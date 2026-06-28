@@ -31,23 +31,16 @@ workflows:
         script: |
           echo $CM_PROVISIONING_PROFILE | base64 --decode > /tmp/profile.mobileprovision
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          UUID=$(security cms -D -i /tmp/profile.mobileprovision 2>/dev/null \
-            | plutil -extract UUID xml1 -o - - \
-            | sed -n 's/.*<string>\(.*\)<\/string>.*/\1/p')
           cp /tmp/profile.mobileprovision \
-            ~/Library/MobileDevice/Provisioning\ Profiles/${UUID}.mobileprovision
-          echo "Installed profile: $UUID"
+            ~/Library/MobileDevice/Provisioning\ Profiles/4af8c60c-f692-4ffc-90c1-384f0330f610.mobileprovision
+          echo "Installed profile: 4af8c60c-f692-4ffc-90c1-384f0330f610"
 
       - name: Flutter pub get
         script: flutter pub get
 
-      - name: Set up code signing
-        script: |
-          xcode-project use-profiles
-
       - name: Build IPA
         script: |
-          flutter build ipa --release
+          flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
