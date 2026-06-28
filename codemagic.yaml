@@ -45,16 +45,32 @@ workflows:
         script: |
           PROFILE_UUID=$(ls ~/Library/MobileDevice/Provisioning\ Profiles/ | sed 's/\.mobileprovision//')
           echo "Using profile UUID: $PROFILE_UUID"
-          # Patch the Xcode project Release config with correct signing settings
-          cd ios
-          /usr/libexec/PlistBuddy -c "Set :objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_STYLE Manual" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Set :objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_IDENTITY 'Apple Distribution'" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Set :objects:97C147071CF9000F007C117D:buildSettings:PROVISIONING_PROFILE $PROFILE_UUID" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
-          # Also patch Profile config (249021D4217E4FDB00AE95B9)
-          /usr/libexec/PlistBuddy -c "Set :objects:249021D4217E4FDB00AE95B9:buildSettings:CODE_SIGN_STYLE Manual" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Set :objects:249021D4217E4FDB00AE95B9:buildSettings:CODE_SIGN_IDENTITY 'Apple Distribution'" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Set :objects:249021D4217E4FDB00AE95B9:buildSettings:PROVISIONING_PROFILE $PROFILE_UUID" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
-          cd ..
+          PBXPROJ="ios/Runner.xcodeproj/project.pbxproj"
+          # Add signing settings to Release build config (97C147071CF9000F007C117D)
+          # Use sed to insert after VERSIONING_SYSTEM in Release target config
+          sed -i '' \
+            "s/VERSIONING_SYSTEM = \"apple-generic\";\n\t\t\t};\n\t\t\tname = Release;/VERSIONING_SYSTEM = \"apple-generic\";\n\t\t\t\tCODE_SIGN_STYLE = Manual;\n\t\t\t\tCODE_SIGN_IDENTITY = \"Apple Distribution\";\n\t\t\t\tPROVISIONING_PROFILE = \"${PROFILE_UUID}\";\n\t\t\t};\n\t\t\tname = Release;/g" \
+            "$PBXPROJ" 2>/dev/null || true
+          # Simpler approach: use Python to patch the file
+          python3 - <<PYEOF
+import re, os
+uuid = "$PROFILE_UUID"
+path = "ios/Runner.xcodeproj/project.pbxproj"
+with open(path, 'r') as f:
+    content = f.read()
+# Find the Release target build config block and add signing settings
+# Target the 97C147071CF9000F007C117D Release block
+old = 'PRODUCT_BUNDLE_IDENTIFIER = com.sprouttogether.app;\n\t\t\t\tDEVELOPMENT_TEAM = LYS695473H;\n\t\t\t\tPRODUCT_NAME = "\$(TARGET_NAME)";\n\t\t\t\tSWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";\n\t\t\t\tSWIFT_VERSION = 5.0;\n\t\t\t\tVERSIONING_SYSTEM = "apple-generic";\n\t\t\t};\n\t\t\tname = Release;'
+new = f'PRODUCT_BUNDLE_IDENTIFIER = com.sprouttogether.app;\n\t\t\t\tCODE_SIGN_IDENTITY = "Apple Distribution";\n\t\t\t\tCODE_SIGN_STYLE = Manual;\n\t\t\t\tDEVELOPMENT_TEAM = LYS695473H;\n\t\t\t\tPROVISIONING_PROFILE = "{uuid}";\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "";\n\t\t\t\tPRODUCT_NAME = "$(TARGET_NAME)";\n\t\t\t\tSWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";\n\t\t\t\tSWIFT_VERSION = 5.0;\n\t\t\t\tVERSIONING_SYSTEM = "apple-generic";\n\t\t\t}};\n\t\t\tname = Release;'
+if old in content:
+    content = content.replace(old, new)
+    print("Patched Release config successfully")
+else:
+    print("WARNING: Could not find Release config block to patch")
+    print(repr(content[content.find('97C147071CF9000F007C117D'):content.find('97C147071CF9000F007C117D')+500]))
+with open(path, 'w') as f:
+    f.write(content)
+PYEOF
 
       - name: Build IPA
         script: |
