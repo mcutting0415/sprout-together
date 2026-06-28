@@ -81,10 +81,12 @@ workflows:
             -sdk iphoneos \
             -configuration Release \
             -archivePath /tmp/Runner.xcarchive \
+            -derivedDataPath /tmp/DerivedData \
             archive \
             DEVELOPMENT_TEAM=LYS695473H \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
+            CODE_SIGN_IDENTITY="Apple Distribution: Mackenzie Cutting (LYS695473H)" \
             PROVISIONING_PROFILE=5f7e57d5-8176-4446-b1a6-5e41b1d59c97 \
+            PROVISIONING_PROFILE_SPECIFIER="SproutTogether App Store" \
             CODE_SIGN_STYLE=Manual
 
       - name: Export IPA
