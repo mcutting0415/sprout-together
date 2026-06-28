@@ -31,17 +31,26 @@ workflows:
 
       - name: Install provisioning profile
         script: |
-          echo $CM_PROVISIONING_PROFILE | base64 --decode > /tmp/profile.mobileprovision
+          printf '%s' "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
+          # Install to both legacy and Xcode-managed locations
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          mkdir -p ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles
+          PROFILE_UUID="4af8c60c-f692-4ffc-90c1-384f0330f610"
           cp /tmp/profile.mobileprovision \
-            ~/Library/MobileDevice/Provisioning\ Profiles/4af8c60c-f692-4ffc-90c1-384f0330f610.mobileprovision
-          echo "Installed profile: 4af8c60c-f692-4ffc-90c1-384f0330f610"
+            ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
+          cp /tmp/profile.mobileprovision \
+            ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
+          echo "Installed profile: $PROFILE_UUID (size: $(wc -c < /tmp/profile.mobileprovision) bytes)"
 
       - name: Flutter pub get
         script: flutter pub get
 
       - name: Pod install
         script: cd ios && pod install
+
+      - name: Verify signing identity
+        script: |
+          security find-identity -p codesigning -v
 
       - name: Archive
         script: |
@@ -52,10 +61,9 @@ workflows:
             -configuration Release \
             -archivePath /tmp/Runner.xcarchive \
             archive \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
             DEVELOPMENT_TEAM=LYS695473H \
-            PROVISIONING_PROFILE=4af8c60c-f692-4ffc-90c1-384f0330f610
+            PROVISIONING_PROFILE=4af8c60c-f692-4ffc-90c1-384f0330f610 \
+            CODE_SIGN_STYLE=Manual
 
       - name: Export IPA
         script: |
