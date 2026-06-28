@@ -31,7 +31,16 @@ workflows:
 
       - name: Install provisioning profile
         script: |
-          printf '%s' "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
+          # Strip any whitespace/newlines from base64 before decoding
+          printf '%s' "$CM_PROVISIONING_PROFILE" | tr -d ' \n\r' | base64 --decode > /tmp/profile.mobileprovision
+          echo "Decoded profile size: $(wc -c < /tmp/profile.mobileprovision) bytes"
+          # Verify the profile is a valid CMS/PKCS7 file
+          security cms -D -i /tmp/profile.mobileprovision -o /tmp/profile_decoded.plist 2>&1 && echo "CMS decode: OK" || echo "CMS decode: FAILED - profile may be corrupt"
+          if [ -f /tmp/profile_decoded.plist ]; then
+            echo "Profile UUID: $(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile_decoded.plist 2>&1)"
+            echo "Profile Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile_decoded.plist 2>&1)"
+            echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile_decoded.plist 2>&1)"
+          fi
           # Install to both legacy and Xcode-managed locations
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           mkdir -p ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles
@@ -40,7 +49,7 @@ workflows:
             ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
           cp /tmp/profile.mobileprovision \
             ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
-          echo "Installed profile: $PROFILE_UUID (size: $(wc -c < /tmp/profile.mobileprovision) bytes)"
+          echo "Installed profile to both locations"
 
       - name: Flutter pub get
         script: flutter pub get
@@ -50,7 +59,11 @@ workflows:
 
       - name: Verify signing identity
         script: |
+          echo "=== Signing identities in keychain ==="
           security find-identity -p codesigning -v
+          echo "=== Installed provisioning profiles ==="
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ 2>/dev/null || echo "No profiles in MobileDevice"
+          ls -la ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/ 2>/dev/null || echo "No profiles in Xcode UserData"
 
       - name: Archive
         script: |
@@ -62,6 +75,7 @@ workflows:
             -archivePath /tmp/Runner.xcarchive \
             archive \
             DEVELOPMENT_TEAM=LYS695473H \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
             PROVISIONING_PROFILE=4af8c60c-f692-4ffc-90c1-384f0330f610 \
             CODE_SIGN_STYLE=Manual
 
