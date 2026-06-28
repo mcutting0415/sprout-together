@@ -54,6 +54,22 @@ workflows:
             echo "Profile Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile_decoded.plist 2>&1)"
             echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile_decoded.plist 2>&1)"
           fi
+          # Extract and trust the certificate chain used to sign this provisioning profile
+          # (Apple iPhone Certification Authority chain - Xcode needs to verify the CMS signature)
+          KEYCHAIN_PATH=$HOME/Library/Keychains/build.keychain-db
+          openssl pkcs7 -inform DER -in /tmp/profile.mobileprovision -out /tmp/profile_signing_certs.pem -print_certs 2>/dev/null && \
+            echo "Extracted profile signing certs" || echo "Could not extract profile signing certs"
+          if [ -f /tmp/profile_signing_certs.pem ]; then
+            # Import and trust all certs in the signing chain
+            security import /tmp/profile_signing_certs.pem -k "$KEYCHAIN_PATH" -T /usr/bin/codesign 2>/dev/null || true
+            # Trust each cert individually as a root/anchor
+            awk '/-----BEGIN CERTIFICATE-----/{f="/tmp/profile_cert_" ++i ".pem"} f{print > f} /-----END CERTIFICATE-----/{f=""}' /tmp/profile_signing_certs.pem
+            for cert in /tmp/profile_cert_*.pem; do
+              echo "Trusting: $cert"
+              security add-trusted-cert -d user -r trustRoot -k "$KEYCHAIN_PATH" "$cert" 2>/dev/null || true
+            done
+            echo "Profile signing cert chain imported and trusted"
+          fi
           # Install to both legacy and Xcode-managed locations
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           mkdir -p ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles
