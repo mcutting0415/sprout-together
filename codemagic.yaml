@@ -52,7 +52,7 @@ workflows:
           # Install to both legacy and Xcode-managed locations
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           mkdir -p ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles
-          PROFILE_UUID="4af8c60c-f692-4ffc-90c1-384f0330f610"
+          PROFILE_UUID="5f7e57d5-8176-4446-b1a6-5e41b1d59c97"
           cp /tmp/profile.mobileprovision \
             ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
           cp /tmp/profile.mobileprovision \
@@ -84,7 +84,7 @@ workflows:
             archive \
             DEVELOPMENT_TEAM=LYS695473H \
             CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE=4af8c60c-f692-4ffc-90c1-384f0330f610 \
+            PROVISIONING_PROFILE=5f7e57d5-8176-4446-b1a6-5e41b1d59c97 \
             CODE_SIGN_STYLE=Manual
 
       - name: Export IPA
