@@ -80,3 +80,4 @@ workflows:
       app_store_connect:
         apple_id: cutting.mackenzie4@gmail.com
         password: $APP_SPECIFIC_PASSWORD
+        submit_to_testflight: true
