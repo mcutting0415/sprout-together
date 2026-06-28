@@ -41,6 +41,21 @@ workflows:
       - name: Flutter pub get
         script: flutter pub get
 
+      - name: Set up code signing in Xcode project
+        script: |
+          PROFILE_UUID=$(ls ~/Library/MobileDevice/Provisioning\ Profiles/ | sed 's/\.mobileprovision//')
+          echo "Using profile UUID: $PROFILE_UUID"
+          # Patch the Xcode project Release config with correct signing settings
+          cd ios
+          /usr/libexec/PlistBuddy -c "Set :objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_STYLE Manual" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Set :objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_IDENTITY 'Apple Distribution'" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Set :objects:97C147071CF9000F007C117D:buildSettings:PROVISIONING_PROFILE $PROFILE_UUID" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
+          # Also patch Profile config (249021D4217E4FDB00AE95B9)
+          /usr/libexec/PlistBuddy -c "Set :objects:249021D4217E4FDB00AE95B9:buildSettings:CODE_SIGN_STYLE Manual" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Set :objects:249021D4217E4FDB00AE95B9:buildSettings:CODE_SIGN_IDENTITY 'Apple Distribution'" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Set :objects:249021D4217E4FDB00AE95B9:buildSettings:PROVISIONING_PROFILE $PROFILE_UUID" Runner.xcodeproj/project.pbxproj 2>/dev/null || true
+          cd ..
+
       - name: Build IPA
         script: |
           # Write ExportOptions.plist
