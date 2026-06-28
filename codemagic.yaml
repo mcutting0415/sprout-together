@@ -71,12 +71,7 @@ workflows:
 
           flutter build ipa \
             --release \
-            --export-options-plist=/tmp/ExportOptions.plist \
-            -- \
-            CODE_SIGN_STYLE=Manual \
-            "CODE_SIGN_IDENTITY=Apple Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="${PROFILE_UUID}" \
-            DEVELOPMENT_TEAM=LYS695473H
+            --export-options-plist=/tmp/ExportOptions.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
