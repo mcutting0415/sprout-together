@@ -77,14 +77,19 @@ workflows:
           cd /tmp && rm -rf Payload && mkdir Payload
           cp -r Runner.xcarchive/Products/Applications/Runner.app Payload/
           zip -qr Runner.ipa Payload/
-          echo "IPA: $(wc -c < /tmp/Runner.ipa) bytes"
+          echo "IPA size: $(wc -c < /tmp/Runner.ipa) bytes"
           mkdir -p /Users/builder/clone/build/ios/ipa
           cp /tmp/Runner.ipa /Users/builder/clone/build/ios/ipa/
 
+      - name: Upload to TestFlight
+        script: |
+          echo "Uploading to TestFlight via altool..."
+          xcrun altool --upload-app \
+            --file /Users/builder/clone/build/ios/ipa/Runner.ipa \
+            --type ios \
+            --username cutting.mackenzie4@gmail.com \
+            --password $APP_SPECIFIC_PASSWORD \
+            --verbose
+
     artifacts:
       - build/ios/ipa/*.ipa
-
-    publishing:
-      app_store_connect:
-        apple_id: cutting.mackenzie4@gmail.com
-        password: $APP_SPECIFIC_PASSWORD
