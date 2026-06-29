@@ -31,7 +31,7 @@ workflows:
           cp /tmp/profile.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/${PROFILE_UUID}.mobileprovision"
 
       - name: Flutter pub upgrade
-        script: flutter pub upgrade
+        script: flutter pub get
 
       - name: Pod install
         script: cd ios && pod install
