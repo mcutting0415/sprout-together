@@ -1,4 +1,3 @@
-# SproutTogether iOS CI
 workflows:
   ios-testflight:
     name: iOS TestFlight
@@ -21,26 +20,16 @@ workflows:
           echo $CM_CERTIFICATE | base64 --decode > /tmp/cert.p12
           keychain add-certificates --certificate /tmp/cert.p12 --certificate-password $CM_CERTIFICATE_PASSWORD
           rm /tmp/cert.p12
-          echo "=== Signing identities ==="
           security find-identity -p codesigning -v
 
       - name: Install provisioning profile
         script: |
-          PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
-          mkdir -p "$PROFILES_HOME"
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           echo "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
-          python3 -c "
-import sys
-data = open('/tmp/profile.mobileprovision','rb').read()
-idx = data.find(b'<?xml')
-if idx == -1: idx = data.find(b'bplist')
-if idx == -1: print('ERROR: no plist found'); sys.exit(1)
-end = data.rfind(b'</plist>') + len(b'</plist>')
-open('/tmp/profile.plist','wb').write(data[idx:end])
-print('Plist extracted OK')
-"
+          python3 -c "import sys; d=open('/tmp/profile.mobileprovision','rb').read(); i=d.find(b'<?xml'); i=d.find(b'bplist') if i<0 else i; sys.exit(1) if i<0 else None; open('/tmp/profile.plist','wb').write(d[i:d.rfind(b'</plist>')+8]); print('plist OK')"
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
           cp /tmp/profile.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/${PROFILE_UUID}.mobileprovision"
+          echo "Installed profile UUID: $PROFILE_UUID"
 
       - name: Flutter pub get
         script: flutter pub get
@@ -48,7 +37,7 @@ print('Plist extracted OK')
       - name: Pod install
         script: cd ios && pod install
 
-      - name: Archive (unsigned)
+      - name: Archive unsigned
         script: |
           xcodebuild \
             -workspace ios/Runner.xcworkspace \
@@ -74,11 +63,13 @@ print('Plist extracted OK')
           done
           codesign --force --sign "Apple Distribution: Mackenzie Cutting (LYS695473H)" \
             --entitlements /tmp/entitlements.plist --timestamp "$APP_PATH"
+          codesign --verify --deep --strict "$APP_PATH" && echo "Signature OK"
           cd /tmp && rm -rf Payload && mkdir Payload
           cp -r Runner.xcarchive/Products/Applications/Runner.app Payload/
           zip -qr Runner.ipa Payload/
           mkdir -p /Users/builder/clone/build/ios/ipa
           cp /tmp/Runner.ipa /Users/builder/clone/build/ios/ipa/
+          echo "IPA size: $(wc -c < /tmp/Runner.ipa) bytes"
 
     artifacts:
       - build/ios/ipa/*.ipa
