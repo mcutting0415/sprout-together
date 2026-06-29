@@ -1,3 +1,4 @@
+# SproutTogether iOS CI
 workflows:
   ios-testflight:
     name: iOS TestFlight
@@ -27,8 +28,19 @@ workflows:
         script: |
           PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
           mkdir -p "$PROFILES_HOME"
-          echo "$CM_PROVISIONING_PROFILE" | base64 --decode > "$PROFILES_HOME/sprouttogether_appstore.mobileprovision"
-          echo "Installed profile ($(wc -c < "$PROFILES_HOME/sprouttogether_appstore.mobileprovision") bytes)"
+          echo "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
+          python3 -c "
+import sys
+data = open('/tmp/profile.mobileprovision','rb').read()
+idx = data.find(b'<?xml')
+if idx == -1: idx = data.find(b'bplist')
+if idx == -1: print('ERROR: no plist found'); sys.exit(1)
+end = data.rfind(b'</plist>') + len(b'</plist>')
+open('/tmp/profile.plist','wb').write(data[idx:end])
+print('Plist extracted OK')
+"
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
+          cp /tmp/profile.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/${PROFILE_UUID}.mobileprovision"
 
       - name: Flutter pub get
         script: flutter pub get
@@ -36,13 +48,7 @@ workflows:
       - name: Pod install
         script: cd ios && pod install
 
-      - name: Set up code signing
-        script: |
-          xcode-project use-profiles
-          echo "=== project.pbxproj signing settings after use-profiles ==="
-          grep -E "CODE_SIGN|PROVISIONING_PROFILE|DEVELOPMENT_TEAM" ios/Runner.xcodeproj/project.pbxproj | sort -u
-
-      - name: Archive
+      - name: Archive (unsigned)
         script: |
           xcodebuild \
             -workspace ios/Runner.xcworkspace \
@@ -51,17 +57,28 @@ workflows:
             -configuration Release \
             -archivePath /tmp/Runner.xcarchive \
             -derivedDataPath /tmp/DerivedData \
-            archive
+            archive \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=LYS695473H \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES
 
-      - name: Export IPA
+      - name: Sign and package IPA
         script: |
-          xcodebuild \
-            -exportArchive \
-            -archivePath /tmp/Runner.xcarchive \
-            -exportPath /tmp/ipa-export \
-            -exportOptionsPlist ios/ExportOptions.plist
-          mkdir -p build/ios/ipa
-          cp /tmp/ipa-export/*.ipa build/ios/ipa/
+          APP_PATH="/tmp/Runner.xcarchive/Products/Applications/Runner.app"
+          /usr/libexec/PlistBuddy -c 'Print :Entitlements' /tmp/profile.plist -x > /tmp/entitlements.plist
+          cp /tmp/profile.mobileprovision "$APP_PATH/embedded.mobileprovision"
+          find "$APP_PATH/Frameworks" \( -name "*.framework" -o -name "*.dylib" \) | while read item; do
+            codesign --force --sign "Apple Distribution: Mackenzie Cutting (LYS695473H)" --timestamp "$item" 2>&1 || true
+          done
+          codesign --force --sign "Apple Distribution: Mackenzie Cutting (LYS695473H)" \
+            --entitlements /tmp/entitlements.plist --timestamp "$APP_PATH"
+          cd /tmp && rm -rf Payload && mkdir Payload
+          cp -r Runner.xcarchive/Products/Applications/Runner.app Payload/
+          zip -qr Runner.ipa Payload/
+          mkdir -p /Users/builder/clone/build/ios/ipa
+          cp /tmp/Runner.ipa /Users/builder/clone/build/ios/ipa/
 
     artifacts:
       - build/ios/ipa/*.ipa
