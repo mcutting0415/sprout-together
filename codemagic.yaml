@@ -51,17 +51,18 @@ workflows:
             security import /tmp/profile_signing_certs.pem -k "$KEYCHAIN_PATH" -T /usr/bin/codesign 2>/dev/null || true
             awk '/-----BEGIN CERTIFICATE-----/{f="/tmp/profile_cert_" ++i ".pem"} f{print > f} /-----END CERTIFICATE-----/{f=""}' /tmp/profile_signing_certs.pem
             for cert in /tmp/profile_cert_*.pem; do
-              security add-trusted-cert -d user -r trustRoot -k "$KEYCHAIN_PATH" "$cert" 2>/dev/null || true
+              echo "Trusting in build keychain: $cert"
+              security add-trusted-cert -d user -r trustRoot -k "$KEYCHAIN_PATH" "$cert" 2>&1 || true
+              echo "Trusting in login keychain: $cert"
+              security add-trusted-cert -d user -r trustRoot -k ~/Library/Keychains/login.keychain-db "$cert" 2>&1 || true
             done
             echo "Profile signing cert chain imported and trusted"
           fi
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           mkdir -p ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles
           PROFILE_UUID="5f7e57d5-8176-4446-b1a6-5e41b1d59c97"
-          cp /tmp/profile.mobileprovision \
-            ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
-          cp /tmp/profile.mobileprovision \
-            ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
+          cp /tmp/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
+          cp /tmp/profile.mobileprovision ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
           echo "Installed profile to both locations"
 
       - name: Flutter pub get
@@ -74,9 +75,10 @@ workflows:
         script: |
           echo "=== Signing identities ==="
           security find-identity -p codesigning -v
-          echo "=== Profiles ==="
+          echo "=== Installed profiles ==="
           find ~/Library -name "*.mobileprovision" 2>/dev/null
-          echo "=== Unlock keychain ==="
+          echo "=== Default keychain ==="
+          security default-keychain -d user
           security unlock-keychain -p "" $HOME/Library/Keychains/build.keychain-db
 
       - name: Archive
@@ -96,7 +98,6 @@ workflows:
             DEVELOPMENT_TEAM=LYS695473H \
             CODE_SIGN_IDENTITY="Apple Distribution: Mackenzie Cutting (LYS695473H)" \
             PROVISIONING_PROFILE=5f7e57d5-8176-4446-b1a6-5e41b1d59c97 \
-            PROVISIONING_PROFILE_SPECIFIER="SproutTogether App Store" \
             CODE_SIGN_STYLE=Manual \
             OTHER_CODE_SIGN_FLAGS="--keychain $HOME/Library/Keychains/build.keychain-db"
 
