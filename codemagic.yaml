@@ -1,4 +1,6 @@
-workflows:
+script: |
+          flutter config --no-enable-swift-package-manager
+          flutter pub getworkflows:
   ios-testflight:
     name: iOS TestFlight
     max_build_duration: 60
