@@ -19,58 +19,42 @@ workflows:
           security create-keychain -p "" "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
           security unlock-keychain -p "" "$KEYCHAIN_PATH"
-          # Import Apple intermediate CA certificates to complete the cert chain
           curl -fsS "https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer" -o /tmp/AppleWWDRCAG3.cer && \
             security import /tmp/AppleWWDRCAG3.cer -k "$KEYCHAIN_PATH" 2>/dev/null || true
           curl -fsS "https://www.apple.com/certificateauthority/AppleWWDRCAG4.cer" -o /tmp/AppleWWDRCAG4.cer && \
             security import /tmp/AppleWWDRCAG4.cer -k "$KEYCHAIN_PATH" 2>/dev/null || true
-          # Import the distribution certificate — fail fast if password is wrong
           security import /tmp/cert.p12 \
             -k "$KEYCHAIN_PATH" \
             -P "$CM_CERTIFICATE_PASSWORD" \
             -T /usr/bin/codesign \
             -T /usr/bin/security \
-            || { echo "ERROR: p12 import failed — check CM_CERTIFICATE_PASSWORD and CM_CERTIFICATE"; exit 1; }
+            || { echo "ERROR: p12 import failed"; exit 1; }
           security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
-          # Add to search list and set as DEFAULT keychain
           security list-keychains -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | xargs)
           security default-keychain -d user -s "$KEYCHAIN_PATH"
           rm /tmp/cert.p12
           echo "Certificate import done"
-          echo "=== Keychain list ==="
-          security list-keychains -d user
-          echo "=== Default keychain ==="
-          security default-keychain -d user
 
       - name: Install provisioning profile
         script: |
-          # Strip any whitespace/newlines from base64 before decoding
           printf '%s' "$CM_PROVISIONING_PROFILE" | tr -d ' \n\r' | base64 --decode > /tmp/profile.mobileprovision
           echo "Decoded profile size: $(wc -c < /tmp/profile.mobileprovision) bytes"
-          # Verify the profile is a valid CMS/PKCS7 file
-          security cms -D -i /tmp/profile.mobileprovision -o /tmp/profile_decoded.plist 2>&1 && echo "CMS decode: OK" || echo "CMS decode: FAILED - profile may be corrupt"
+          security cms -D -i /tmp/profile.mobileprovision -o /tmp/profile_decoded.plist 2>&1 && echo "CMS decode: OK" || echo "CMS decode: FAILED"
           if [ -f /tmp/profile_decoded.plist ]; then
             echo "Profile UUID: $(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile_decoded.plist 2>&1)"
             echo "Profile Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile_decoded.plist 2>&1)"
-            echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile_decoded.plist 2>&1)"
           fi
-          # Extract and trust the certificate chain used to sign this provisioning profile
-          # (Apple iPhone Certification Authority chain - Xcode needs to verify the CMS signature)
           KEYCHAIN_PATH=$HOME/Library/Keychains/build.keychain-db
           openssl pkcs7 -inform DER -in /tmp/profile.mobileprovision -out /tmp/profile_signing_certs.pem -print_certs 2>/dev/null && \
-            echo "Extracted profile signing certs" || echo "Could not extract profile signing certs"
+            echo "Extracted profile signing certs" || echo "Could not extract"
           if [ -f /tmp/profile_signing_certs.pem ]; then
-            # Import and trust all certs in the signing chain
             security import /tmp/profile_signing_certs.pem -k "$KEYCHAIN_PATH" -T /usr/bin/codesign 2>/dev/null || true
-            # Trust each cert individually as a root/anchor
             awk '/-----BEGIN CERTIFICATE-----/{f="/tmp/profile_cert_" ++i ".pem"} f{print > f} /-----END CERTIFICATE-----/{f=""}' /tmp/profile_signing_certs.pem
             for cert in /tmp/profile_cert_*.pem; do
-              echo "Trusting: $cert"
               security add-trusted-cert -d user -r trustRoot -k "$KEYCHAIN_PATH" "$cert" 2>/dev/null || true
             done
             echo "Profile signing cert chain imported and trusted"
           fi
-          # Install to both legacy and Xcode-managed locations
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           mkdir -p ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles
           PROFILE_UUID="5f7e57d5-8176-4446-b1a6-5e41b1d59c97"
@@ -88,22 +72,19 @@ workflows:
 
       - name: Verify signing identity
         script: |
-          echo "=== Signing identities in keychain ==="
+          echo "=== Signing identities ==="
           security find-identity -p codesigning -v
-          echo "=== Installed provisioning profiles ==="
-          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ 2>/dev/null || echo "No profiles in MobileDevice"
-          ls -la ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/ 2>/dev/null || echo "No profiles in Xcode UserData"
-          echo "=== All provisioning profiles on system ==="
+          echo "=== Profiles ==="
           find ~/Library -name "*.mobileprovision" 2>/dev/null
-          echo "=== Xcode UserData dirs ==="
-          ls ~/Library/Developer/Xcode/UserData/ 2>/dev/null || echo "No Xcode UserData"
-          echo "=== Default keychain ==="
-          security default-keychain -d user
-          echo "=== Unlock keychain for archive ==="
+          echo "=== Unlock keychain ==="
           security unlock-keychain -p "" $HOME/Library/Keychains/build.keychain-db
 
       - name: Archive
         script: |
+          security unlock-keychain -p "" $HOME/Library/Keychains/build.keychain-db
+          security set-keychain-settings -lut 21600 $HOME/Library/Keychains/build.keychain-db
+          echo "=== Identity check pre-archive ==="
+          security find-identity -p codesigning -v $HOME/Library/Keychains/build.keychain-db
           xcodebuild \
             -workspace ios/Runner.xcworkspace \
             -scheme Runner \
