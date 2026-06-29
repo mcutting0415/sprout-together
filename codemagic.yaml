@@ -7,7 +7,7 @@ workflows:
     environment:
       groups:
         - ios_signing
-      flutter: 3.24.5
+      flutter: stable
       xcode: 16
       cocoapods: default
 
@@ -31,8 +31,8 @@ workflows:
           cp /tmp/profile.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/${PROFILE_UUID}.mobileprovision"
           echo "Installed profile: $PROFILE_UUID"
 
-      - name: Flutter pub get
-        script: flutter pub get
+      - name: Flutter pub upgrade
+        script: flutter pub upgrade
 
       - name: Pod install
         script: cd ios && pod install
