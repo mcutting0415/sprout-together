@@ -29,16 +29,7 @@ workflows:
           mkdir -p "$PROFILES_HOME"
           echo "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
           echo "Profile size: $(wc -c < /tmp/profile.mobileprovision) bytes"
-          python3 -c "
-import sys
-data = open('/tmp/profile.mobileprovision','rb').read()
-idx = data.find(b'<?xml')
-if idx == -1: idx = data.find(b'bplist')
-if idx == -1: print('ERROR: no plist found'); sys.exit(1)
-end = data.rfind(b'</plist>') + len(b'</plist>')
-open('/tmp/profile.plist','wb').write(data[idx:end])
-print('Plist extracted OK')
-"
+          python3 -c "data=open('/tmp/profile.mobileprovision','rb').read();idx=data.find(b'<?xml');idx=data.find(b'bplist') if idx<0 else idx;assert idx>=0,'no plist found';end=data.rfind(b'</plist>')+8;open('/tmp/profile.plist','wb').write(data[idx:end]);print('Plist extracted OK')"
           echo "Profile UUID: $(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)"
           echo "Profile Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile.plist)"
           echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile.plist)"
