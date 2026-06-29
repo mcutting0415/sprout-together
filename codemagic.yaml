@@ -7,7 +7,7 @@ workflows:
     environment:
       groups:
         - ios_signing
-      flutter: stable
+      flutter: 3.24.5
       xcode: 16
       cocoapods: default
 
@@ -29,7 +29,6 @@ workflows:
           python3 -c "import sys; d=open('/tmp/profile.mobileprovision','rb').read(); i=d.find(b'<?xml'); i=d.find(b'bplist') if i<0 else i; sys.exit(1) if i<0 else None; open('/tmp/profile.plist','wb').write(d[i:d.rfind(b'</plist>')+8]); print('plist OK')"
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
           cp /tmp/profile.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/${PROFILE_UUID}.mobileprovision"
-          echo "Installed profile: $PROFILE_UUID"
 
       - name: Flutter pub upgrade
         script: flutter pub upgrade
