@@ -20,20 +20,23 @@ workflows:
           echo $CM_CERTIFICATE | base64 --decode > /tmp/cert.p12
           keychain add-certificates --certificate /tmp/cert.p12 --certificate-password $CM_CERTIFICATE_PASSWORD
           rm /tmp/cert.p12
+          echo "=== Cert fingerprint in keychain ==="
+          security find-certificate -c "Apple Distribution" -p 2>/dev/null | openssl x509 -fingerprint -noout -sha1 2>/dev/null || echo "check failed"
           security find-identity -p codesigning -v
 
       - name: Install provisioning profile
         script: |
           set -e
-          PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
-          mkdir -p "$PROFILES_HOME"
           echo "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
           security cms -D -i /tmp/profile.mobileprovision -o /tmp/profile.plist
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
-          echo "UUID: $PROFILE_UUID"
-          echo "Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile.plist)"
-          cp /tmp/profile.mobileprovision "$PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
-          echo "Installed to: $PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
+          echo "Profile UUID: $PROFILE_UUID"
+          echo "Profile Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile.plist)"
+          echo "=== Cert fingerprints in profile ==="
+          for i in 0 1 2; do
+            /usr/libexec/PlistBuddy -c "Print :DeveloperCertificates:$i" /tmp/profile.plist > /tmp/dev_cert$i.der 2>/dev/null && \
+              openssl x509 -inform DER -in /tmp/dev_cert$i.der -fingerprint -noout -sha1 -subject 2>/dev/null || break
+          done
 
       - name: Flutter pub get
         script: |
@@ -59,6 +62,8 @@ workflows:
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=LYS695473H \
             AD_HOC_CODE_SIGNING_ALLOWED=YES
+          echo "=== Xcode auto-downloaded profiles ==="
+          ls -la "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles/" 2>/dev/null || echo "none"
           ls /tmp/Runner.xcarchive/Products/Applications/
 
       - name: Sign and package IPA
@@ -67,22 +72,35 @@ workflows:
           CERT_IDENTITY="Apple Distribution: Mackenzie Cutting (LYS695473H)"
           APP_PATH=$(find /tmp/Runner.xcarchive -name "Runner.app" | head -1)
           echo "App: $APP_PATH"
+          # Clear ALL profile dirs so codesign cannot auto-embed a different profile
+          rm -rf "$HOME/Library/MobileDevice/Provisioning Profiles/" 2>/dev/null || true
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles/"
+          rm -rf "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles/" 2>/dev/null || true
+          mkdir -p "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles/"
+          # Embed our profile
           cp /tmp/profile.mobileprovision "$APP_PATH/embedded.mobileprovision"
+          # Extract entitlements
           /usr/libexec/PlistBuddy -c 'Print :Entitlements' /tmp/profile.plist -x > /tmp/entitlements.plist
-          cat /tmp/entitlements.plist
+          # Sign dylibs
           find "$APP_PATH" -name "*.dylib" 2>/dev/null | while read f; do
             codesign --force --sign "$CERT_IDENTITY" --timestamp "$f"
           done
+          # Sign frameworks
           find "$APP_PATH/Frameworks" -maxdepth 1 -type d -name "*.framework" 2>/dev/null | while read fw; do
             echo "Signing: $fw"
             codesign --force --sign "$CERT_IDENTITY" --timestamp "$fw"
           done
+          # Sign extensions
           find "$APP_PATH" -maxdepth 2 -type d -name "*.appex" 2>/dev/null | while read ext; do
             codesign --force --sign "$CERT_IDENTITY" --entitlements /tmp/entitlements.plist --timestamp "$ext"
           done
+          # Sign main app
           codesign --force --sign "$CERT_IDENTITY" --entitlements /tmp/entitlements.plist --timestamp "$APP_PATH"
-          echo "=== Deep verify ==="
+          # Verify embedded profile UUID
+          security cms -D -i "$APP_PATH/embedded.mobileprovision" -o /tmp/embedded_check.plist 2>/dev/null
+          echo "Embedded profile UUID: $(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/embedded_check.plist 2>/dev/null)"
           codesign --deep --strict --verify --verbose=4 "$APP_PATH" 2>&1
+          # Package IPA
           rm -rf /tmp/IPAPayload
           mkdir -p /tmp/IPAPayload/Payload
           cp -rp "$APP_PATH" /tmp/IPAPayload/Payload/Runner.app
@@ -93,23 +111,20 @@ workflows:
 
       - name: Upload to TestFlight
         script: |
-          set -e
           IPA_PATH=$(find /Users/builder/clone/build/ios/ipa -name "*.ipa" | head -1)
           echo "IPA: $IPA_PATH ($(wc -c < "$IPA_PATH") bytes)"
-          echo "=== altool validate ==="
           xcrun altool --validate-app \
             -f "$IPA_PATH" \
             -t ios \
             -u cutting.mackenzie4@gmail.com \
             -p $APP_SPECIFIC_PASSWORD \
-            --show-progress 2>&1 || echo "altool validate exit: $?"
-          echo "=== iTMSTransporter upload ==="
-          xcrun iTMSTransporter \
-            -m upload \
+            --show-progress && echo "Validation PASSED" || echo "Validation FAILED: exit $?"
+          xcrun altool --upload-app \
             -f "$IPA_PATH" \
+            -t ios \
             -u cutting.mackenzie4@gmail.com \
             -p $APP_SPECIFIC_PASSWORD \
-            -v eXtreme 2>&1 | tail -100
+            --show-progress && echo "Upload SUCCEEDED" || echo "Upload FAILED: exit $?"
 
     artifacts:
       - build/ios/ipa/*.ipa
