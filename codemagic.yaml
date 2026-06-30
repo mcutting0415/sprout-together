@@ -28,26 +28,12 @@ workflows:
           PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
           mkdir -p "$PROFILES_HOME"
           echo "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
-          echo "Profile file info:"
-          file /tmp/profile.mobileprovision
-          echo "First bytes (hex):"
-          xxd /tmp/profile.mobileprovision | head -2
           security cms -D -i /tmp/profile.mobileprovision -o /tmp/profile.plist
-          echo "Decode result: $?"
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
           echo "UUID: $PROFILE_UUID"
           echo "Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile.plist)"
-          echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile.plist)"
-          echo "ProvisionsAllDevices: $(/usr/libexec/PlistBuddy -c 'Print :ProvisionsAllDevices' /tmp/profile.plist 2>/dev/null || echo 'false')"
-          echo "ProvisionedDevices: $(/usr/libexec/PlistBuddy -c 'Print :ProvisionedDevices' /tmp/profile.plist 2>/dev/null || echo 'empty (App Store)')"
           cp /tmp/profile.mobileprovision "$PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
-          echo "Installed: $PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
-          ls -la "$PROFILES_HOME/"
-          # Verify openssl can parse the PKCS7 structure
-          echo "=== OpenSSL verification ==="
-          openssl pkcs7 -inform DER -in /tmp/profile.mobileprovision -print_certs -noout 2>&1 | head -15 || echo "openssl pkcs7 failed"
-          echo "=== Keychain search list ==="
-          security list-keychains
+          echo "Installed to: $PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
 
       - name: Flutter pub get
         script: |
@@ -73,7 +59,6 @@ workflows:
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=LYS695473H \
             AD_HOC_CODE_SIGNING_ALLOWED=YES
-          echo "=== Archive ==="
           ls /tmp/Runner.xcarchive/Products/Applications/
 
       - name: Sign and package IPA
@@ -82,51 +67,49 @@ workflows:
           CERT_IDENTITY="Apple Distribution: Mackenzie Cutting (LYS695473H)"
           APP_PATH=$(find /tmp/Runner.xcarchive -name "Runner.app" | head -1)
           echo "App: $APP_PATH"
-          # Embed provisioning profile
           cp /tmp/profile.mobileprovision "$APP_PATH/embedded.mobileprovision"
-          # Extract entitlements
           /usr/libexec/PlistBuddy -c 'Print :Entitlements' /tmp/profile.plist -x > /tmp/entitlements.plist
-          echo "=== Entitlements ==="
           cat /tmp/entitlements.plist
-          # Sign dylibs first
           find "$APP_PATH" -name "*.dylib" 2>/dev/null | while read f; do
-            echo "Signing dylib: $f"
             codesign --force --sign "$CERT_IDENTITY" --timestamp "$f"
           done
-          # Sign frameworks
           find "$APP_PATH/Frameworks" -maxdepth 1 -type d -name "*.framework" 2>/dev/null | while read fw; do
-            echo "Signing framework: $fw"
+            echo "Signing: $fw"
             codesign --force --sign "$CERT_IDENTITY" --timestamp "$fw"
           done
-          # Sign extensions
           find "$APP_PATH" -maxdepth 2 -type d -name "*.appex" 2>/dev/null | while read ext; do
-            echo "Signing extension: $ext"
             codesign --force --sign "$CERT_IDENTITY" --entitlements /tmp/entitlements.plist --timestamp "$ext"
           done
-          # Sign main app
           codesign --force --sign "$CERT_IDENTITY" --entitlements /tmp/entitlements.plist --timestamp "$APP_PATH"
-          echo "=== Verification ==="
-          codesign --verify --verbose=4 "$APP_PATH"
-          codesign --display --verbose=4 "$APP_PATH" 2>&1 | head -20
-          # Package IPA
+          echo "=== Deep verify ==="
+          codesign --deep --strict --verify --verbose=4 "$APP_PATH" 2>&1
           rm -rf /tmp/IPAPayload
           mkdir -p /tmp/IPAPayload/Payload
           cp -rp "$APP_PATH" /tmp/IPAPayload/Payload/Runner.app
           cd /tmp/IPAPayload && zip -qr /tmp/Runner.ipa Payload/
           mkdir -p /Users/builder/clone/build/ios/ipa
           mv /tmp/Runner.ipa /Users/builder/clone/build/ios/ipa/Runner.ipa
-          echo "IPA: $(ls -lh /Users/builder/clone/build/ios/ipa/Runner.ipa)"
+          ls -lh /Users/builder/clone/build/ios/ipa/Runner.ipa
 
       - name: Upload to TestFlight
         script: |
           set -e
           IPA_PATH=$(find /Users/builder/clone/build/ios/ipa -name "*.ipa" | head -1)
-          echo "Uploading: ${IPA_PATH} ($(wc -c < "${IPA_PATH}") bytes)"
+          echo "IPA: $IPA_PATH ($(wc -c < "$IPA_PATH") bytes)"
+          echo "=== altool validate ==="
+          xcrun altool --validate-app \
+            -f "$IPA_PATH" \
+            -t ios \
+            -u cutting.mackenzie4@gmail.com \
+            -p $APP_SPECIFIC_PASSWORD \
+            --show-progress 2>&1 || echo "altool validate exit: $?"
+          echo "=== iTMSTransporter upload ==="
           xcrun iTMSTransporter \
             -m upload \
-            -f "${IPA_PATH}" \
+            -f "$IPA_PATH" \
             -u cutting.mackenzie4@gmail.com \
-            -p $APP_SPECIFIC_PASSWORD
+            -p $APP_SPECIFIC_PASSWORD \
+            -v eXtreme 2>&1 | tail -100
 
     artifacts:
       - build/ios/ipa/*.ipa
