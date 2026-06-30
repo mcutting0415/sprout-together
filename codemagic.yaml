@@ -20,8 +20,10 @@ workflows:
           echo $CM_CERTIFICATE | base64 --decode > /tmp/cert.p12
           keychain add-certificates --certificate /tmp/cert.p12 --certificate-password $CM_CERTIFICATE_PASSWORD
           rm /tmp/cert.p12
-          echo "=== Signing identities ==="
+          echo "=== All signing identities in ALL keychains ==="
           security find-identity -p codesigning -v
+          echo "=== Custom keychain only ==="
+          security find-identity -p codesigning -v ~/Library/Keychains/cms-keychain-db
 
       - name: Install provisioning profile
         script: |
@@ -41,7 +43,6 @@ workflows:
           "
           echo "Profile UUID: $(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)"
           echo "Profile Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile.plist)"
-          echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile.plist)"
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
           cp /tmp/profile.mobileprovision "$PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
           echo "Installed as ${PROFILE_UUID}.mobileprovision"
@@ -75,15 +76,20 @@ workflows:
           set -e
           APP_PATH="/tmp/Runner.xcarchive/Products/Applications/Runner.app"
           /usr/libexec/PlistBuddy -c 'Print :Entitlements' /tmp/profile.plist -x > /tmp/entitlements.plist
-          echo "Entitlements:"; cat /tmp/entitlements.plist
+          echo "=== Entitlements ==="; cat /tmp/entitlements.plist
           cp /tmp/profile.mobileprovision "$APP_PATH/embedded.mobileprovision"
           echo "Embedded profile UUID: $(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)"
+          # Sign using exact SHA1 fingerprint to avoid cert ambiguity
+          CERT_SHA1="1826D8F4F54B2188AE873E7255C2A88728E4EDD4"
           find "$APP_PATH/Frameworks" \( -name "*.framework" -o -name "*.dylib" \) | while read item; do
-            codesign --force --sign "Apple Distribution: Mackenzie Cutting (LYS695473H)" --timestamp "$item" 2>&1 || true
+            codesign --force --sign "$CERT_SHA1" --timestamp "$item" 2>&1 || true
           done
-          codesign --force --sign "Apple Distribution: Mackenzie Cutting (LYS695473H)" \
+          codesign --force --sign "$CERT_SHA1" \
             --entitlements /tmp/entitlements.plist --timestamp "$APP_PATH"
+          echo "=== Verify signing ==="
           codesign --verify --deep --strict "$APP_PATH" && echo "SIGNED OK"
+          echo "=== Cert used to sign ==="
+          codesign -dvvv "$APP_PATH" 2>&1 | grep -E "SHA1|CDHash|Authority|Identifier"
           cd /tmp && rm -rf Payload && mkdir Payload
           ditto Runner.xcarchive/Products/Applications/Runner.app Payload/Runner.app
           ditto -c -k --keepParent Payload Runner.ipa
