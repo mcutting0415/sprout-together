@@ -44,7 +44,12 @@ workflows:
           echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile.plist)"
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
           cp /tmp/profile.mobileprovision "$PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
-          echo "Installed as ${PROFILE_UUID}.mobileprovision"
+          echo "Installed to MobileDevice Provisioning Profiles"
+          XCODE_PROFILES="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
+          mkdir -p "$XCODE_PROFILES"
+          cp /tmp/profile.mobileprovision "$XCODE_PROFILES/${PROFILE_UUID}.mobileprovision"
+          echo "Installed to Xcode UserData Provisioning Profiles"
+          ls "$PROFILES_HOME" && ls "$XCODE_PROFILES"
 
       - name: Flutter pub get
         script: |
