@@ -20,7 +20,6 @@ workflows:
           echo $CM_CERTIFICATE | base64 --decode > /tmp/cert.p12
           keychain add-certificates --certificate /tmp/cert.p12 --certificate-password $CM_CERTIFICATE_PASSWORD
           rm /tmp/cert.p12
-          echo "=== Signing identities ==="
           security find-identity -p codesigning -v
 
       - name: Install provisioning profile
@@ -30,11 +29,10 @@ workflows:
           echo "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
           python3 -c "data=open('/tmp/profile.mobileprovision','rb').read();idx=data.find(b'<?xml');idx=data.find(b'bplist') if idx<0 else idx;assert idx>=0,'no plist found';end=data.rfind(b'</plist>')+8;open('/tmp/profile.plist','wb').write(data[idx:end]);print('Plist extracted OK')"
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
-          echo "Profile UUID: $PROFILE_UUID"
-          echo "Profile Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile.plist)"
+          echo "UUID: $PROFILE_UUID"
+          echo "Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile.plist)"
           echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile.plist)"
           cp /tmp/profile.mobileprovision "$PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
-          echo "Installed profile OK"
 
       - name: Flutter pub get
         script: |
@@ -44,16 +42,18 @@ workflows:
       - name: Pod install
         script: cd ios && pod install
 
-      - name: Set up code signing
+      - name: Patch xcconfig for manual signing
         script: |
-          xcode-project use-profiles --profile /tmp/profile.mobileprovision
-          echo "=== Xcode project signing configured ==="
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
+          echo "Patching with UUID: ${PROFILE_UUID}"
+          printf '\nCODE_SIGN_STYLE = Manual\nCODE_SIGN_IDENTITY = Apple Distribution: Mackenzie Cutting (LYS695473H)\nDEVELOPMENT_TEAM = LYS695473H\nPROVISIONING_PROFILE_SPECIFIER = '${PROFILE_UUID}'\n' >> ios/Flutter/Release.xcconfig
+          echo "=== Release.xcconfig ==="
+          cat ios/Flutter/Release.xcconfig
 
       - name: Archive and Export IPA
         script: |
           set -e
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
-          echo "Profile UUID: ${PROFILE_UUID}"
           xcodebuild \
             -workspace ios/Runner.xcworkspace \
             -scheme Runner \
@@ -62,15 +62,13 @@ workflows:
             -archivePath /tmp/Runner.xcarchive \
             -derivedDataPath /tmp/DerivedData \
             archive
-          echo "=== Archive done, building ExportOptions.plist ==="
-          python3 -c "import plistlib,sys;u=sys.argv[1];p={'method':'app-store','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','provisioningProfiles':{'com.sprouttogether.app':u},'uploadBitcode':False,'uploadSymbols':True};open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps(p));print('ExportOptions.plist created for '+u)" "${PROFILE_UUID}"
+          echo "=== Archive succeeded, creating ExportOptions ==="
+          python3 -c "import plistlib,sys;u=sys.argv[1];p={'method':'app-store','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','provisioningProfiles':{'com.sprouttogether.app':u},'uploadBitcode':False,'uploadSymbols':True};open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps(p));print('ExportOptions created for '+u)" "${PROFILE_UUID}"
           mkdir -p /Users/builder/clone/build/ios/ipa
           xcodebuild -exportArchive \
             -archivePath /tmp/Runner.xcarchive \
             -exportPath /Users/builder/clone/build/ios/ipa \
             -exportOptionsPlist /tmp/ExportOptions.plist
-          echo "=== IPA files ==="
-          ls -la /Users/builder/clone/build/ios/ipa/
           IPA=$(find /Users/builder/clone/build/ios/ipa -name "*.ipa" | head -1)
           echo "IPA: ${IPA} ($(wc -c < "${IPA}") bytes)"
 
@@ -78,7 +76,7 @@ workflows:
         script: |
           set -e
           IPA_PATH=$(find /Users/builder/clone/build/ios/ipa -name "*.ipa" | head -1)
-          echo "IPA: ${IPA_PATH} ($(wc -c < "${IPA_PATH}") bytes)"
+          echo "Uploading: ${IPA_PATH}"
           xcrun altool --upload-app \
             --file "${IPA_PATH}" \
             --type ios \
