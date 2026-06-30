@@ -44,11 +44,16 @@ workflows:
       - name: Pod install
         script: cd ios && pod install
 
+      - name: Set up code signing
+        script: |
+          xcode-project use-profiles --profile /tmp/profile.mobileprovision
+          echo "=== Xcode project signing configured ==="
+
       - name: Archive and Export IPA
         script: |
           set -e
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
-          echo "Using profile UUID: ${PROFILE_UUID}"
+          echo "Profile UUID: ${PROFILE_UUID}"
           xcodebuild \
             -workspace ios/Runner.xcworkspace \
             -scheme Runner \
@@ -56,14 +61,9 @@ workflows:
             -configuration Release \
             -archivePath /tmp/Runner.xcarchive \
             -derivedDataPath /tmp/DerivedData \
-            archive \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution: Mackenzie Cutting (LYS695473H)" \
-            DEVELOPMENT_TEAM=LYS695473H \
-            PROVISIONING_PROFILE=${PROFILE_UUID}
-          echo "=== Archive done, creating ExportOptions ==="
-          python3 -c "import plistlib,sys;u=sys.argv[1];p={'method':'app-store','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','provisioningProfiles':{'com.sprouttogether.app':u},'uploadBitcode':False,'uploadSymbols':True};open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps(p));print('ExportOptions.plist created for UUID: '+u)" "${PROFILE_UUID}"
-          cat /tmp/ExportOptions.plist
+            archive
+          echo "=== Archive done, building ExportOptions.plist ==="
+          python3 -c "import plistlib,sys;u=sys.argv[1];p={'method':'app-store','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','provisioningProfiles':{'com.sprouttogether.app':u},'uploadBitcode':False,'uploadSymbols':True};open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps(p));print('ExportOptions.plist created for '+u)" "${PROFILE_UUID}"
           mkdir -p /Users/builder/clone/build/ios/ipa
           xcodebuild -exportArchive \
             -archivePath /tmp/Runner.xcarchive \
@@ -71,14 +71,14 @@ workflows:
             -exportOptionsPlist /tmp/ExportOptions.plist
           echo "=== IPA files ==="
           ls -la /Users/builder/clone/build/ios/ipa/
+          IPA=$(find /Users/builder/clone/build/ios/ipa -name "*.ipa" | head -1)
+          echo "IPA: ${IPA} ($(wc -c < "${IPA}") bytes)"
 
       - name: Upload to TestFlight
         script: |
           set -e
           IPA_PATH=$(find /Users/builder/clone/build/ios/ipa -name "*.ipa" | head -1)
-          echo "IPA: ${IPA_PATH}"
-          if [ -z "${IPA_PATH}" ]; then echo "ERROR: no IPA found"; exit 1; fi
-          echo "Size: $(wc -c < "${IPA_PATH}") bytes"
+          echo "IPA: ${IPA_PATH} ($(wc -c < "${IPA_PATH}") bytes)"
           xcrun altool --upload-app \
             --file "${IPA_PATH}" \
             --type ios \
