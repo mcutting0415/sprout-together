@@ -63,25 +63,28 @@ workflows:
 
       - name: Export IPA (App Store)
         script: |
-          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
-          python3 -c "import plistlib; p={'method':'app-store','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','provisioningProfiles':{'com.sprouttogether.app':'${PROFILE_UUID}'},'uploadBitcode':False,'uploadSymbols':True}; open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps(p)); print('ExportOptions.plist created')"
+          python3 -c "import plistlib; open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps({'method':'app-store','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','uploadBitcode':False,'uploadSymbols':True})); print('ExportOptions.plist created')"
+          cat /tmp/ExportOptions.plist
           mkdir -p /Users/builder/clone/build/ios/ipa
           xcodebuild -exportArchive \
             -archivePath /tmp/Runner.xcarchive \
             -exportPath /Users/builder/clone/build/ios/ipa \
             -exportOptionsPlist /tmp/ExportOptions.plist
-          echo "=== IPA files ==="
-          ls -la /Users/builder/clone/build/ios/ipa/
+          echo "=== Export result ==="
+          ls -la /Users/builder/clone/build/ios/ipa/ || echo "ERROR: no files"
 
       - name: Upload to TestFlight
         script: |
           IPA_PATH=$(find /Users/builder/clone/build/ios/ipa -name "*.ipa" | head -1)
-          echo "Uploading: $IPA_PATH"
+          echo "IPA path: $IPA_PATH"
+          if [ -z "$IPA_PATH" ]; then echo "ERROR: no IPA found"; exit 1; fi
+          echo "IPA size: $(wc -c < "$IPA_PATH") bytes"
           xcrun altool --upload-app \
             --file "$IPA_PATH" \
             --type ios \
             --username cutting.mackenzie4@gmail.com \
             --password $APP_SPECIFIC_PASSWORD \
+            --output-format xml \
             --verbose
 
     artifacts:
