@@ -44,12 +44,7 @@ workflows:
           echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile.plist)"
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
           cp /tmp/profile.mobileprovision "$PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
-          echo "Installed to MobileDevice Provisioning Profiles"
-          XCODE_PROFILES="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
-          mkdir -p "$XCODE_PROFILES"
-          cp /tmp/profile.mobileprovision "$XCODE_PROFILES/${PROFILE_UUID}.mobileprovision"
-          echo "Installed to Xcode UserData Provisioning Profiles"
-          ls "$PROFILES_HOME" && ls "$XCODE_PROFILES"
+          echo "Installed as ${PROFILE_UUID}.mobileprovision"
 
       - name: Flutter pub get
         script: |
@@ -75,25 +70,31 @@ workflows:
             DEVELOPMENT_TEAM=LYS695473H \
             AD_HOC_CODE_SIGNING_ALLOWED=YES
 
-      - name: Export IPA
+      - name: Sign and package IPA
         script: |
           set -e
-          /usr/libexec/PlistBuddy -c "Clear dict" /tmp/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Add :method string app-store-connect" /tmp/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Add :teamID string LYS695473H" /tmp/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Add :signingStyle string manual" /tmp/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles dict" /tmp/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:com.sprouttogether.app string 5f7e57d5-8176-4446-b1a6-5e41b1d59c97" /tmp/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Add :signingCertificate string Apple Distribution" /tmp/ExportOptions.plist
-          cat /tmp/ExportOptions.plist
-          xcodebuild -exportArchive \
-            -archivePath /tmp/Runner.xcarchive \
-            -exportOptionsPlist /tmp/ExportOptions.plist \
-            -exportPath /tmp/export
+          APP_PATH="/tmp/Runner.xcarchive/Products/Applications/Runner.app"
+          # Extract entitlements from profile plist
+          /usr/libexec/PlistBuddy -c 'Print :Entitlements' /tmp/profile.plist -x > /tmp/entitlements.plist
+          echo "Entitlements:"; cat /tmp/entitlements.plist
+          # Embed provisioning profile
+          cp /tmp/profile.mobileprovision "$APP_PATH/embedded.mobileprovision"
+          echo "Embedded profile UUID: $(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)"
+          # Sign all frameworks and dylibs first
+          find "$APP_PATH/Frameworks" \( -name "*.framework" -o -name "*.dylib" \) | while read item; do
+            codesign --force --sign "Apple Distribution: Mackenzie Cutting (LYS695473H)" --timestamp "$item" 2>&1 || true
+          done
+          # Sign the main app
+          codesign --force --sign "Apple Distribution: Mackenzie Cutting (LYS695473H)" \
+            --entitlements /tmp/entitlements.plist --timestamp "$APP_PATH"
+          codesign --verify --deep --strict "$APP_PATH" && echo "SIGNED OK"
+          # Package IPA using ditto to preserve symlinks
+          cd /tmp && rm -rf Payload && mkdir Payload
+          ditto Runner.xcarchive/Products/Applications/Runner.app Payload/Runner.app
+          ditto -c -k --keepParent Payload Runner.ipa
+          echo "IPA size: $(wc -c < Runner.ipa) bytes"
           mkdir -p /Users/builder/clone/build/ios/ipa
-          cp /tmp/export/*.ipa /Users/builder/clone/build/ios/ipa/
-          echo "IPA exported:"
-          ls -la /Users/builder/clone/build/ios/ipa/
+          cp /tmp/Runner.ipa /Users/builder/clone/build/ios/ipa/
 
     artifacts:
       - build/ios/ipa/*.ipa
