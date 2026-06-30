@@ -30,7 +30,6 @@ workflows:
           python3 -c "data=open('/tmp/profile.mobileprovision','rb').read();idx=data.find(b'<?xml');idx=data.find(b'bplist') if idx<0 else idx;assert idx>=0,'no plist found';end=data.rfind(b'</plist>')+8;open('/tmp/profile.plist','wb').write(data[idx:end]);print('Plist extracted OK')"
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
           echo "UUID: $PROFILE_UUID"
-          echo "Name: $(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile.plist)"
           echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile.plist)"
           cp /tmp/profile.mobileprovision "$PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
 
@@ -42,18 +41,9 @@ workflows:
       - name: Pod install
         script: cd ios && pod install
 
-      - name: Patch xcconfig for manual signing
-        script: |
-          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
-          echo "Patching with UUID: ${PROFILE_UUID}"
-          printf '\nCODE_SIGN_STYLE = Manual\nCODE_SIGN_IDENTITY = Apple Distribution: Mackenzie Cutting (LYS695473H)\nDEVELOPMENT_TEAM = LYS695473H\nPROVISIONING_PROFILE_SPECIFIER = '${PROFILE_UUID}'\n' >> ios/Flutter/Release.xcconfig
-          echo "=== Release.xcconfig ==="
-          cat ios/Flutter/Release.xcconfig
-
-      - name: Archive and Export IPA
+      - name: Archive (unsigned)
         script: |
           set -e
-          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
           xcodebuild \
             -workspace ios/Runner.xcworkspace \
             -scheme Runner \
@@ -61,9 +51,21 @@ workflows:
             -configuration Release \
             -archivePath /tmp/Runner.xcarchive \
             -derivedDataPath /tmp/DerivedData \
-            archive
-          echo "=== Archive succeeded, creating ExportOptions ==="
-          python3 -c "import plistlib,sys;u=sys.argv[1];p={'method':'app-store','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','provisioningProfiles':{'com.sprouttogether.app':u},'uploadBitcode':False,'uploadSymbols':True};open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps(p));print('ExportOptions created for '+u)" "${PROFILE_UUID}"
+            archive \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=LYS695473H \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES
+          echo "Archive done"
+
+      - name: Export IPA (App Store)
+        script: |
+          set -e
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
+          echo "Profile UUID: ${PROFILE_UUID}"
+          python3 -c "import plistlib,sys;u=sys.argv[1];p={'method':'app-store','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','provisioningProfiles':{'com.sprouttogether.app':u},'uploadBitcode':False,'uploadSymbols':True};open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps(p));print('Created ExportOptions for: '+u)" "${PROFILE_UUID}"
+          cat /tmp/ExportOptions.plist
           mkdir -p /Users/builder/clone/build/ios/ipa
           xcodebuild -exportArchive \
             -archivePath /tmp/Runner.xcarchive \
@@ -76,14 +78,12 @@ workflows:
         script: |
           set -e
           IPA_PATH=$(find /Users/builder/clone/build/ios/ipa -name "*.ipa" | head -1)
-          echo "Uploading: ${IPA_PATH}"
-          xcrun altool --upload-app \
-            --file "${IPA_PATH}" \
-            --type ios \
-            --username cutting.mackenzie4@gmail.com \
-            --password $APP_SPECIFIC_PASSWORD \
-            --output-format xml \
-            --verbose
+          echo "Uploading: ${IPA_PATH} ($(wc -c < "${IPA_PATH}") bytes)"
+          xcrun iTMSTransporter \
+            -m upload \
+            -f "${IPA_PATH}" \
+            -u cutting.mackenzie4@gmail.com \
+            -p $APP_SPECIFIC_PASSWORD
 
     artifacts:
       - build/ios/ipa/*.ipa
