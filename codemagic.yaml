@@ -58,13 +58,14 @@ workflows:
             DEVELOPMENT_TEAM=LYS695473H \
             AD_HOC_CODE_SIGNING_ALLOWED=YES
           echo "Archive done"
+          ls /tmp/Runner.xcarchive/Products/Applications/
 
       - name: Export IPA (App Store)
         script: |
           set -e
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
           echo "Profile UUID: ${PROFILE_UUID}"
-          python3 -c "import plistlib,sys;u=sys.argv[1];p={'method':'app-store','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','provisioningProfiles':{'com.sprouttogether.app':u},'uploadBitcode':False,'uploadSymbols':True};open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps(p));print('Created ExportOptions for: '+u)" "${PROFILE_UUID}"
+          python3 -c "import plistlib,sys;u=sys.argv[1];p={'method':'app-store-connect','teamID':'LYS695473H','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','provisioningProfiles':{'com.sprouttogether.app':u},'uploadBitcode':False,'uploadSymbols':True};open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps(p));print('ExportOptions created for: '+u)" "${PROFILE_UUID}"
           cat /tmp/ExportOptions.plist
           mkdir -p /Users/builder/clone/build/ios/ipa
           xcodebuild -exportArchive \
