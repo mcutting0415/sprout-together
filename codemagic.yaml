@@ -8,7 +8,7 @@ workflows:
       groups:
         - ios_signing
       flutter: stable
-      xcode: 16
+      xcode: 26
       cocoapods: default
 
     scripts:
