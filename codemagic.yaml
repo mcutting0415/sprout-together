@@ -24,14 +24,25 @@ workflows:
 
       - name: Install provisioning profile
         script: |
+          set -e
           PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
           mkdir -p "$PROFILES_HOME"
           echo "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
-          python3 -c "data=open('/tmp/profile.mobileprovision','rb').read();idx=data.find(b'<?xml');idx=data.find(b'bplist') if idx<0 else idx;assert idx>=0,'no plist found';end=data.rfind(b'</plist>')+8;open('/tmp/profile.plist','wb').write(data[idx:end]);print('Plist extracted OK')"
+          echo "Profile file type:"
+          file /tmp/profile.mobileprovision
+          echo "First 20 bytes (hex):"
+          xxd /tmp/profile.mobileprovision | head -2
+          echo "Decoding with security cms..."
+          security cms -D -i /tmp/profile.mobileprovision -o /tmp/profile.plist
+          echo "Decode result: $?"
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /tmp/profile.plist)
           echo "UUID: $PROFILE_UUID"
+          echo "Name: $PROFILE_NAME"
           echo "Expires: $(/usr/libexec/PlistBuddy -c 'Print :ExpirationDate' /tmp/profile.plist)"
           cp /tmp/profile.mobileprovision "$PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
+          echo "Installed to: $PROFILES_HOME/${PROFILE_UUID}.mobileprovision"
+          ls -la "$PROFILES_HOME/"
 
       - name: Flutter pub get
         script: |
@@ -57,7 +68,7 @@ workflows:
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=LYS695473H \
             AD_HOC_CODE_SIGNING_ALLOWED=YES
-          echo "Archive done"
+          echo "=== Archive contents ==="
           ls /tmp/Runner.xcarchive/Products/Applications/
 
       - name: Export IPA (App Store)
@@ -65,8 +76,9 @@ workflows:
           set -e
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /tmp/profile.plist)
           echo "Profile UUID: ${PROFILE_UUID}"
+          echo "Profiles installed:"
+          ls "$HOME/Library/MobileDevice/Provisioning Profiles/"
           python3 -c "import plistlib,sys;u=sys.argv[1];p={'method':'app-store-connect','teamID':'LYS695473H','signingStyle':'manual','signingCertificate':'Apple Distribution: Mackenzie Cutting (LYS695473H)','provisioningProfiles':{'com.sprouttogether.app':u},'uploadBitcode':False,'uploadSymbols':True};open('/tmp/ExportOptions.plist','wb').write(plistlib.dumps(p));print('ExportOptions created for: '+u)" "${PROFILE_UUID}"
-          cat /tmp/ExportOptions.plist
           mkdir -p /Users/builder/clone/build/ios/ipa
           xcodebuild -exportArchive \
             -archivePath /tmp/Runner.xcarchive \
