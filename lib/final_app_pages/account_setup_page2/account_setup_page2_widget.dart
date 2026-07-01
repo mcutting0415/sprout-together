@@ -324,7 +324,7 @@ class _AccountSetupPage2WidgetState extends State<AccountSetupPage2Widget> {
                                       'goals': FFAppState().setupGoals,
                                       'has_completed_setup': true,
                                     },
-                                    matchingRows: (rows) => rows,
+                                    matchingRows: (rows) => rows.eq('id', currentUserUid),
                                   );
                                   FFAppState().hasCompletedProfileSetup = true;
                                   safeSetState(() {});
