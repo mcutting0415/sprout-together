@@ -33,10 +33,10 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
     super.initState();
     _model = createModel(context, () => SignUpPageModel());
 
-    _model.textController1 ??= TextEditingController(text: 'Enter Name');
+    _model.textController1 ??= TextEditingController();
     _model.textFieldFocusNode1 ??= FocusNode();
 
-    _model.emailTextController ??= TextEditingController(text: 'Enter email');
+    _model.emailTextController ??= TextEditingController();
     _model.textFieldFocusNode2 ??= FocusNode();
 
     _model.passwordTextController ??= TextEditingController();
@@ -72,13 +72,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
-                    child: Align(
-                      alignment: AlignmentDirectional(0.0, -1.0),
+                    child: SingleChildScrollView(
                       child: Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(
                             24.0, 40.0, 24.0, 24.0),
                         child: Column(
-                          mainAxisSize: MainAxisSize.max,
+                          mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
