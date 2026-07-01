@@ -68,10 +68,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
+              Expanded(
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(
@@ -1093,8 +1090,6 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                       ),
                     ].divide(SizedBox(width: 5.0)),
                   ),
-                ],
-              ),
             ],
           ),
         ),
