@@ -69,7 +69,9 @@ workflows:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=LYS695473H \
-            AD_HOC_CODE_SIGNING_ALLOWED=YES
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            CURRENT_PROJECT_VERSION=$BUILD_NUMBER \
+            MARKETING_VERSION=1.0.0
 
       - name: Sign and package IPA
         script: |
