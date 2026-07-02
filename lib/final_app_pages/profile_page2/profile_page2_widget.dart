@@ -192,7 +192,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                                                   valueOrDefault<String>(
                                                     containerProfilesRow
                                                         ?.fullName,
-                                                    'Loading . . .',
+                                                    'Tap to set name',
                                                   ),
                                                   style: FlutterFlowTheme.of(
                                                           context)
@@ -242,7 +242,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                                                       valueOrDefault<String>(
                                                         containerProfilesRow
                                                             ?.experienceLevel,
-                                                        'Gardener . . .',
+                                                        'Gardener',
                                                       ),
                                                       style:
                                                           FlutterFlowTheme.of(
@@ -368,7 +368,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                                   Text(
                                     valueOrDefault<String>(
                                       containerProfilesRow?.gardeningZone,
-                                      'Unknown . . .',
+                                      'Zone not set',
                                     ),
                                     style: FlutterFlowTheme.of(context)
                                         .bodyMedium
@@ -442,7 +442,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                                         Text(
                                           valueOrDefault<String>(
                                             containerProfilesRow?.town,
-                                            'Unknown . . ',
+                                            'Location not set',
                                           ),
                                           style: FlutterFlowTheme.of(context)
                                               .bodyMedium

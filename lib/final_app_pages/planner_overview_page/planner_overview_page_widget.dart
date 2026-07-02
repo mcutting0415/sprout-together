@@ -105,23 +105,6 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           size: 15.0,
                         ),
                         onPressed: () async {
-                          await ProfilesTable().update(
-                            data: {
-                              'id': currentUserUid,
-                              'full_name': FFAppState().setupNameInput,
-                              'town': FFAppState().setupTownInput,
-                              'profile_image_url':
-                                  FFAppState().setupProfileImageURL,
-                              'gardening_zone': FFAppState().setupGardeningZone,
-                              'zip_code': FFAppState().setupZipCode,
-                              'garden_types': FFAppState().setupGardenTypes,
-                              'experience_level':
-                                  FFAppState().setupExperienceLevel,
-                              'goals': FFAppState().setupGoals,
-                            },
-                            matchingRows: (rows) => rows,
-                          );
-
                           context.pushNamed(CreateGardenPageWidget.routeName);
                         },
                       ),
