@@ -1,3 +1,5 @@
+import '/auth/supabase_auth/auth_util.dart';
+import '/backend/supabase/supabase.dart';
 import '/components/journal_entry/journal_entry_widget.dart';
 import '/components/stat_pill/stat_pill_widget.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
@@ -5,6 +7,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:ui';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -89,10 +92,62 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  List<GardenJournalEntriesRow> _entries = [];
+  Map<String, String> _gardenNames = {};
+  bool _isLoading = true;
+  String _selectedFilter = 'All';
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => GardenJournalPage2Model());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  Future<void> _loadData() async {
+    final entries = await GardenJournalEntriesTable().queryRows(
+      queryFn: (q) => q
+          .eqOrNull('user_id', currentUserUid)
+          .order('entry_date', ascending: false),
+    );
+    final gardens = await GardensTable().queryRows(
+      queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+    );
+    final names = <String, String>{};
+    for (final g in gardens) {
+      if (g.id != null) names[g.id!] = g.gardenName ?? 'Garden';
+    }
+    if (mounted) {
+      safeSetState(() {
+        _entries = entries;
+        _gardenNames = names;
+        _isLoading = false;
+      });
+    }
+  }
+
+  List<GardenJournalEntriesRow> get _filteredEntries {
+    switch (_selectedFilter) {
+      case 'By Garden':
+        return _entries.where((e) => e.gardenId != null).toList();
+      case 'By Plant':
+        return _entries.where((e) => e.plantId != null).toList();
+      case 'By Month':
+        final now = DateTime.now();
+        return _entries
+            .where((e) =>
+                e.entryDate != null &&
+                e.entryDate!.month == now.month &&
+                e.entryDate!.year == now.year)
+            .toList();
+      default:
+        return _entries;
+    }
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    return DateFormat('MMMM dd, yyyy').format(date);
   }
 
   @override
@@ -164,7 +219,9 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                             .primary,
                                         size: 16.0,
                                       ),
-                                      value: '24',
+                                      value: _isLoading
+                                          ? '–'
+                                          : _entries.length.toString(),
                                       label: 'Entries',
                                     ),
                                   ),
@@ -178,7 +235,14 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                             .primary,
                                         size: 16.0,
                                       ),
-                                      value: '86',
+                                      value: _isLoading
+                                          ? '–'
+                                          : _entries
+                                              .where((e) =>
+                                                  e.imageUrl != null &&
+                                                  e.imageUrl!.isNotEmpty)
+                                              .length
+                                              .toString(),
                                       label: 'Photos',
                                     ),
                                   ),
@@ -192,7 +256,14 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                             .primary,
                                         size: 16.0,
                                       ),
-                                      value: '3',
+                                      value: _isLoading
+                                          ? '–'
+                                          : _entries
+                                              .map((e) => e.gardenId)
+                                              .whereType<String>()
+                                              .toSet()
+                                              .length
+                                              .toString(),
                                       label: 'Gardens',
                                     ),
                                   ),
@@ -214,40 +285,65 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                height: 34.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                    width: 1.0,
+                              'All',
+                              'By Garden',
+                              'By Plant',
+                              'By Month',
+                            ].map((filter) {
+                              final isSelected = _selectedFilter == filter;
+                              return GestureDetector(
+                                onTap: () => safeSetState(
+                                    () => _selectedFilter = filter),
+                                child: Container(
+                                  height: 34.0,
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? FlutterFlowTheme.of(context).primary
+                                        : FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    border: Border.all(
+                                      color: FlutterFlowTheme.of(context)
+                                          .alternate,
+                                      width: 1.0,
+                                    ),
                                   ),
-                                ),
-                                alignment: AlignmentDirectional(0.0, 0.0),
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      12.0, 0.0, 12.0, 0.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.check_rounded,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primaryText,
-                                        size: 16.0,
-                                      ),
-                                      Text(
-                                        'All Entries',
-                                        style: FlutterFlowTheme.of(context)
-                                            .labelMedium
-                                            .override(
-                                              font: GoogleFonts.poppins(
+                                  alignment: AlignmentDirectional(0.0, 0.0),
+                                  child: Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        12.0, 0.0, 12.0, 0.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (isSelected)
+                                          Icon(Icons.check_rounded,
+                                              color: Colors.white, size: 16.0),
+                                        Text(
+                                          filter == 'All'
+                                              ? 'All Entries'
+                                              : filter,
+                                          style: FlutterFlowTheme.of(context)
+                                              .labelMedium
+                                              .override(
+                                                font: GoogleFonts.poppins(
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .labelMedium
+                                                          .fontWeight,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .labelMedium
+                                                          .fontStyle,
+                                                ),
+                                                color: isSelected
+                                                    ? Colors.white
+                                                    : FlutterFlowTheme.of(
+                                                            context)
+                                                        .primaryText,
+                                                fontSize: 14.0,
+                                                letterSpacing: 0.0,
                                                 fontWeight:
                                                     FlutterFlowTheme.of(context)
                                                         .labelMedium
@@ -256,199 +352,15 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                                     FlutterFlowTheme.of(context)
                                                         .labelMedium
                                                         .fontStyle,
+                                                lineHeight: 1.4,
                                               ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
-                                              fontSize: 14.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontStyle,
-                                              lineHeight: 1.4,
-                                            ),
-                                      ),
-                                    ].divide(SizedBox(width: 6.0)),
+                                        ),
+                                      ].divide(SizedBox(width: 6.0)),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                height: 34.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                alignment: AlignmentDirectional(0.0, 0.0),
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      12.0, 0.0, 12.0, 0.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'By Garden',
-                                        style: FlutterFlowTheme.of(context)
-                                            .labelMedium
-                                            .override(
-                                              font: GoogleFonts.poppins(
-                                                fontWeight:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontWeight,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontStyle,
-                                              ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
-                                              fontSize: 14.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontStyle,
-                                              lineHeight: 1.4,
-                                            ),
-                                      ),
-                                    ].divide(SizedBox(width: 6.0)),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 34.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                alignment: AlignmentDirectional(0.0, 0.0),
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      12.0, 0.0, 12.0, 0.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'By Plant',
-                                        style: FlutterFlowTheme.of(context)
-                                            .labelMedium
-                                            .override(
-                                              font: GoogleFonts.poppins(
-                                                fontWeight:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontWeight,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontStyle,
-                                              ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
-                                              fontSize: 14.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontStyle,
-                                              lineHeight: 1.4,
-                                            ),
-                                      ),
-                                    ].divide(SizedBox(width: 6.0)),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 34.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                alignment: AlignmentDirectional(0.0, 0.0),
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      12.0, 0.0, 12.0, 0.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'By Month',
-                                        style: FlutterFlowTheme.of(context)
-                                            .labelMedium
-                                            .override(
-                                              font: GoogleFonts.poppins(
-                                                fontWeight:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontWeight,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontStyle,
-                                              ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
-                                              fontSize: 14.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelMedium
-                                                      .fontStyle,
-                                              lineHeight: 1.4,
-                                            ),
-                                      ),
-                                    ].divide(SizedBox(width: 6.0)),
-                                  ),
-                                ),
-                              ),
-                            ].divide(SizedBox(width: 8.0)),
+                              );
+                            }).toList().divide(SizedBox(width: 8.0)),
                           ),
                         ),
                       ),
@@ -470,108 +382,126 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    wrapWithModel(
-                      model: _model.journalEntryModel1,
-                      updateCallback: () => safeSetState(() {}),
-                      child: JournalEntryWidget(
-                        imgDesc:
-                            'https://dimg.dreamflow.cloud/v1/image/basket%20of%20red%20tomatoes%20on%20a%20wooden%20bench',
-                        date: 'October 12, 2023',
-                        garden: 'Backyard Veggies',
-                        title: 'First Tomato Harvest!',
-                        preview:
-                            'Finally picked the Early Girl tomatoes today. The flavor is incredible compared to store-bought.',
-                      ),
-                    ),
-                    wrapWithModel(
-                      model: _model.journalEntryModel2,
-                      updateCallback: () => safeSetState(() {}),
-                      child: JournalEntryWidget(
-                        imgDesc:
-                            'https://dimg.dreamflow.cloud/v1/image/orange%20butterfly%20on%20a%20purple%20flower',
-                        date: 'October 08, 2023',
-                        garden: 'Front Porch',
-                        title: 'Monarch Butterfly Visit',
-                        preview:
-                            'Spotted two Monarchs on the Milkweed this morning. The pollinators are loving the late bloom.',
-                      ),
-                    ),
-                    wrapWithModel(
-                      model: _model.journalEntryModel3,
-                      updateCallback: () => safeSetState(() {}),
-                      child: JournalEntryWidget(
-                        imgDesc:
-                            'https://dimg.dreamflow.cloud/v1/image/hand%20holding%20fresh%20green%20basil%20leaves',
-                        date: 'September 30, 2023',
-                        garden: 'Herb Spiral',
-                        title: 'Pruning the Basil',
-                        preview:
-                            'Cut back the Thai Basil before the first frost. Made a huge batch of pesto for the freezer.',
-                      ),
-                    ),
-                    wrapWithModel(
-                      model: _model.journalEntryModel4,
-                      updateCallback: () => safeSetState(() {}),
-                      child: JournalEntryWidget(
-                        imgDesc:
-                            'https://dimg.dreamflow.cloud/v1/image/large%20orange%20pumpkin%20in%20a%20vine-covered%20patch',
-                        date: 'September 22, 2023',
-                        garden: 'Backyard Veggies',
-                        title: 'Pumpkin Watch',
-                        preview:
-                            'The Jack-O-Lantern pumpkins are finally turning orange! Just in time for the spooky season.',
-                      ),
-                    ),
+                    if (_isLoading)
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(32.0),
+                          child: CircularProgressIndicator(
+                            color: FlutterFlowTheme.of(context).primary,
+                          ),
+                        ),
+                      )
+                    else if (_filteredEntries.isEmpty)
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40.0),
+                        child: Column(
+                          children: [
+                            Icon(Icons.book_outlined,
+                                color: FlutterFlowTheme.of(context).primary,
+                                size: 48.0),
+                            SizedBox(height: 16.0),
+                            Text(
+                              _selectedFilter == 'All'
+                                  ? 'No journal entries yet'
+                                  : 'No entries for $_selectedFilter',
+                              style: FlutterFlowTheme.of(context)
+                                  .titleMedium
+                                  .override(
+                                    font: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .titleMedium
+                                          .fontStyle,
+                                    ),
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.w600,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .titleMedium
+                                        .fontStyle,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 8.0),
+                            Text(
+                              'Start documenting your garden\'s journey!',
+                              style: FlutterFlowTheme.of(context)
+                                  .labelMedium
+                                  .override(
+                                    font: GoogleFonts.poppins(
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .fontWeight,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .fontStyle,
+                                    ),
+                                    letterSpacing: 0.0,
+                                    fontWeight: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .fontWeight,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .fontStyle,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      ..._filteredEntries.map((entry) => JournalEntryWidget(
+                            key: ValueKey(entry.id),
+                            imgDesc: (entry.imageUrl != null &&
+                                    entry.imageUrl!.isNotEmpty)
+                                ? entry.imageUrl!
+                                : 'https://dimg.dreamflow.cloud/v1/image/garden%20journal%20entry',
+                            date: _formatDate(entry.entryDate ?? entry.createdAt),
+                            garden: entry.gardenId != null
+                                ? (_gardenNames[entry.gardenId!] ?? 'Garden')
+                                : 'General',
+                            title: entry.title ?? 'Journal Entry',
+                            preview: entry.entryText ?? '',
+                          )),
                   ],
                 ),
               ),
-              Container(
-                child: Padding(
+              if (!_isLoading)
+                Padding(
                   padding: EdgeInsets.all(24.0),
-                  child: Container(
-                    child: Container(
-                      alignment: AlignmentDirectional(0.0, 0.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.eco_rounded,
-                            color: FlutterFlowTheme.of(context).primaryText,
-                            size: 32.0,
-                          ),
-                          Text(
-                            'End of 2023 Season',
-                            style: FlutterFlowTheme.of(context)
-                                .labelLarge
-                                .override(
-                                  font: GoogleFonts.poppins(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .labelLarge
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .labelLarge
-                                        .fontStyle,
-                                  ),
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .labelLarge
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .labelLarge
-                                      .fontStyle,
-                                  lineHeight: 1.4,
-                                ),
-                          ),
-                        ].divide(SizedBox(height: 8.0)),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.eco_rounded,
+                        color: FlutterFlowTheme.of(context).primaryText,
+                        size: 32.0,
                       ),
-                    ),
+                      Text(
+                        _entries.isEmpty
+                            ? 'Start your journal'
+                            : 'You\'re all caught up!',
+                        style: FlutterFlowTheme.of(context).labelLarge.override(
+                              font: GoogleFonts.poppins(
+                                fontWeight: FlutterFlowTheme.of(context)
+                                    .labelLarge
+                                    .fontWeight,
+                                fontStyle: FlutterFlowTheme.of(context)
+                                    .labelLarge
+                                    .fontStyle,
+                              ),
+                              color: FlutterFlowTheme.of(context).secondaryText,
+                              letterSpacing: 0.0,
+                              fontWeight:
+                                  FlutterFlowTheme.of(context).labelLarge.fontWeight,
+                              fontStyle:
+                                  FlutterFlowTheme.of(context).labelLarge.fontStyle,
+                              lineHeight: 1.4,
+                            ),
+                      ),
+                    ].divide(SizedBox(height: 8.0)),
                   ),
                 ),
-              ),
             ],
           ),
         ),
