@@ -191,6 +191,22 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                                   },
                                 ),
                                 ListTile(
+                                  leading: Icon(Icons.book_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primary),
+                                  title: Text('Garden Journal',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(
+                                        GardenJournalPage2Widget.routeName);
+                                  },
+                                ),
+                                ListTile(
                                   leading: Icon(Icons.settings_rounded,
                                       color: FlutterFlowTheme.of(context)
                                           .primary),

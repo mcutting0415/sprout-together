@@ -16,7 +16,7 @@ class SettingRowWidget extends StatefulWidget {
     String? subtitle,
     bool? isLast,
   })  : this.title = title ?? 'Saved Gardens',
-        this.subtitle = subtitle ?? '4 Active layouts',
+        this.subtitle = subtitle ?? '',
         this.isLast = isLast ?? false;
 
   final Widget? icon;
@@ -118,21 +118,9 @@ class _SettingRowWidgetState extends State<SettingRowWidget> {
                                   lineHeight: 1.4,
                                 ),
                           ),
-                          if (valueOrDefault<bool>(
-                            valueOrDefault<String>(
-                                      widget!.subtitle,
-                                      '4 Active layouts',
-                                    ) !=
-                                    ''
-                                ? true
-                                : false,
-                            true,
-                          ))
+                          if (widget!.subtitle.isNotEmpty)
                             Text(
-                              valueOrDefault<String>(
-                                widget!.subtitle,
-                                '4 Active layouts',
-                              ),
+                              widget!.subtitle,
                               style: FlutterFlowTheme.of(context)
                                   .bodySmall
                                   .override(

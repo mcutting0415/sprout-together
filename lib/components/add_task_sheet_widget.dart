@@ -121,31 +121,45 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
+    return Container(
+      decoration: BoxDecoration(
+        color: FlutterFlowTheme.of(context).secondaryBackground,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(24.0, 16.0, 24.0, 24.0),
+          child: SingleChildScrollView(
+            child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        // Drag handle
         Container(
-          width: 100.0,
-          height: 100.0,
+          width: 40.0,
+          height: 4.0,
           decoration: BoxDecoration(
-            color: FlutterFlowTheme.of(context).secondaryBackground,
+            color: FlutterFlowTheme.of(context).alternate,
+            borderRadius: BorderRadius.circular(2.0),
           ),
         ),
+        SizedBox(height: 16.0),
         Text(
-          'Add Task\n',
-          style: FlutterFlowTheme.of(context).bodyMedium.override(
+          'Add Task',
+          style: FlutterFlowTheme.of(context).titleLarge.override(
                 font: GoogleFonts.poppins(
-                  fontWeight:
-                      FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                  fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                  fontWeight: FontWeight.w600,
+                  fontStyle: FlutterFlowTheme.of(context).titleLarge.fontStyle,
                 ),
                 letterSpacing: 0.0,
-                fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                fontWeight: FontWeight.w600,
+                fontStyle: FlutterFlowTheme.of(context).titleLarge.fontStyle,
               ),
         ),
+        SizedBox(height: 20.0),
         Container(
-          width: 200.0,
+          width: double.infinity,
           child: TextFormField(
             controller: _model.textController1,
             focusNode: _model.textFieldFocusNode1,
@@ -167,7 +181,7 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                     fontStyle:
                         FlutterFlowTheme.of(context).labelMedium.fontStyle,
                   ),
-              hintText: 'Task Name\n',
+              hintText: 'Task Name',
               hintStyle: FlutterFlowTheme.of(context).labelMedium.override(
                     font: GoogleFonts.poppins(
                       fontWeight:
@@ -229,6 +243,7 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
             validator: _model.textController1Validator.asValidator(context),
           ),
         ),
+        SizedBox(height: 12.0),
         FlutterFlowDropDown<String>(
           controller: _model.dropDownValueController ??=
               FormFieldController<String>(null),
@@ -238,10 +253,10 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
             'Harvest',
             'Plant',
             'Prune',
-            'Other\n'
+            'Other'
           ],
           onChanged: (val) => safeSetState(() => _model.dropDownValue = val),
-          width: 200.0,
+          width: double.infinity,
           height: 40.0,
           textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
                 font: GoogleFonts.poppins(
@@ -311,7 +326,7 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                     ?.id;
                 safeSetState(() {});
               },
-              width: 200.0,
+              width: double.infinity,
               height: 40.0,
               textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
                     font: GoogleFonts.poppins(
@@ -326,7 +341,7 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                     fontStyle:
                         FlutterFlowTheme.of(context).bodyMedium.fontStyle,
                   ),
-              hintText: 'Select...',
+              hintText: 'Select garden...',
               icon: Icon(
                 Icons.keyboard_arrow_down_rounded,
                 color: FlutterFlowTheme.of(context).secondaryText,
@@ -345,8 +360,9 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
             );
           },
         ),
+        SizedBox(height: 12.0),
         Container(
-          width: 200.0,
+          width: double.infinity,
           child: TextFormField(
             controller: _model.textController2,
             focusNode: _model.textFieldFocusNode2,
@@ -369,7 +385,7 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                     fontStyle:
                         FlutterFlowTheme.of(context).labelMedium.fontStyle,
                   ),
-              hintText: 'Due Date\n',
+              hintText: 'Due Date',
               hintStyle: FlutterFlowTheme.of(context).labelMedium.override(
                     font: GoogleFonts.poppins(
                       fontWeight:
@@ -431,8 +447,9 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
             validator: _model.textController2Validator.asValidator(context),
           ),
         ),
+        SizedBox(height: 12.0),
         Container(
-          width: 200.0,
+          width: double.infinity,
           child: TextFormField(
             controller: _model.textController3,
             focusNode: _model.textFieldFocusNode3,
@@ -454,7 +471,7 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                     fontStyle:
                         FlutterFlowTheme.of(context).labelMedium.fontStyle,
                   ),
-              hintText: 'Notes (optional)\n',
+              hintText: 'Notes (optional)',
               hintStyle: FlutterFlowTheme.of(context).labelMedium.override(
                     font: GoogleFonts.poppins(
                       fontWeight:
@@ -516,96 +533,107 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
             validator: _model.textController3Validator.asValidator(context),
           ),
         ),
+        SizedBox(height: 24.0),
         Row(
           mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            FFButtonWidget(
-              onPressed: () async {
-                Navigator.pop(context);
-              },
-              text: 'Cancel\n',
-              options: FFButtonOptions(
-                height: 40.0,
-                padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                color: Color(0x00FFFFFF),
-                textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-                      font: GoogleFonts.poppins(
+            Expanded(
+              child: FFButtonWidget(
+                onPressed: () async {
+                  Navigator.pop(context);
+                },
+                text: 'Cancel',
+                options: FFButtonOptions(
+                  height: 48.0,
+                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                  iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                  color: Color(0x00FFFFFF),
+                  textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                        font: GoogleFonts.poppins(
+                          fontWeight:
+                              FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                          fontStyle:
+                              FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                        ),
+                        color: Color(0xFF2D6A4F),
+                        letterSpacing: 0.0,
                         fontWeight:
                             FlutterFlowTheme.of(context).titleSmall.fontWeight,
                         fontStyle:
                             FlutterFlowTheme.of(context).titleSmall.fontStyle,
                       ),
-                      color: Color(0xFF2D6A4F),
-                      letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).titleSmall.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).titleSmall.fontStyle,
-                    ),
-                elevation: 0.0,
-                borderSide: BorderSide(
-                  color: Color(0xFF2D6A4F),
-                  width: 2.0,
+                  elevation: 0.0,
+                  borderSide: BorderSide(
+                    color: Color(0xFF2D6A4F),
+                    width: 2.0,
+                  ),
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
-                borderRadius: BorderRadius.circular(8.0),
               ),
             ),
-            FFButtonWidget(
-              onPressed: () async {
-                if (_model.selectedGardenId != null &&
-                    _model.selectedGardenId != '') {
-                  await GardenTasksTable().insert({
-                    'task_name': _model.textController1.text,
-                    'task_type': _model.dropDownValue,
-                    'due_date': supaSerialize<DateTime>(_model.selectedDate),
-                    'notes': _model.textController3.text,
-                    'user_id': currentUserUid,
-                    'garden_id': _model.selectedGardenId,
-                  });
-                  Navigator.pop(context);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Please select a garden first',
-                        style: TextStyle(
-                          color: FlutterFlowTheme.of(context).primaryText,
+            SizedBox(width: 12.0),
+            Expanded(
+              child: FFButtonWidget(
+                onPressed: () async {
+                  if (_model.selectedGardenId != null &&
+                      _model.selectedGardenId != '') {
+                    await GardenTasksTable().insert({
+                      'task_name': _model.textController1.text,
+                      'task_type': _model.dropDownValue,
+                      'due_date': supaSerialize<DateTime>(_model.selectedDate),
+                      'notes': _model.textController3.text,
+                      'user_id': currentUserUid,
+                      'garden_id': _model.selectedGardenId,
+                    });
+                    Navigator.pop(context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Please select a garden first',
+                          style: TextStyle(
+                            color: FlutterFlowTheme.of(context).primaryText,
+                          ),
                         ),
+                        duration: Duration(milliseconds: 4000),
+                        backgroundColor: FlutterFlowTheme.of(context).secondary,
                       ),
-                      duration: Duration(milliseconds: 4000),
-                      backgroundColor: FlutterFlowTheme.of(context).secondary,
-                    ),
-                  );
-                }
-              },
-              text: 'Add Task\n',
-              options: FFButtonOptions(
-                height: 40.0,
-                padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                color: Color(0xFF2D6A4F),
-                textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-                      font: GoogleFonts.poppins(
+                    );
+                  }
+                },
+                text: 'Add Task',
+                options: FFButtonOptions(
+                  height: 48.0,
+                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                  iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                  color: Color(0xFF2D6A4F),
+                  textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                        font: GoogleFonts.poppins(
+                          fontWeight:
+                              FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                          fontStyle:
+                              FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                        ),
+                        color: Colors.white,
+                        letterSpacing: 0.0,
                         fontWeight:
                             FlutterFlowTheme.of(context).titleSmall.fontWeight,
                         fontStyle:
                             FlutterFlowTheme.of(context).titleSmall.fontStyle,
                       ),
-                      color: Colors.white,
-                      letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).titleSmall.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).titleSmall.fontStyle,
-                    ),
-                elevation: 0.0,
-                borderRadius: BorderRadius.circular(8.0),
+                  elevation: 0.0,
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
               ),
             ),
           ],
         ),
       ],
+    ),
+          ),
+        ),
+      ),
     );
   }
 }

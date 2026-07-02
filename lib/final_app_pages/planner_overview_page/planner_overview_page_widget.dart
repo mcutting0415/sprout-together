@@ -492,7 +492,6 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                 padding: EdgeInsets.all(20.0),
                 child: Container(
                   width: double.infinity,
-                  height: 185.0,
                   decoration: BoxDecoration(
                     color: FlutterFlowTheme.of(context).secondaryBackground,
                     borderRadius: BorderRadius.circular(24.0),
@@ -503,7 +502,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                   child: Padding(
                     padding: EdgeInsets.all(20.0),
                     child: Column(
-                      mainAxisSize: MainAxisSize.max,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           'Today in Your Garden...',
@@ -540,13 +539,13 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                         .fontStyle,
                                   ),
                                   color: Color(0xFF5F6F52),
-                                  fontSize: 20.0,
+                                  fontSize: 16.0,
                                   letterSpacing: 0.0,
                                   fontWeight: FontWeight.bold,
                                   fontStyle: FlutterFlowTheme.of(context)
                                       .bodyMedium
                                       .fontStyle,
-                                  lineHeight: 1.5,
+                                  lineHeight: 1.6,
                                 ),
                           ),
                         ),
@@ -868,6 +867,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                   .bodyMedium
                                   .fontStyle,
                             ),
+                            color: Color(0xFF3E4B3C),
                             letterSpacing: 0.0,
                             fontWeight: FontWeight.bold,
                             fontStyle: FlutterFlowTheme.of(context)

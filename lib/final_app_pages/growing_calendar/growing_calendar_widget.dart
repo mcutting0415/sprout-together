@@ -58,7 +58,8 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
             await showModalBottomSheet(
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
-              enableDrag: false,
+              enableDrag: true,
+              isDismissible: true,
               context: context,
               builder: (context) {
                 return GestureDetector(
