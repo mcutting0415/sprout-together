@@ -57,7 +57,7 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Color(0xFFF6F4EC),
+      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -311,7 +311,7 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
                                         .bodyMedium
                                         .fontStyle,
                                   ),
-                                  color: Color(0xFF6B7280),
+                                  color: FlutterFlowTheme.of(context).secondaryText,
                                   fontSize: 20.0,
                                   letterSpacing: 0.0,
                                   fontWeight: FontWeight.w600,
@@ -444,54 +444,71 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
               ),
             ],
           ),
-          Container(
-            width: double.infinity,
-            height: 400.0,
-            decoration: BoxDecoration(
-              color: FlutterFlowTheme.of(context).secondaryBackground,
+          FutureBuilder<List<PlantsRow>>(
+            future: PlantsTable().queryRows(
+              queryFn: (q) {
+                final category = _model.choiceChipsValue;
+                final search = _model.textController?.text.trim().toLowerCase() ?? '';
+                var query = q;
+                if (category != null && category != 'All') {
+                  query = query.eqOrNull('category', category);
+                }
+                return query;
+              },
             ),
-            child: GridView(
-              padding: EdgeInsets.zero,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.65,
-              ),
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              children: [
-                FutureBuilder<List<PlantsRow>>(
-                  future: PlantsTable().queryRows(
-                    queryFn: (q) => q,
-                  ),
-                  builder: (context, snapshot) {
-                    // Customize what your widget looks like when it's loading.
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: SizedBox(
-                          width: 50.0,
-                          height: 50.0,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              FlutterFlowTheme.of(context).primary,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                    List<PlantsRow> plantLibraryCardPlantsRowList =
-                        snapshot.data!;
-
-                    return wrapWithModel(
-                      model: _model.plantLibraryCardModel,
-                      updateCallback: () => safeSetState(() {}),
-                      child: PlantLibraryCardWidget(
-                        plantID: '',
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Container(
+                  height: 200.0,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        FlutterFlowTheme.of(context).primary,
                       ),
-                    );
-                  },
+                    ),
+                  ),
+                );
+              }
+              final search = _model.textController?.text.trim().toLowerCase() ?? '';
+              final plants = snapshot.data!
+                  .where((p) => search.isEmpty ||
+                      (p.plantName ?? '').toLowerCase().contains(search))
+                  .toList();
+              if (plants.isEmpty) {
+                return Container(
+                  height: 200.0,
+                  child: Center(
+                    child: Text(
+                      'No plants found.',
+                      style: FlutterFlowTheme.of(context).bodyMedium,
+                    ),
+                  ),
+                );
+              }
+              return GridView.builder(
+                padding: EdgeInsets.all(16.0),
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.65,
+                  crossAxisSpacing: 12.0,
+                  mainAxisSpacing: 12.0,
                 ),
-              ],
-            ),
+                itemCount: plants.length,
+                itemBuilder: (context, index) {
+                  final plant = plants[index];
+                  return PlantLibraryCardWidget(
+                    key: ValueKey(plant.id),
+                    plantImage: plant.imageUrl ?? '',
+                    plantName: plant.plantName ?? 'Plant',
+                    sunRequirement: plant.sunRequirement ?? 'Full Sun',
+                    waterRequirement: plant.waterRequirement ?? 'Moderate',
+                    plantID: plant.id,
+                  );
+                },
+              );
+            },
           ),
         ],
       ),

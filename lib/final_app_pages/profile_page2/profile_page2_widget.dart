@@ -1,11 +1,14 @@
 import '/auth/supabase_auth/auth_util.dart';
+import '/backend/supabase/storage/storage.dart';
 import '/backend/supabase/supabase.dart';
 import '/components/account_management_rounded_widget.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/flutter_flow/upload_data.dart';
 import 'dart:ui';
+import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,10 +31,43 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  bool _isUploadingPhoto = false;
+  String? _localImageUrl;
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => ProfilePage2Model());
+  }
+
+  Future<void> _handlePhotoUpload() async {
+    final selectedMedia = await selectMediaWithSourceBottomSheet(
+      context: context,
+      storageFolderPath: 'profiles/',
+      allowPhoto: true,
+    );
+    if (selectedMedia == null || selectedMedia.isEmpty) return;
+    if (!selectedMedia.every((m) => validateFileFormat(m.storagePath, context))) return;
+
+    safeSetState(() => _isUploadingPhoto = true);
+    try {
+      final downloadUrls = await uploadSupabaseStorageFiles(
+        bucketName: 'profile-photo',
+        selectedFiles: selectedMedia,
+      );
+      if (downloadUrls.isNotEmpty) {
+        final newUrl = downloadUrls.first;
+        await ProfilesTable().update(
+          data: {'profile_image_url': newUrl},
+          matchingRows: (rows) => rows.eqOrNull('id', currentUserUid),
+        );
+        safeSetState(() {
+          _localImageUrl = newUrl;
+        });
+      }
+    } finally {
+      safeSetState(() => _isUploadingPhoto = false);
+    }
   }
 
   @override
@@ -129,54 +165,124 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          Container(
-                                            width: 80.0,
-                                            height: 80.0,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(24.0),
-                                            ),
-                                            alignment:
-                                                AlignmentDirectional(0.0, 0.0),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(24.0),
-                                              child: (containerProfilesRow
-                                                              ?.profileImageUrl !=
-                                                          null &&
-                                                      containerProfilesRow!
-                                                          .profileImageUrl!
-                                                          .isNotEmpty)
-                                                  ? CachedNetworkImage(
-                                                      fadeInDuration: Duration(
-                                                          milliseconds: 0),
-                                                      fadeOutDuration: Duration(
-                                                          milliseconds: 0),
-                                                      imageUrl:
-                                                          containerProfilesRow!
-                                                              .profileImageUrl!,
-                                                      width: 80.0,
-                                                      height: 80.0,
-                                                      fit: BoxFit.cover,
-                                                      alignment:
-                                                          Alignment(0.0, 0.0),
-                                                    )
-                                                  : Container(
-                                                      width: 80.0,
-                                                      height: 80.0,
-                                                      color: FlutterFlowTheme
-                                                              .of(context)
-                                                          .primary
-                                                          .withOpacity(0.2),
-                                                      child: Icon(
-                                                        Icons.person_rounded,
-                                                        size: 48.0,
+                                          GestureDetector(
+                                            onTap: _handlePhotoUpload,
+                                            child: Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                Container(
+                                                  width: 80.0,
+                                                  height: 80.0,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            24.0),
+                                                  ),
+                                                  alignment:
+                                                      AlignmentDirectional(
+                                                          0.0, 0.0),
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            24.0),
+                                                    child: () {
+                                                      final imageUrl = _localImageUrl ??
+                                                          containerProfilesRow
+                                                              ?.profileImageUrl;
+                                                      return (imageUrl != null &&
+                                                              imageUrl.isNotEmpty)
+                                                          ? CachedNetworkImage(
+                                                              fadeInDuration:
+                                                                  Duration(
+                                                                      milliseconds:
+                                                                          0),
+                                                              fadeOutDuration:
+                                                                  Duration(
+                                                                      milliseconds:
+                                                                          0),
+                                                              imageUrl: imageUrl,
+                                                              width: 80.0,
+                                                              height: 80.0,
+                                                              fit: BoxFit.cover,
+                                                              alignment:
+                                                                  Alignment(
+                                                                      0.0, 0.0),
+                                                            )
+                                                          : Container(
+                                                              width: 80.0,
+                                                              height: 80.0,
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .primary
+                                                                  .withOpacity(
+                                                                      0.2),
+                                                              child: Icon(
+                                                                Icons
+                                                                    .person_rounded,
+                                                                size: 48.0,
+                                                                color:
+                                                                    FlutterFlowTheme
+                                                                        .of(
+                                                                            context)
+                                                                        .primary,
+                                                              ),
+                                                            );
+                                                    }(),
+                                                  ),
+                                                ),
+                                                if (_isUploadingPhoto)
+                                                  Positioned.fill(
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              24.0),
+                                                      child: Container(
+                                                        color: Colors.black45,
+                                                        child: Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            strokeWidth: 2.0,
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
+                                                                    Color>(
+                                                              Colors.white,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                else
+                                                  Positioned(
+                                                    right: -4.0,
+                                                    bottom: -4.0,
+                                                    child: Container(
+                                                      width: 24.0,
+                                                      height: 24.0,
+                                                      decoration: BoxDecoration(
                                                         color:
                                                             FlutterFlowTheme.of(
                                                                     context)
                                                                 .primary,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
+                                                        border: Border.all(
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primaryBackground,
+                                                          width: 2.0,
+                                                        ),
+                                                      ),
+                                                      child: Icon(
+                                                        Icons
+                                                            .camera_alt_rounded,
+                                                        color: Colors.white,
+                                                        size: 12.0,
                                                       ),
                                                     ),
+                                                  ),
+                                              ],
                                             ),
                                           ),
                                           Expanded(
@@ -278,12 +384,9 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                                                       SizedBox(width: 4.0)),
                                                 ),
                                                 Text(
-                                                  valueOrDefault<String>(
-                                                    containerProfilesRow
-                                                        ?.createdAt
-                                                        ?.toString(),
-                                                    'Member Since . . .',
-                                                  ),
+                                                  containerProfilesRow?.createdAt != null
+                                                    ? 'Member since ${DateFormat('MMMM yyyy').format(containerProfilesRow!.createdAt!)}'
+                                                    : 'Member Since . . .',
                                                   style: FlutterFlowTheme.of(
                                                           context)
                                                       .labelSmall

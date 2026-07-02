@@ -86,10 +86,20 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(30.0),
                   child: Image.network(
-                    'https://picsum.photos/seed/773/600',
+                    widget.plantImage.startsWith('http')
+                        ? widget.plantImage
+                        : 'https://picsum.photos/seed/${widget.plantName}/600',
                     width: double.infinity,
                     height: 135.0,
                     fit: BoxFit.fill,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: double.infinity,
+                      height: 135.0,
+                      color: FlutterFlowTheme.of(context).alternate,
+                      child: Icon(Icons.local_florist,
+                          color: FlutterFlowTheme.of(context).primary,
+                          size: 40.0),
+                    ),
                   ),
                 ),
               ),
@@ -110,7 +120,7 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                     Align(
                       alignment: AlignmentDirectional(0.0, -1.0),
                       child: Text(
-                        'test',
+                        widget.plantName,
                         textAlign: TextAlign.center,
                         style: FlutterFlowTheme.of(context)
                             .titleMedium
@@ -144,7 +154,7 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                       size: 18.0,
                     ),
                     Text(
-                      'sun tsst',
+                      widget.sunRequirement,
                       style: FlutterFlowTheme.of(context).bodyMedium.override(
                             font: GoogleFonts.poppins(
                               fontWeight: FlutterFlowTheme.of(context)
@@ -177,7 +187,7 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                       size: 18.0,
                     ),
                     Text(
-                      'water test',
+                      widget.waterRequirement,
                       textAlign: TextAlign.start,
                       style: FlutterFlowTheme.of(context).bodyMedium.override(
                             font: GoogleFonts.poppins(

@@ -53,7 +53,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
       },
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: Color(0xFFF6F4EC),
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         body: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.max,
@@ -497,7 +497,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                           .bodyMedium
                                           .fontStyle,
                                     ),
-                                    color: Color(0xFF3E4B3C),
+                                    color: FlutterFlowTheme.of(context).primaryText,
                                     fontSize: 20.0,
                                     letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
@@ -521,7 +521,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                         .bodyMedium
                                         .fontStyle,
                                   ),
-                                  color: Color(0xFF5F6F52),
+                                  color: FlutterFlowTheme.of(context).secondaryText,
                                   fontSize: 16.0,
                                   letterSpacing: 0.0,
                                   fontWeight: FontWeight.bold,
@@ -574,7 +574,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                           .bodyMedium
                                           .fontStyle,
                                     ),
-                                    color: Color(0xFF3E4B3C),
+                                    color: FlutterFlowTheme.of(context).primaryText,
                                     fontSize: 18.0,
                                     letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
@@ -623,7 +623,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                                     .bodyMedium
                                                     .fontStyle,
                                           ),
-                                          color: Color(0xFF3E4B3C),
+                                          color: FlutterFlowTheme.of(context).primaryText,
                                           fontSize: 12.0,
                                           letterSpacing: 0.0,
                                           fontWeight:
@@ -677,7 +677,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                                   .bodyMedium
                                                   .fontStyle,
                                         ),
-                                        color: Color(0xFF3E4B3C),
+                                        color: FlutterFlowTheme.of(context).primaryText,
                                         fontSize: 12.0,
                                         letterSpacing: 0.0,
                                         fontWeight: FlutterFlowTheme.of(context)
@@ -728,7 +728,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                                   .bodyMedium
                                                   .fontStyle,
                                         ),
-                                        color: Color(0xFF3E4B3C),
+                                        color: FlutterFlowTheme.of(context).primaryText,
                                         fontSize: 12.0,
                                         letterSpacing: 0.0,
                                         fontWeight: FlutterFlowTheme.of(context)
@@ -779,7 +779,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                                   .bodyMedium
                                                   .fontStyle,
                                         ),
-                                        color: Color(0xFF3E4B3C),
+                                        color: FlutterFlowTheme.of(context).primaryText,
                                         fontSize: 12.0,
                                         letterSpacing: 0.0,
                                         fontWeight: FlutterFlowTheme.of(context)
