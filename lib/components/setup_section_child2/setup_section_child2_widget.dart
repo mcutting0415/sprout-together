@@ -198,7 +198,7 @@ class _SetupSectionChild2WidgetState extends State<SetupSectionChild2Widget> {
                       FFAppState().setupZipCode = val;
                     },
                     onFieldSubmitted: (_) async {
-                      FFAppState().setupZipCode = _model.textController.text;
+                      FFAppState().setupZipCode = _model.textController?.text ?? '';
                       safeSetState(() {});
                     },
                     autofocus: false,
@@ -290,12 +290,12 @@ class _SetupSectionChild2WidgetState extends State<SetupSectionChild2Widget> {
               SizedBox(width: 8.0),
               ElevatedButton(
                 onPressed: () {
-                  final zip = _model.textController.text.trim();
+                  final zip = (_model.textController?.text ?? '').trim();
                   if (zip.length < 5) return;
                   final zone = _zoneFromZip(zip);
                   safeSetState(() {
                     _model.dropdownValue = zone;
-                    _model.dropdownValueController.value = zone;
+                    _model.dropdownValueController?.value = zone;
                   });
                   FFAppState().setupGardeningZone = zone;
                   FFAppState().setupZipCode = zip;
