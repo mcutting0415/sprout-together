@@ -43,12 +43,16 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.gardenPlotQuery = await GardenPlotsTable().queryRows(
-        queryFn: (q) => q.eqOrNull(
-          'garden_id',
-          widget!.gardenID,
-        ),
-      );
+      await _loadPlots();
+    });
+  }
+
+  Future<void> _loadPlots() async {
+    final plots = await GardenPlotsTable().queryRows(
+      queryFn: (q) => q.eqOrNull('garden_id', widget!.gardenID),
+    );
+    safeSetState(() {
+      _model.gardenPlotQuery = plots;
     });
   }
 
@@ -483,6 +487,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                       plotID: plotItemItem.id!,
                                       rowIndex: plotItemItem.rowIndex!,
                                       colIndex: plotItemItem.colIndex!,
+                                      onPlantAssigned: () => _loadPlots(),
                                     ),
                                   ),
                                 );

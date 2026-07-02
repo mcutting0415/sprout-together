@@ -1,3 +1,4 @@
+import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -18,6 +19,7 @@ class PlotSquareWidget extends StatefulWidget {
     required this.plotID,
     required this.rowIndex,
     required this.colIndex,
+    this.onPlantAssigned,
   })  : this.isEmpty = isEmpty ?? false,
         this.plantName = plantName ?? 'Tomato';
 
@@ -28,6 +30,7 @@ class PlotSquareWidget extends StatefulWidget {
   final String? plotID;
   final int? rowIndex;
   final int? colIndex;
+  final VoidCallback? onPlantAssigned;
 
   @override
   State<PlotSquareWidget> createState() => _PlotSquareWidgetState();
@@ -55,6 +58,180 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
     super.dispose();
   }
 
+  Future<void> _showPlantPicker() async {
+    final bool? assigned = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.6,
+          decoration: BoxDecoration(
+            color: FlutterFlowTheme.of(context).primaryBackground,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24.0),
+              topRight: Radius.circular(24.0),
+            ),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 8.0),
+              Container(
+                width: 40.0,
+                height: 4.0,
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).alternate,
+                  borderRadius: BorderRadius.circular(2.0),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 12.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.local_florist_rounded,
+                        color: FlutterFlowTheme.of(context).primary,
+                        size: 20.0),
+                    const SizedBox(width: 8.0),
+                    Text(
+                      'Pick a Plant',
+                      style: FlutterFlowTheme.of(context).titleMedium.override(
+                            font: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FlutterFlowTheme.of(context)
+                                  .titleMedium
+                                  .fontStyle,
+                            ),
+                            letterSpacing: 0.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const Spacer(),
+                    if (!widget.isEmpty)
+                      TextButton(
+                        onPressed: () async {
+                          await GardenPlotsTable().update(
+                            data: {'plant_id': ''},
+                            matchingRows: (rows) =>
+                                rows.eqOrNull('id', widget.plotID),
+                          );
+                          Navigator.of(sheetContext).pop(true);
+                        },
+                        child: Text(
+                          'Clear',
+                          style: FlutterFlowTheme.of(context).bodySmall.override(
+                                font: GoogleFonts.poppins(
+                                  fontWeight:
+                                      FlutterFlowTheme.of(context).bodySmall.fontWeight,
+                                ),
+                                color: FlutterFlowTheme.of(context).error,
+                                letterSpacing: 0.0,
+                              ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Divider(
+                  height: 1.0,
+                  color: FlutterFlowTheme.of(context).alternate),
+              Expanded(
+                child: FutureBuilder<List<PlantsRow>>(
+                  future: PlantsTable().queryRows(
+                    queryFn: (q) => q.order('plant_name', ascending: true),
+                  ),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            FlutterFlowTheme.of(context).primary,
+                          ),
+                        ),
+                      );
+                    }
+                    final plants = snapshot.data!;
+                    if (plants.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No plants in library yet.',
+                          style:
+                              FlutterFlowTheme.of(context).bodyMedium.override(
+                                    font: GoogleFonts.poppins(
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .fontWeight,
+                                    ),
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText,
+                                    letterSpacing: 0.0,
+                                  ),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      itemCount: plants.length,
+                      itemBuilder: (context, index) {
+                        final plant = plants[index];
+                        return ListTile(
+                          leading: Container(
+                            width: 36.0,
+                            height: 36.0,
+                            decoration: BoxDecoration(
+                              color: Color(0x1A6F8F72),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Icon(
+                              Icons.local_florist_rounded,
+                              color: FlutterFlowTheme.of(context).primary,
+                              size: 18.0,
+                            ),
+                          ),
+                          title: Text(
+                            plant.plantName ?? 'Unknown Plant',
+                            style: FlutterFlowTheme.of(context)
+                                .bodyMedium
+                                .override(
+                                  font: GoogleFonts.poppins(
+                                    fontWeight: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .fontWeight,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .fontStyle,
+                                  ),
+                                  letterSpacing: 0.0,
+                                  fontWeight: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .fontWeight,
+                                ),
+                          ),
+                          onTap: () async {
+                            await GardenPlotsTable().update(
+                              data: {'plant_id': plant.id},
+                              matchingRows: (rows) =>
+                                  rows.eqOrNull('id', widget.plotID),
+                            );
+                            Navigator.of(sheetContext).pop(true);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (assigned == true) {
+      widget.onPlantAssigned?.call();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -63,15 +240,7 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
       hoverColor: Colors.transparent,
       highlightColor: Colors.transparent,
       onTap: () async {
-        _model.isSelected = !_model.isSelected;
-        safeSetState(() {});
-        if (_model.isSelected == true) {
-          FFAppState().addToSelectedPlotIDs(widget!.plotID!);
-          safeSetState(() {});
-        } else {
-          FFAppState().removeFromSelectedPlotIDs(widget!.plotID!);
-          safeSetState(() {});
-        }
+        await _showPlantPicker();
       },
       child: Container(
         width: 64.0,
@@ -90,66 +259,54 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
           shape: BoxShape.rectangle,
           border: Border.all(
             color: valueOrDefault<Color>(
-              _model.isSelected ? Color(0xFFD4E8C4) : Color(0xFFD8D2CB),
+              widget!.isEmpty ? Color(0xFFD8D2CB) : Color(0xFF6F8F72),
               Color(0x4D6F8F72),
             ),
             width: 1.0,
           ),
         ),
         alignment: AlignmentDirectional(0.0, 0.0),
-        child: Visibility(
-          visible: valueOrDefault<bool>(
-            valueOrDefault<bool>(
-              widget!.isEmpty,
-              false,
-            )
-                ? false
-                : true,
-            true,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (widget!.isEmpty)
-                Align(
-                  alignment: AlignmentDirectional(0.0, 0.0),
-                  child: Icon(
-                    Icons.add,
-                    color: FlutterFlowTheme.of(context).secondaryText,
-                    size: 24.0,
-                  ),
-                ),
-              if (!widget!.isEmpty) widget!.icon!,
-              if (!widget!.isEmpty)
-                Text(
-                  valueOrDefault<String>(
-                    widget!.plantName,
-                    'Tomato',
-                  ),
-                  maxLines: 1,
-                  style: FlutterFlowTheme.of(context).labelSmall.override(
-                        font: GoogleFonts.poppins(
+        child: widget!.isEmpty
+            ? Icon(
+                Icons.add,
+                color: FlutterFlowTheme.of(context).secondaryText,
+                size: 24.0,
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  widget!.icon!,
+                  Text(
+                    valueOrDefault<String>(
+                      widget!.plantName,
+                      'Plant',
+                    ),
+                    maxLines: 1,
+                    style: FlutterFlowTheme.of(context).labelSmall.override(
+                          font: GoogleFonts.poppins(
+                            fontWeight: FlutterFlowTheme.of(context)
+                                .labelSmall
+                                .fontWeight,
+                            fontStyle: FlutterFlowTheme.of(context)
+                                .labelSmall
+                                .fontStyle,
+                          ),
+                          color: FlutterFlowTheme.of(context).primaryText,
+                          letterSpacing: 0.0,
                           fontWeight: FlutterFlowTheme.of(context)
                               .labelSmall
                               .fontWeight,
-                          fontStyle:
-                              FlutterFlowTheme.of(context).labelSmall.fontStyle,
+                          fontStyle: FlutterFlowTheme.of(context)
+                              .labelSmall
+                              .fontStyle,
+                          lineHeight: 1.4,
                         ),
-                        color: FlutterFlowTheme.of(context).primaryText,
-                        letterSpacing: 0.0,
-                        fontWeight:
-                            FlutterFlowTheme.of(context).labelSmall.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).labelSmall.fontStyle,
-                        lineHeight: 1.4,
-                      ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-            ].divide(SizedBox(height: 4.0)),
-          ),
-        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ].divide(SizedBox(height: 4.0)),
+              ),
       ),
     );
   }

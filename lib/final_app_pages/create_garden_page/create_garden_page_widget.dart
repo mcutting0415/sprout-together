@@ -1457,7 +1457,7 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                           GardenBuilderPageWidget.routeName,
                           queryParameters: {
                             'gardenID': serializeParam(
-                              '',
+                              _model.newGarden?.id ?? '',
                               ParamType.String,
                             ),
                           }.withoutNulls,
