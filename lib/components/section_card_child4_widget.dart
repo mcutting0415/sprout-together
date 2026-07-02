@@ -56,7 +56,7 @@ class _SectionCardChild4WidgetState extends State<SectionCardChild4Widget> {
               size: 20.0,
             ),
             title: 'Saved Gardens',
-            subtitle: '4 Active layouts',
+            subtitle: '',
             isLast: false,
           ),
         ),

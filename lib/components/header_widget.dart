@@ -1,9 +1,9 @@
-import '/draft_pages/side_menu/side_menu_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:ui';
+import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -126,12 +126,108 @@ class _HeaderWidgetState extends State<HeaderWidget> {
                   await showModalBottomSheet(
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
-                    enableDrag: false,
+                    enableDrag: true,
+                    isDismissible: true,
                     context: context,
-                    builder: (context) {
-                      return Padding(
-                        padding: MediaQuery.viewInsetsOf(context),
-                        child: SideMenuWidget(),
+                    builder: (ctx) {
+                      return Container(
+                        margin: EdgeInsetsDirectional.fromSTEB(0, 80, 0, 0),
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context)
+                              .secondaryBackground,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(24),
+                            topRight: Radius.circular(24),
+                          ),
+                          border: Border.all(
+                            color: FlutterFlowTheme.of(context).primaryText,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Container(
+                                width: 40,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText
+                                      .withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.person_rounded,
+                                  color:
+                                      FlutterFlowTheme.of(context).primary),
+                              title: Text('My Profile',
+                                  style:
+                                      FlutterFlowTheme.of(context).bodyLarge),
+                              trailing: Icon(Icons.chevron_right_rounded,
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText),
+                              onTap: () {
+                                Navigator.pop(ctx);
+                                context
+                                    .pushNamed(ProfilePage2Widget.routeName);
+                              },
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.eco_rounded,
+                                  color:
+                                      FlutterFlowTheme.of(context).primary),
+                              title: Text('My Planner',
+                                  style:
+                                      FlutterFlowTheme.of(context).bodyLarge),
+                              trailing: Icon(Icons.chevron_right_rounded,
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText),
+                              onTap: () {
+                                Navigator.pop(ctx);
+                                context.pushNamed(
+                                    PlannerOverviewPageWidget.routeName);
+                              },
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.local_florist_rounded,
+                                  color:
+                                      FlutterFlowTheme.of(context).primary),
+                              title: Text('Plant Library',
+                                  style:
+                                      FlutterFlowTheme.of(context).bodyLarge),
+                              trailing: Icon(Icons.chevron_right_rounded,
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText),
+                              onTap: () {
+                                Navigator.pop(ctx);
+                                context.pushNamed(
+                                    PlantLibraryPageWidget.routeName);
+                              },
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.settings_rounded,
+                                  color:
+                                      FlutterFlowTheme.of(context).primary),
+                              title: Text('Settings',
+                                  style:
+                                      FlutterFlowTheme.of(context).bodyLarge),
+                              trailing: Icon(Icons.chevron_right_rounded,
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText),
+                              onTap: () {
+                                Navigator.pop(ctx);
+                                context
+                                    .pushNamed(SettingsPage2Widget.routeName);
+                              },
+                            ),
+                            SizedBox(
+                                height:
+                                    MediaQuery.of(ctx).padding.bottom + 16),
+                          ],
+                        ),
                       );
                     },
                   ).then((value) => safeSetState(() {}));

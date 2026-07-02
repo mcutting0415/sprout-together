@@ -112,13 +112,29 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.add_a_photo_outlined,
-                  color: Color(0xFF6F8F72),
-                  size: 36.0,
-                ),
+                if (_model.uploadedLocalFile_uploadDataWq4.bytes != null &&
+                    _model.uploadedLocalFile_uploadDataWq4.bytes!.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(50.0),
+                    child: Image.memory(
+                      _model.uploadedLocalFile_uploadDataWq4.bytes!,
+                      width: 80.0,
+                      height: 80.0,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                else
+                  Icon(
+                    Icons.add_a_photo_outlined,
+                    color: Color(0xFF6F8F72),
+                    size: 36.0,
+                  ),
                 Text(
-                  'Add Profile Photo',
+                  (_model.uploadedLocalFile_uploadDataWq4.bytes != null &&
+                          _model.uploadedLocalFile_uploadDataWq4.bytes!
+                              .isNotEmpty)
+                      ? 'Change Photo'
+                      : 'Add Profile Photo',
                   textAlign: TextAlign.center,
                   style: FlutterFlowTheme.of(context).bodyMedium.override(
                         font: GoogleFonts.poppins(

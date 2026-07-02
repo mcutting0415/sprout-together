@@ -141,18 +141,42 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                                             child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(24.0),
-                                              child: CachedNetworkImage(
-                                                fadeInDuration:
-                                                    Duration(milliseconds: 0),
-                                                fadeOutDuration:
-                                                    Duration(milliseconds: 0),
-                                                imageUrl: containerProfilesRow!
-                                                    .profileImageUrl!,
-                                                width: 80.0,
-                                                height: 80.0,
-                                                fit: BoxFit.cover,
-                                                alignment: Alignment(0.0, 0.0),
-                                              ),
+                                              child: (containerProfilesRow
+                                                              ?.profileImageUrl !=
+                                                          null &&
+                                                      containerProfilesRow!
+                                                          .profileImageUrl!
+                                                          .isNotEmpty)
+                                                  ? CachedNetworkImage(
+                                                      fadeInDuration: Duration(
+                                                          milliseconds: 0),
+                                                      fadeOutDuration: Duration(
+                                                          milliseconds: 0),
+                                                      imageUrl:
+                                                          containerProfilesRow!
+                                                              .profileImageUrl!,
+                                                      width: 80.0,
+                                                      height: 80.0,
+                                                      fit: BoxFit.cover,
+                                                      alignment:
+                                                          Alignment(0.0, 0.0),
+                                                    )
+                                                  : Container(
+                                                      width: 80.0,
+                                                      height: 80.0,
+                                                      color: FlutterFlowTheme
+                                                              .of(context)
+                                                          .primary
+                                                          .withOpacity(0.2),
+                                                      child: Icon(
+                                                        Icons.person_rounded,
+                                                        size: 48.0,
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primary,
+                                                      ),
+                                                    ),
                                             ),
                                           ),
                                           Expanded(
@@ -559,7 +583,8 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
 
                                   return Container(
                                     width: double.infinity,
-                                    height: 36.0,
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 12.0, horizontal: 16.0),
                                     decoration: BoxDecoration(
                                       color:
                                           FlutterFlowTheme.of(context).primary,
@@ -569,34 +594,72 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                                             .primaryText,
                                       ),
                                     ),
-                                    child: Text(
-                                      (List<String> var1) {
-                                        return var1.join(', ');
-                                      }(containerProfilesRow!.goals.toList()),
-                                      textAlign: TextAlign.center,
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                            font: GoogleFonts.poppins(
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontStyle,
-                                            ),
-                                            letterSpacing: 0.0,
-                                            fontWeight:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMedium
-                                                    .fontWeight,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMedium
-                                                    .fontStyle,
-                                          ),
+                                    child: Wrap(
+                                      spacing: 8.0,
+                                      runSpacing: 8.0,
+                                      alignment: WrapAlignment.center,
+                                      children: (containerProfilesRow!.goals
+                                              .isEmpty)
+                                          ? [
+                                              Text(
+                                                'No goals set yet',
+                                                textAlign: TextAlign.center,
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .override(
+                                                          font:
+                                                              GoogleFonts.poppins(
+                                                            fontWeight: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .fontWeight,
+                                                            fontStyle: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .fontStyle,
+                                                          ),
+                                                          color: Colors.white,
+                                                          letterSpacing: 0.0,
+                                                        ),
+                                              )
+                                            ]
+                                          : containerProfilesRow!.goals
+                                              .map((goal) => Container(
+                                                    padding: EdgeInsets.symmetric(
+                                                        horizontal: 12.0,
+                                                        vertical: 6.0),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white
+                                                          .withOpacity(0.2),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0),
+                                                    ),
+                                                    child: Text(
+                                                      goal,
+                                                      style: FlutterFlowTheme
+                                                              .of(context)
+                                                          .bodySmall
+                                                          .override(
+                                                            font: GoogleFonts
+                                                                .poppins(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontStyle: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .bodySmall
+                                                                  .fontStyle,
+                                                            ),
+                                                            color: Colors.white,
+                                                            letterSpacing: 0.0,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                    ),
+                                                  ))
+                                              .toList(),
                                     ),
                                   );
                                 },
@@ -608,62 +671,67 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).primaryText,
+                        color: FlutterFlowTheme.of(context).alternate,
                         borderRadius: BorderRadius.circular(24.0),
                         shape: BoxShape.rectangle,
                         border: Border.all(
-                          color: FlutterFlowTheme.of(context).primary,
+                          color: FlutterFlowTheme.of(context).primaryText,
                           width: 1.0,
                         ),
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(24.0),
-                        child: Container(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'All Images',
-                                    style: FlutterFlowTheme.of(context)
-                                        .titleMedium
-                                        .override(
-                                          font: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.bold,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .titleMedium
-                                                    .fontStyle,
-                                          ),
-                                          color: FlutterFlowTheme.of(context)
-                                              .secondaryBackground,
-                                          letterSpacing: 0.0,
-                                          fontWeight: FontWeight.bold,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .titleMedium
-                                                  .fontStyle,
-                                          decoration: TextDecoration.underline,
-                                          lineHeight: 1.4,
-                                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'My Garden Photos',
+                              style: FlutterFlowTheme.of(context)
+                                  .titleMedium
+                                  .override(
+                                    font: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .titleMedium
+                                          .fontStyle,
+                                    ),
+                                    color: FlutterFlowTheme.of(context)
+                                        .primaryText,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.underline,
+                                    lineHeight: 1.4,
                                   ),
-                                ].divide(SizedBox(width: 8.0)),
-                              ),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children:
-                                    <Widget>[].divide(SizedBox(height: 8.0)),
-                              ),
-                            ].divide(SizedBox(height: 16.0)),
-                          ),
+                            ),
+                            SizedBox(height: 12.0),
+                            Icon(
+                              Icons.photo_library_outlined,
+                              color: FlutterFlowTheme.of(context).secondaryText,
+                              size: 40.0,
+                            ),
+                            SizedBox(height: 8.0),
+                            Text(
+                              'Your garden photos will appear here.',
+                              textAlign: TextAlign.center,
+                              style: FlutterFlowTheme.of(context)
+                                  .bodySmall
+                                  .override(
+                                    font: GoogleFonts.poppins(
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .bodySmall
+                                          .fontWeight,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .bodySmall
+                                          .fontStyle,
+                                    ),
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

@@ -458,7 +458,7 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
                           ),
                     ),
                     subtitle: Text(
-                      'Subtitle',
+                      'Coming soon',
                       style: FlutterFlowTheme.of(context).labelMedium.override(
                             font: GoogleFonts.poppins(
                               fontWeight: FlutterFlowTheme.of(context)
