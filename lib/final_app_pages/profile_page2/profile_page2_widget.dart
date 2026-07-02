@@ -43,7 +43,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
   Future<void> _handlePhotoUpload() async {
     final selectedMedia = await selectMediaWithSourceBottomSheet(
       context: context,
-      storageFolderPath: 'profiles/',
+      storageFolderPath: 'profiles/$currentUserUid/',
       allowPhoto: true,
     );
     if (selectedMedia == null || selectedMedia.isEmpty) return;
@@ -64,6 +64,17 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
         safeSetState(() {
           _localImageUrl = newUrl;
         });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Profile photo updated!')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to upload photo: $e')),
+        );
       }
     } finally {
       safeSetState(() => _isUploadingPhoto = false);
