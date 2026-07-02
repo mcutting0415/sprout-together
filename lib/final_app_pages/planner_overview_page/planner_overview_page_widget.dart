@@ -798,7 +798,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                       ),
                       FFButtonWidget(
                         onPressed: () {
-                          print('Button pressed ...');
+                          context.pushNamed(CurrentGardens3Widget.routeName);
                         },
                         text: 'View Full Garden Analysis',
                         options: FFButtonOptions(

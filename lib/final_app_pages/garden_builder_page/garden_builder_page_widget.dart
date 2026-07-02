@@ -112,14 +112,13 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      if (FFAppState().isSideMenuOpen)
-                        wrapWithModel(
-                          model: _model.finalHeaderModel,
-                          updateCallback: () => safeSetState(() {}),
-                          child: FinalHeaderWidget(
-                            pageTitle: 'Garden Builder',
-                          ),
+                      wrapWithModel(
+                        model: _model.finalHeaderModel,
+                        updateCallback: () => safeSetState(() {}),
+                        child: FinalHeaderWidget(
+                          pageTitle: 'Garden Builder',
                         ),
+                      ),
                       Padding(
                         padding: EdgeInsets.all(30.0),
                         child: Container(
@@ -245,7 +244,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                               size: 14.0,
                                             ),
                                             Text(
-                                              '${gardenBuilderPageGardensRow?.width?.toString()}${gardenBuilderPageGardensRow?.length?.toString()}',
+                                              '${gardenBuilderPageGardensRow?.width?.toString() ?? '?'} × ${gardenBuilderPageGardensRow?.length?.toString() ?? '?'} ft',
                                               style: FlutterFlowTheme.of(
                                                       context)
                                                   .bodySmall
@@ -413,25 +412,50 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                           ].divide(SizedBox(height: 24.0)),
                         ),
                       ),
-                      Container(
-                        width: 100.0,
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          color:
-                              FlutterFlowTheme.of(context).secondaryBackground,
-                        ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                         child: Builder(
                           builder: (context) {
                             final plotItem =
                                 _model.gardenPlotQuery?.toList() ?? [];
 
+                            if (plotItem.isEmpty) {
+                              return Padding(
+                                padding: EdgeInsets.all(24.0),
+                                child: Center(
+                                  child: Text(
+                                    'No plots yet — create a garden first.',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          font: GoogleFonts.poppins(
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyMedium
+                                                    .fontWeight,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyMedium
+                                                    .fontStyle,
+                                          ),
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryText,
+                                          letterSpacing: 0.0,
+                                        ),
+                                  ),
+                                ),
+                              );
+                            }
+
                             return GridView.builder(
                               padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 4,
-                                crossAxisSpacing: 5.0,
-                                mainAxisSpacing: 10.0,
+                                crossAxisSpacing: 8.0,
+                                mainAxisSpacing: 8.0,
                                 childAspectRatio: 1.0,
                               ),
                               scrollDirection: Axis.vertical,
@@ -450,7 +474,8 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                       key: Key(
                                         'Keyeqt_${plotItemIndex.toString()}',
                                       ),
-                                      isEmpty: false,
+                                      isEmpty: plotItemItem.plantId == null ||
+                                          plotItemItem.plantId!.isEmpty,
                                       icon: FaIcon(
                                         FontAwesomeIcons.seedling,
                                       ),
@@ -1098,7 +1123,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                                   ),
                                             ),
                                             Text(
-                                              '4 Assigned',
+                                              '${_model.gardenPlotQuery?.where((p) => p.plantId != null && p.plantId!.isNotEmpty).length ?? 0} Assigned',
                                               style: FlutterFlowTheme.of(
                                                       context)
                                                   .bodyLarge
@@ -1175,7 +1200,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                                   ),
                                             ),
                                             Text(
-                                              '8 Spaces',
+                                              '${(_model.gardenPlotQuery?.length ?? 0) - (_model.gardenPlotQuery?.where((p) => p.plantId != null && p.plantId!.isNotEmpty).length ?? 0)} Spaces',
                                               style: FlutterFlowTheme.of(
                                                       context)
                                                   .bodyLarge
@@ -1252,7 +1277,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                                   ),
                                             ),
                                             Text(
-                                              '32 sq ft',
+                                              '${((gardenBuilderPageGardensRow?.width ?? 0) * (gardenBuilderPageGardensRow?.length ?? 0)).toStringAsFixed(0)} sq ft',
                                               style: FlutterFlowTheme.of(
                                                       context)
                                                   .bodyLarge
@@ -1287,28 +1312,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                           ),
                         ),
                       ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Container(
-                            height: 1.0,
-                            decoration: BoxDecoration(
-                              color: FlutterFlowTheme.of(context).alternate,
-                              shape: BoxShape.rectangle,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(24.0),
-                            child: Container(
-                              child: Container(
-                                width: 0.0,
-                                height: 0.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      SizedBox(height: 24.0),
                     ],
                   ),
                 ),

@@ -11,36 +11,6 @@ import 'package:provider/provider.dart';
 import 'companion_guide_page2_model.dart';
 export 'companion_guide_page2_model.dart';
 
-/// Create an alternative version of my Companion Planting page for
-/// SproutTogether.
-///
-/// Requirements:
-///
-/// * Use the existing SproutTogether theme, colors, and typography.
-/// * Make the page feel clean, modern, and easy to understand.
-/// * Reduce clutter and improve visual organization.
-/// * Use cards and sections with plenty of spacing.
-///
-/// Include:
-///
-/// * A plant search bar at the top.
-/// * A plant selection area.
-/// * A section for Companion Plants (Good Matches).
-/// * A section for Plants to Avoid.
-/// * A section explaining why the plants are compatible or incompatible.
-/// * Companion plants should use positive visual indicators.
-/// * Plants to avoid should use warning indicators.
-///
-/// Design Goals:
-///
-/// * Make it easy for beginner gardeners to understand.
-/// * Prioritize readability.
-/// * Use gardening-themed icons and visual cues.
-/// * Make the page feel educational and helpful.
-/// * Use cards instead of long lists where possible.
-///
-/// Do not add logic, actions, or database connections.
-/// Focus only on layout, visual hierarchy, and user experience.
 class CompanionGuidePage2Widget extends StatefulWidget {
   const CompanionGuidePage2Widget({
     super.key,
@@ -71,7 +41,6 @@ class _CompanionGuidePage2WidgetState extends State<CompanionGuidePage2Widget> {
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
   }
 
@@ -88,98 +57,22 @@ class _CompanionGuidePage2WidgetState extends State<CompanionGuidePage2Widget> {
         body: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Flexible(
-                child: Align(
-                  alignment: AlignmentDirectional(0.0, -1.21),
-                  child: wrapWithModel(
-                    model: _model.finalHeaderModel,
-                    updateCallback: () => safeSetState(() {}),
-                    child: FinalHeaderWidget(
-                      pageTitle: 'Companion Plants',
-                    ),
-                  ),
+              wrapWithModel(
+                model: _model.finalHeaderModel,
+                updateCallback: () => safeSetState(() {}),
+                child: FinalHeaderWidget(
+                  pageTitle: 'Companion Plants',
                 ),
               ),
-              Expanded(
-                flex: 1,
-                child: FutureBuilder<List<PlantsRow>>(
-                  future: PlantsTable().querySingleRow(
-                    queryFn: (q) => q.eqOrNull(
-                      'id',
-                      widget!.plantID,
-                    ),
-                  ),
-                  builder: (context, snapshot) {
-                    // Customize what your widget looks like when it's loading.
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: SizedBox(
-                          width: 50.0,
-                          height: 50.0,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              FlutterFlowTheme.of(context).primary,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                    List<PlantsRow> columnPlantsRowList = snapshot.data!;
-
-                    final columnPlantsRow = columnPlantsRowList.isNotEmpty
-                        ? columnPlantsRowList.first
-                        : null;
-
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          valueOrDefault<String>(
-                            columnPlantsRow?.plantName,
-                            'Plant Name',
-                          ),
-                          style:
-                              FlutterFlowTheme.of(context).bodyMedium.override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .fontStyle,
-                                    ),
-                                    letterSpacing: 0.0,
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                  ),
-                        ),
-                      ].divide(SizedBox(height: 4.0)),
-                    );
-                  },
-                ),
-              ),
-              FutureBuilder<List<PlantCompanionsRow>>(
-                future: PlantCompanionsTable().queryRows(
-                  queryFn: (q) => q
-                      .eqOrNull(
-                        'plant_id',
-                        widget!.plantID,
-                      )
-                      .eqOrNull(
-                        'relationship_type',
-                        'good',
-                      ),
+              // ── Selected plant name ──
+              FutureBuilder<List<PlantsRow>>(
+                future: PlantsTable().querySingleRow(
+                  queryFn: (q) => q.eqOrNull('id', widget!.plantID),
                 ),
                 builder: (context, snapshot) {
-                  // Customize what your widget looks like when it's loading.
                   if (!snapshot.hasData) {
                     return Center(
                       child: SizedBox(
@@ -193,134 +86,127 @@ class _CompanionGuidePage2WidgetState extends State<CompanionGuidePage2Widget> {
                       ),
                     );
                   }
-                  List<PlantCompanionsRow> columnPlantCompanionsRowList =
-                      snapshot.data!;
+                  final columnPlantsRow = snapshot.data!.isNotEmpty
+                      ? snapshot.data!.first
+                      : null;
 
-                  return Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: List.generate(columnPlantCompanionsRowList.length,
-                        (columnIndex) {
-                      final columnPlantCompanionsRow =
-                          columnPlantCompanionsRowList[columnIndex];
-                      return FutureBuilder<List<PlantsRow>>(
-                        future: PlantsTable().querySingleRow(
-                          queryFn: (q) => q.eqOrNull(
-                            'id',
-                            columnPlantCompanionsRow.relatedPlantId,
+                  return Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                        16.0, 16.0, 16.0, 8.0),
+                    child: Text(
+                      valueOrDefault<String>(
+                        columnPlantsRow?.plantName,
+                        'Plant Name',
+                      ),
+                      style: FlutterFlowTheme.of(context).headlineSmall.override(
+                            font: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FlutterFlowTheme.of(context)
+                                  .headlineSmall
+                                  .fontStyle,
+                            ),
+                            letterSpacing: 0.0,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ),
-                        builder: (context, snapshot) {
-                          // Customize what your widget looks like when it's loading.
-                          if (!snapshot.hasData) {
-                            return Center(
-                              child: SizedBox(
-                                width: 50.0,
-                                height: 50.0,
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    FlutterFlowTheme.of(context).primary,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                          List<PlantsRow> relationshipCardPlantsRowList =
-                              snapshot.data!;
-
-                          final relationshipCardPlantsRow =
-                              relationshipCardPlantsRowList.isNotEmpty
-                                  ? relationshipCardPlantsRowList.first
-                                  : null;
-
-                          return wrapWithModel(
-                            model: _model.relationshipCardModels1.getModel(
-                              columnIndex.toString(),
-                              columnIndex,
-                            ),
-                            updateCallback: () => safeSetState(() {}),
-                            child: RelationshipCardWidget(
-                              key: Key(
-                                'Keyvdo_${columnIndex.toString()}',
-                              ),
-                              tone: FlutterFlowTheme.of(context).success,
-                              icon: Icon(
-                                Icons.agriculture_rounded,
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                size: 18.0,
-                              ),
-                              name: relationshipCardPlantsRow?.plantName,
-                              reason: columnPlantCompanionsRow.reason,
-                            ),
-                          );
-                        },
-                      );
-                    }).divide(SizedBox(height: 16.0)),
+                    ),
                   );
                 },
               ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 0.0),
+              // ── Good Companions header ──
+              Padding(
+                padding:
+                    EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 16.0, 8.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Icon(Icons.check_circle_outline_rounded,
+                        color: FlutterFlowTheme.of(context).success,
+                        size: 20.0),
+                    SizedBox(width: 8.0),
+                    Text(
+                      'Good Companions',
+                      style:
+                          FlutterFlowTheme.of(context).titleMedium.override(
+                                font: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .fontStyle,
+                                ),
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FlutterFlowTheme.of(context)
+                                    .titleMedium
+                                    .fontStyle,
+                                lineHeight: 1.4,
+                              ),
+                    ),
+                  ],
+                ),
+              ),
+              // ── Good Companions list ──
+              FutureBuilder<List<PlantCompanionsRow>>(
+                future: PlantCompanionsTable().queryRows(
+                  queryFn: (q) => q
+                      .eqOrNull('plant_id', widget!.plantID)
+                      .eqOrNull('relationship_type', 'good'),
+                ),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: SizedBox(
+                        width: 50.0,
+                        height: 50.0,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            FlutterFlowTheme.of(context).primary,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  final companions = snapshot.data!;
+
+                  if (companions.isEmpty) {
+                    return Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Center(
                         child: Text(
-                          'Plants to Avoid',
+                          'No companion planting data yet for this plant.',
+                          textAlign: TextAlign.center,
                           style:
-                              FlutterFlowTheme.of(context).titleMedium.override(
+                              FlutterFlowTheme.of(context).bodySmall.override(
                                     font: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .bodySmall
+                                          .fontWeight,
                                       fontStyle: FlutterFlowTheme.of(context)
-                                          .titleMedium
+                                          .bodySmall
                                           .fontStyle,
                                     ),
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText,
                                     letterSpacing: 0.0,
-                                    fontWeight: FontWeight.bold,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .titleMedium
-                                        .fontStyle,
-                                    lineHeight: 1.4,
                                   ),
                         ),
                       ),
-                    ],
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Color(0x0DFF5963),
-                      borderRadius: BorderRadius.circular(24.0),
-                      shape: BoxShape.rectangle,
-                      border: Border.all(
-                        color: Color(0x33FF5963),
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Container(
-                        child: FutureBuilder<List<PlantCompanionsRow>>(
-                          future: PlantCompanionsTable().queryRows(
-                            queryFn: (q) => q
-                                .eqOrNull(
-                                  'plant_id',
-                                  widget!.plantID,
-                                )
-                                .eqOrNull(
-                                  'relationship_type',
-                                  'bad',
-                                ),
+                    );
+                  }
+
+                  return Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                        16.0, 0.0, 16.0, 8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: List.generate(companions.length, (i) {
+                        final companion = companions[i];
+                        return FutureBuilder<List<PlantsRow>>(
+                          future: PlantsTable().querySingleRow(
+                            queryFn: (q) =>
+                                q.eqOrNull('id', companion.relatedPlantId),
                           ),
                           builder: (context, snapshot) {
-                            // Customize what your widget looks like when it's loading.
                             if (!snapshot.hasData) {
                               return Center(
                                 child: SizedBox(
@@ -334,87 +220,183 @@ class _CompanionGuidePage2WidgetState extends State<CompanionGuidePage2Widget> {
                                 ),
                               );
                             }
-                            List<PlantCompanionsRow>
-                                columnPlantCompanionsRowList = snapshot.data!;
+                            final plant = snapshot.data!.isNotEmpty
+                                ? snapshot.data!.first
+                                : null;
 
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: List.generate(
-                                  columnPlantCompanionsRowList.length,
-                                  (columnIndex) {
-                                final columnPlantCompanionsRow =
-                                    columnPlantCompanionsRowList[columnIndex];
-                                return FutureBuilder<List<PlantsRow>>(
-                                  future: PlantsTable().querySingleRow(
-                                    queryFn: (q) => q.eqOrNull(
-                                      'id',
-                                      columnPlantCompanionsRow.relatedPlantId,
-                                    ),
-                                  ),
-                                  builder: (context, snapshot) {
-                                    // Customize what your widget looks like when it's loading.
-                                    if (!snapshot.hasData) {
-                                      return Center(
-                                        child: SizedBox(
-                                          width: 50.0,
-                                          height: 50.0,
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                              FlutterFlowTheme.of(context)
-                                                  .primary,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    List<PlantsRow>
-                                        relationshipCardPlantsRowList =
-                                        snapshot.data!;
-
-                                    final relationshipCardPlantsRow =
-                                        relationshipCardPlantsRowList.isNotEmpty
-                                            ? relationshipCardPlantsRowList
-                                                .first
-                                            : null;
-
-                                    return wrapWithModel(
-                                      model: _model.relationshipCardModels2
-                                          .getModel(
-                                        columnIndex.toString(),
-                                        columnIndex,
-                                      ),
-                                      updateCallback: () => safeSetState(() {}),
-                                      child: RelationshipCardWidget(
-                                        key: Key(
-                                          'Keyd7y_${columnIndex.toString()}',
-                                        ),
-                                        tone:
-                                            FlutterFlowTheme.of(context).error,
-                                        icon: Icon(
-                                          Icons.warning_amber_rounded,
-                                          color: FlutterFlowTheme.of(context)
-                                              .primaryText,
-                                          size: 18.0,
-                                        ),
-                                        name: relationshipCardPlantsRow
-                                            ?.plantName,
-                                        reason: columnPlantCompanionsRow.reason,
-                                      ),
-                                    );
-                                  },
-                                );
-                              }).divide(SizedBox(height: 16.0)),
+                            return wrapWithModel(
+                              model: _model.relationshipCardModels1
+                                  .getModel(i.toString(), i),
+                              updateCallback: () => safeSetState(() {}),
+                              child: RelationshipCardWidget(
+                                key: Key('Keyvdo_${i.toString()}'),
+                                tone: FlutterFlowTheme.of(context).success,
+                                icon: Icon(
+                                  Icons.agriculture_rounded,
+                                  color:
+                                      FlutterFlowTheme.of(context).primaryText,
+                                  size: 18.0,
+                                ),
+                                name: plant?.plantName,
+                                reason: companion.reason,
+                              ),
                             );
                           },
-                        ),
-                      ),
+                        );
+                      }).divide(SizedBox(height: 16.0)),
+                    ),
+                  );
+                },
+              ),
+              // ── Plants to Avoid header ──
+              Padding(
+                padding:
+                    EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 16.0, 8.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Icon(Icons.warning_amber_rounded,
+                        color: FlutterFlowTheme.of(context).error, size: 20.0),
+                    SizedBox(width: 8.0),
+                    Text(
+                      'Plants to Avoid',
+                      style:
+                          FlutterFlowTheme.of(context).titleMedium.override(
+                                font: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .fontStyle,
+                                ),
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FlutterFlowTheme.of(context)
+                                    .titleMedium
+                                    .fontStyle,
+                                lineHeight: 1.4,
+                              ),
+                    ),
+                  ],
+                ),
+              ),
+              // ── Plants to Avoid list ──
+              Padding(
+                padding:
+                    EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color(0x0DFF5963),
+                    borderRadius: BorderRadius.circular(24.0),
+                    shape: BoxShape.rectangle,
+                    border: Border.all(
+                      color: Color(0x33FF5963),
+                      width: 1.0,
                     ),
                   ),
-                ].divide(SizedBox(height: 16.0)),
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: FutureBuilder<List<PlantCompanionsRow>>(
+                      future: PlantCompanionsTable().queryRows(
+                        queryFn: (q) => q
+                            .eqOrNull('plant_id', widget!.plantID)
+                            .eqOrNull('relationship_type', 'bad'),
+                      ),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(
+                            child: SizedBox(
+                              width: 50.0,
+                              height: 50.0,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  FlutterFlowTheme.of(context).primary,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        final badCompanions = snapshot.data!;
+
+                        if (badCompanions.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No incompatible plants listed for this plant.',
+                              textAlign: TextAlign.center,
+                              style: FlutterFlowTheme.of(context)
+                                  .bodySmall
+                                  .override(
+                                    font: GoogleFonts.poppins(
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .bodySmall
+                                          .fontWeight,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .bodySmall
+                                          .fontStyle,
+                                    ),
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          );
+                        }
+
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: List.generate(badCompanions.length, (i) {
+                            final companion = badCompanions[i];
+                            return FutureBuilder<List<PlantsRow>>(
+                              future: PlantsTable().querySingleRow(
+                                queryFn: (q) =>
+                                    q.eqOrNull('id', companion.relatedPlantId),
+                              ),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Center(
+                                    child: SizedBox(
+                                      width: 50.0,
+                                      height: 50.0,
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          FlutterFlowTheme.of(context).primary,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                final plant = snapshot.data!.isNotEmpty
+                                    ? snapshot.data!.first
+                                    : null;
+
+                                return wrapWithModel(
+                                  model: _model.relationshipCardModels2
+                                      .getModel(i.toString(), i),
+                                  updateCallback: () => safeSetState(() {}),
+                                  child: RelationshipCardWidget(
+                                    key: Key('Keyd7y_${i.toString()}'),
+                                    tone: FlutterFlowTheme.of(context).error,
+                                    icon: Icon(
+                                      Icons.warning_amber_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryText,
+                                      size: 18.0,
+                                    ),
+                                    name: plant?.plantName,
+                                    reason: companion.reason,
+                                  ),
+                                );
+                              },
+                            );
+                          }).divide(SizedBox(height: 16.0)),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ),
+              // ── Gardener's Tip ──
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24.0),
@@ -426,74 +408,72 @@ class _CompanionGuidePage2WidgetState extends State<CompanionGuidePage2Widget> {
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(24.0),
-                  child: Container(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.lightbulb_outline_rounded,
-                          color: FlutterFlowTheme.of(context).tertiary,
-                          size: 24.0,
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Gardener\'s Tip',
-                                style: FlutterFlowTheme.of(context)
-                                    .titleSmall
-                                    .override(
-                                      font: GoogleFonts.poppins(
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .titleSmall
-                                            .fontStyle,
-                                      ),
-                                      color:
-                                          FlutterFlowTheme.of(context).tertiary,
-                                      letterSpacing: 0.0,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.lightbulb_outline_rounded,
+                        color: FlutterFlowTheme.of(context).tertiary,
+                        size: 24.0,
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Gardener\'s Tip',
+                              style: FlutterFlowTheme.of(context)
+                                  .titleSmall
+                                  .override(
+                                    font: GoogleFonts.poppins(
                                       fontWeight: FontWeight.bold,
                                       fontStyle: FlutterFlowTheme.of(context)
                                           .titleSmall
                                           .fontStyle,
                                     ),
-                              ),
-                              Text(
-                                'Companion planting works by creating a mini-ecosystem. Some plants fix nitrogen, while others act as \'trap crops\' to lure pests away from your main harvest.',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodySmall
-                                    .override(
-                                      font: GoogleFonts.poppins(
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .bodySmall
-                                            .fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .bodySmall
-                                            .fontStyle,
-                                      ),
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      letterSpacing: 0.0,
+                                    color:
+                                        FlutterFlowTheme.of(context).tertiary,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .titleSmall
+                                        .fontStyle,
+                                  ),
+                            ),
+                            Text(
+                              'Companion planting works by creating a mini-ecosystem. Some plants fix nitrogen, while others act as \'trap crops\' to lure pests away from your main harvest.',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodySmall
+                                  .override(
+                                    font: GoogleFonts.poppins(
                                       fontWeight: FlutterFlowTheme.of(context)
                                           .bodySmall
                                           .fontWeight,
                                       fontStyle: FlutterFlowTheme.of(context)
                                           .bodySmall
                                           .fontStyle,
-                                      lineHeight: 1.4,
                                     ),
-                              ),
-                            ].divide(SizedBox(height: 4.0)),
-                          ),
+                                    color:
+                                        FlutterFlowTheme.of(context).primaryText,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FlutterFlowTheme.of(context)
+                                        .bodySmall
+                                        .fontWeight,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .bodySmall
+                                        .fontStyle,
+                                    lineHeight: 1.4,
+                                  ),
+                            ),
+                          ].divide(SizedBox(height: 4.0)),
                         ),
-                      ].divide(SizedBox(width: 16.0)),
-                    ),
+                      ),
+                    ].divide(SizedBox(width: 16.0)),
                   ),
                 ),
               ),

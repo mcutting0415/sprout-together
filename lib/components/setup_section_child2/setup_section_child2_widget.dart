@@ -44,6 +44,58 @@ class _SetupSectionChild2WidgetState extends State<SetupSectionChild2Widget> {
     super.dispose();
   }
 
+  /// Maps a 5-digit US zip code to an approximate USDA hardiness zone string.
+  String _zoneFromZip(String zip) {
+    final n = int.tryParse(zip.padLeft(5, '0').substring(0, 5)) ?? -1;
+    if (n < 0) return 'Zone 6';
+    if (n < 1000) return 'Zone 10-11'; // 00xxx = PR
+    if (n < 3000) return 'Zone 6'; // MA, RI
+    if (n < 4000) return 'Zone 5'; // NH
+    if (n < 6000) return 'Zone 5'; // ME, VT
+    if (n < 7000) return 'Zone 6'; // CT
+    if (n < 9000) return 'Zone 7a'; // NJ
+    if (n < 10000) return 'Zone 6'; // misc
+    if (n < 15000) return 'Zone 6'; // NY
+    if (n < 20000) return 'Zone 6'; // PA
+    if (n < 25000) return 'Zone 7a'; // DC, MD, VA
+    if (n < 27000) return 'Zone 6'; // WV
+    if (n < 29000) return 'Zone 7b'; // NC
+    if (n < 32000) return 'Zone 8'; // SC, GA
+    if (n < 35000) return 'Zone 9'; // FL
+    if (n < 37000) return 'Zone 8'; // AL
+    if (n < 38000) return 'Zone 7a'; // TN
+    if (n < 40000) return 'Zone 8'; // MS
+    if (n < 43000) return 'Zone 6'; // KY
+    if (n < 46000) return 'Zone 6'; // OH
+    if (n < 48000) return 'Zone 5'; // IN
+    if (n < 50000) return 'Zone 5'; // MI
+    if (n < 53000) return 'Zone 5'; // IA
+    if (n < 55000) return 'Zone 5'; // WI
+    if (n < 57000) return 'Zone 4'; // MN
+    if (n < 58000) return 'Zone 4'; // SD
+    if (n < 59000) return 'Zone 1-3'; // ND
+    if (n < 60000) return 'Zone 4'; // MT
+    if (n < 63000) return 'Zone 5'; // IL
+    if (n < 66000) return 'Zone 6'; // MO
+    if (n < 68000) return 'Zone 6'; // KS
+    if (n < 70000) return 'Zone 5'; // NE
+    if (n < 72000) return 'Zone 9'; // LA
+    if (n < 73000) return 'Zone 7a'; // AR
+    if (n < 75000) return 'Zone 7a'; // OK
+    if (n < 80000) return 'Zone 8'; // TX
+    if (n < 82000) return 'Zone 5'; // CO
+    if (n < 83000) return 'Zone 4'; // WY
+    if (n < 84000) return 'Zone 5'; // ID
+    if (n < 85000) return 'Zone 6'; // UT
+    if (n < 87000) return 'Zone 9'; // AZ
+    if (n < 89000) return 'Zone 6'; // NM
+    if (n < 90000) return 'Zone 8'; // NV
+    if (n < 97000) return 'Zone 9'; // CA
+    if (n < 98000) return 'Zone 8'; // OR
+    if (n < 99500) return 'Zone 8'; // WA
+    return 'Zone 1-3'; // AK
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -142,6 +194,9 @@ class _SetupSectionChild2WidgetState extends State<SetupSectionChild2Widget> {
                   child: TextFormField(
                     controller: _model.textController,
                     focusNode: _model.textFieldFocusNode,
+                    onChanged: (val) {
+                      FFAppState().setupZipCode = val;
+                    },
                     onFieldSubmitted: (_) async {
                       FFAppState().setupZipCode = _model.textController.text;
                       safeSetState(() {});
@@ -230,6 +285,44 @@ class _SetupSectionChild2WidgetState extends State<SetupSectionChild2Widget> {
                       FilteringTextInputFormatter.allow(RegExp('[0-9]'))
                     ],
                   ),
+                ),
+              ),
+              SizedBox(width: 8.0),
+              ElevatedButton(
+                onPressed: () {
+                  final zip = _model.textController.text.trim();
+                  if (zip.length < 5) return;
+                  final zone = _zoneFromZip(zip);
+                  safeSetState(() {
+                    _model.dropdownValue = zone;
+                    _model.dropdownValueController.value = zone;
+                  });
+                  FFAppState().setupGardeningZone = zone;
+                  FFAppState().setupZipCode = zip;
+                  safeSetState(() {});
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: FlutterFlowTheme.of(context).primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                ),
+                child: Text(
+                  'Auto-detect',
+                  style: FlutterFlowTheme.of(context).bodySmall.override(
+                        font: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontStyle: FlutterFlowTheme.of(context)
+                              .bodySmall
+                              .fontStyle,
+                        ),
+                        color: Colors.white,
+                        letterSpacing: 0.0,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
               ),
             ],
