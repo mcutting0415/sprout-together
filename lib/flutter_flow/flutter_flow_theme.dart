@@ -6,12 +6,64 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const kThemeModeKey = '__theme_mode__';
+const kColorThemeKey = '__color_theme__';
 
 SharedPreferences? _prefs;
 
+// Global color theme — updated on every setColorThemeSetting call
+String _currentColorTheme = 'Sprout Green';
+
+Color _primaryColorForTheme() {
+  switch (_currentColorTheme) {
+    case 'Earth Green':
+      return const Color(0xFF8B6914);
+    case 'Ocean Blue':
+      return const Color(0xFF1A6B8A);
+    case 'Lavender':
+      return const Color(0xFF7B5EA7);
+    default:
+      return const Color(0xFF6F8F72); // Sprout Green
+  }
+}
+
+Color _primaryColorForThemeDark() {
+  switch (_currentColorTheme) {
+    case 'Earth Green':
+      return const Color(0xFFB8940E);
+    case 'Ocean Blue':
+      return const Color(0xFF2AA8CC);
+    case 'Lavender':
+      return const Color(0xFF9B7FD4);
+    default:
+      return const Color(0xFF7BA05B); // Sprout Green
+  }
+}
+
+Color _alternateColorForTheme() {
+  switch (_currentColorTheme) {
+    case 'Earth Green':
+      return const Color(0xFFE6DCC8);
+    case 'Ocean Blue':
+      return const Color(0xFFD0E8F0);
+    case 'Lavender':
+      return const Color(0xFFE6DCF0);
+    default:
+      return const Color(0xFFDDE6D5); // Sprout Green
+  }
+}
+
 abstract class FlutterFlowTheme {
-  static Future initialize() async =>
-      _prefs = await SharedPreferences.getInstance();
+  static Future initialize() async {
+    _prefs = await SharedPreferences.getInstance();
+    _currentColorTheme = _prefs?.getString(kColorThemeKey) ?? 'Sprout Green';
+  }
+
+  static void saveColorTheme(String theme) {
+    _currentColorTheme = theme;
+    _prefs?.setString(kColorThemeKey, theme);
+  }
+
+  static String get colorTheme => _currentColorTheme;
 
   static ThemeMode get themeMode {
     final darkMode = _prefs?.getBool(kThemeModeKey);
@@ -149,10 +201,10 @@ class LightModeTheme extends FlutterFlowTheme {
   @Deprecated('Use tertiary instead')
   Color get tertiaryColor => tertiary;
 
-  late Color primary = const Color(0xFF6F8F72);
+  late Color primary = _primaryColorForTheme();
   late Color secondary = const Color(0xFFDADEE4);
   late Color tertiary = const Color(0xFFE0A43A);
-  late Color alternate = const Color(0xFFDDE6D5);
+  late Color alternate = _alternateColorForTheme();
   late Color primaryText = const Color(0xFF3E4B3C);
   late Color secondaryText = const Color(0xFF6B7280);
   late Color primaryBackground = const Color(0xFFF6F4EC);
@@ -340,7 +392,7 @@ class DarkModeTheme extends FlutterFlowTheme {
   @Deprecated('Use tertiary instead')
   Color get tertiaryColor => tertiary;
 
-  late Color primary = const Color(0xFF7BA05B);
+  late Color primary = _primaryColorForThemeDark();
   late Color secondary = const Color(0xFF39D2C0);
   late Color tertiary = const Color(0xFFE0A43A);
   late Color alternate = const Color(0xFF2A342C);

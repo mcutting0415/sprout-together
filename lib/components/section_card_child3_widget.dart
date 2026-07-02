@@ -347,7 +347,7 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
               Padding(
                 padding: EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 0.0),
                 child: Text(
-                  'Appearence',
+                  'Appearance',
                   style: FlutterFlowTheme.of(context).bodyMedium.override(
                         font: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
@@ -374,7 +374,7 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
               FlutterFlowDropDown<String>(
                 controller: _model.dropDownValueController2 ??=
                     FormFieldController<String>(
-                  _model.dropDownValue2 ??= '',
+                  _model.dropDownValue2 ??= FlutterFlowTheme.colorTheme,
                 ),
                 options: List<String>.from(
                     ['Sprout Green', 'Earth Green', 'Ocean Blue', 'Lavender']),
@@ -384,8 +384,16 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
                   'Ocean Blue',
                   'Lavender'
                 ],
-                onChanged: (val) =>
-                    safeSetState(() => _model.dropDownValue2 = val),
+                onChanged: (val) {
+                  safeSetState(() => _model.dropDownValue2 = val);
+                  if (val != null) {
+                    FlutterFlowTheme.saveColorTheme(val);
+                    final isDark =
+                        Theme.of(context).brightness == Brightness.dark;
+                    setDarkModeSetting(
+                        context, isDark ? ThemeMode.dark : ThemeMode.light);
+                  }
+                },
                 width: 200.0,
                 height: 40.0,
                 textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -431,10 +439,16 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
                 child: Material(
                   color: Colors.transparent,
                   child: SwitchListTile.adaptive(
-                    value: _model.switchListTileValue ??= false,
+                    value: _model.switchListTileValue ??=
+                        (Theme.of(context).brightness == Brightness.dark),
                     onChanged: (newValue) async {
                       safeSetState(
                           () => _model.switchListTileValue = newValue!);
+                      setDarkModeSetting(
+                          context,
+                          newValue!
+                              ? ThemeMode.dark
+                              : ThemeMode.light);
                     },
                     title: Text(
                       'Dark Mode',
@@ -454,26 +468,6 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
                                 .fontWeight,
                             fontStyle: FlutterFlowTheme.of(context)
                                 .titleLarge
-                                .fontStyle,
-                          ),
-                    ),
-                    subtitle: Text(
-                      'Coming soon',
-                      style: FlutterFlowTheme.of(context).labelMedium.override(
-                            font: GoogleFonts.poppins(
-                              fontWeight: FlutterFlowTheme.of(context)
-                                  .labelMedium
-                                  .fontWeight,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .labelMedium
-                                  .fontStyle,
-                            ),
-                            letterSpacing: 0.0,
-                            fontWeight: FlutterFlowTheme.of(context)
-                                .labelMedium
-                                .fontWeight,
-                            fontStyle: FlutterFlowTheme.of(context)
-                                .labelMedium
                                 .fontStyle,
                           ),
                     ),
