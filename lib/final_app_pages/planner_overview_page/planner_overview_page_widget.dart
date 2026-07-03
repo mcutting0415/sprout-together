@@ -607,7 +607,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           width: double.infinity,
                           height: 60.0,
                           decoration: BoxDecoration(
-                            color: Color(0xFFEEF5E8),
+                            color: Color(0xFF7BA05B).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(18.0),
                           ),
                           child: Row(
@@ -665,7 +665,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           width: double.infinity,
                           height: 60.0,
                           decoration: BoxDecoration(
-                            color: Color(0xFFFFF1F0),
+                            color: Color(0xFFD9534F).withOpacity(0.12),
                             borderRadius: BorderRadius.circular(18.0),
                           ),
                           child: Row(
@@ -716,7 +716,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           width: double.infinity,
                           height: 60.0,
                           decoration: BoxDecoration(
-                            color: Color(0xFFE8F4F8),
+                            color: Color(0xFF4A90A4).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(18.0),
                           ),
                           child: Row(
@@ -767,7 +767,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           width: double.infinity,
                           height: 60.0,
                           decoration: BoxDecoration(
-                            color: Color(0xFFFFF6E5),
+                            color: Color(0xFFE0A43A).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(18.0),
                           ),
                           child: Row(

@@ -69,7 +69,7 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
             ),
             shape: BoxShape.rectangle,
             border: Border.all(
-              color: FlutterFlowTheme.of(context).primaryText,
+              color: FlutterFlowTheme.of(context).alternate,
             ),
           ),
           child: Align(
@@ -81,10 +81,10 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                   child: FlutterFlowIconButton(
                     borderRadius: 8.0,
                     buttonSize: 48.0,
-                    fillColor: Colors.white,
+                    fillColor: FlutterFlowTheme.of(context).primaryBackground,
                     icon: Icon(
                       Icons.menu,
-                      color: Color(0xFF2E4A2E),
+                      color: FlutterFlowTheme.of(context).primary,
                       size: 24.0,
                     ),
                     onPressed: () async {

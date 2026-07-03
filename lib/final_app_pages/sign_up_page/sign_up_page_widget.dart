@@ -125,7 +125,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                             .bodyMedium
                                             .fontStyle,
                                       ),
-                                      color: Color(0xFF3E4B3C),
+                                      color: FlutterFlowTheme.of(context).primaryText,
                                       fontSize: 20.0,
                                       letterSpacing: 0.0,
                                       fontWeight: FontWeight.w600,
@@ -152,7 +152,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                             .bodyMedium
                                             .fontStyle,
                                       ),
-                                      color: Color(0xFF6B7280),
+                                      color: FlutterFlowTheme.of(context).secondaryText,
                                       letterSpacing: 0.0,
                                       fontWeight: FlutterFlowTheme.of(context)
                                           .bodyMedium
@@ -1079,7 +1079,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                           .bodyMedium
                                           .fontStyle,
                                     ),
-                                    color: Color(0xFF6F8F72),
+                                    color: FlutterFlowTheme.of(context).primary,
                                     letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
                                     fontStyle: FlutterFlowTheme.of(context)

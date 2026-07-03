@@ -47,7 +47,7 @@ class _HelpPageWidgetState extends State<HelpPageWidget> {
       },
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: Color(0xFFF6F4EC),
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         body: SafeArea(
           top: true,
           child: Column(
@@ -152,7 +152,7 @@ class _HelpPageWidgetState extends State<HelpPageWidget> {
                                             .bodyMedium
                                             .fontStyle,
                                       ),
-                                      color: Color(0xFF6B7280),
+                                      color: FlutterFlowTheme.of(context).secondaryText,
                                       letterSpacing: 0.0,
                                       fontWeight: FlutterFlowTheme.of(context)
                                           .bodyMedium

@@ -58,7 +58,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
       },
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: Color(0xFFF6F4EC),
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         body: SafeArea(
           top: true,
           child: Column(
@@ -162,7 +162,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                   .bodyMedium
                                                   .fontStyle,
                                         ),
-                                        color: Color(0xFF6B7280),
+                                        color: FlutterFlowTheme.of(context).secondaryText,
                                         letterSpacing: 0.0,
                                         fontWeight: FlutterFlowTheme.of(context)
                                             .bodyMedium
@@ -283,7 +283,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                           16.0),
                                                 ),
                                                 filled: true,
-                                                fillColor: Color(0xFFF6F4EC),
+                                                fillColor: FlutterFlowTheme.of(context).secondaryBackground,
                                               ),
                                               style:
                                                   FlutterFlowTheme.of(context)
@@ -434,7 +434,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                           16.0),
                                                 ),
                                                 filled: true,
-                                                fillColor: Color(0xFFF6F4EC),
+                                                fillColor: FlutterFlowTheme.of(context).secondaryBackground,
                                                 suffixIcon: InkWell(
                                                   onTap: () async {
                                                     safeSetState(() => _model
@@ -609,7 +609,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                     .bodySmall
                                     .fontStyle,
                               ),
-                              color: Color(0xFF6F7280),
+                              color: FlutterFlowTheme.of(context).secondaryText,
                               fontSize: 13.0,
                               letterSpacing: 0.0,
                               fontWeight: FlutterFlowTheme.of(context)
@@ -666,7 +666,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                   .bodyMedium
                                   .fontStyle,
                             ),
-                            color: Color(0xFF6F8F72),
+                            color: FlutterFlowTheme.of(context).primary,
                             letterSpacing: 0.0,
                             fontWeight: FontWeight.w600,
                             fontStyle: FlutterFlowTheme.of(context)

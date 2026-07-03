@@ -486,7 +486,7 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                           fontStyle:
                               FlutterFlowTheme.of(context).titleSmall.fontStyle,
                         ),
-                        color: Color(0xFF2D6A4F),
+                        color: FlutterFlowTheme.of(context).primary,
                         letterSpacing: 0.0,
                         fontWeight:
                             FlutterFlowTheme.of(context).titleSmall.fontWeight,
@@ -495,7 +495,7 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                       ),
                   elevation: 0.0,
                   borderSide: BorderSide(
-                    color: Color(0xFF2D6A4F),
+                    color: FlutterFlowTheme.of(context).primary,
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(12.0),
@@ -537,7 +537,7 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                   height: 48.0,
                   padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                   iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                  color: Color(0xFF2D6A4F),
+                  color: FlutterFlowTheme.of(context).primary,
                   textStyle: FlutterFlowTheme.of(context).titleSmall.override(
                         font: GoogleFonts.poppins(
                           fontWeight:

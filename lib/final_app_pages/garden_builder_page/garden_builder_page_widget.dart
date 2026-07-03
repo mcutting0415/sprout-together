@@ -78,7 +78,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
         // Customize what your widget looks like when it's loading.
         if (!snapshot.hasData) {
           return Scaffold(
-            backgroundColor: Color(0xFFF8F7F2),
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
             body: Center(
               child: SizedBox(
                 width: 50.0,
@@ -106,7 +106,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
           },
           child: Scaffold(
             key: scaffoldKey,
-            backgroundColor: Color(0xFFF8F7F2),
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
             body: Stack(
               children: [
                 SingleChildScrollView(
@@ -1049,7 +1049,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                       ),
                                       Icon(
                                         Icons.add_circle_outline_rounded,
-                                        color: Color(0xFF5E8B5A),
+                                        color: FlutterFlowTheme.of(context).primary,
                                         size: 24.0,
                                       ),
                                     ].divide(SizedBox(width: 16.0)),

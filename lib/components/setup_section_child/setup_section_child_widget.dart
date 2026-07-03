@@ -126,7 +126,7 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                 else
                   Icon(
                     Icons.add_a_photo_outlined,
-                    color: Color(0xFF6F8F72),
+                    color: FlutterFlowTheme.of(context).primary,
                     size: 36.0,
                   ),
                 Text(
@@ -144,7 +144,7 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                           fontStyle:
                               FlutterFlowTheme.of(context).bodyMedium.fontStyle,
                         ),
-                        color: Color(0xFF6B7280),
+                        color: FlutterFlowTheme.of(context).secondaryText,
                         letterSpacing: 0.0,
                         fontWeight:
                             FlutterFlowTheme.of(context).bodyMedium.fontWeight,

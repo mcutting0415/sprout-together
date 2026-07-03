@@ -416,7 +416,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                                                                   .fontStyle,
                                                         ),
                                                         color:
-                                                            Color(0xFF90939C),
+                                                            FlutterFlowTheme.of(context).secondaryText,
                                                         letterSpacing: 0.0,
                                                         fontWeight:
                                                             FlutterFlowTheme.of(
