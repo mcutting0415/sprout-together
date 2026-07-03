@@ -343,7 +343,7 @@ String _getStoragePath(
   final timestamp = DateTime.now().microsecondsSinceEpoch;
   // Workaround fixed by https://github.com/flutter/plugins/pull/3685
   // (not yet in stable).
-  final ext = isVideo ? 'mp4' : filePath.split('.').last;
+  final ext = isVideo ? 'mp4' : filePath.split('.').last.toLowerCase();
   final indexStr = index != null ? '_$index' : '';
   return '$pathPrefix/$timestamp$indexStr.$ext';
 }
