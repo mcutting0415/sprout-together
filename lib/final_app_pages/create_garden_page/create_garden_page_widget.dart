@@ -1321,6 +1321,13 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                     ),
                     FFButtonWidget(
                       onPressed: () async {
+                        if (_model.textController1.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Please enter a garden name.')),
+                          );
+                          return;
+                        }
+                        try {
                         _model.newGarden = await GardensTable().insert({
                           'garden_name': _model.textController1.text,
                           'garden_type': _model.choiceChipsValue1,
@@ -1464,6 +1471,13 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                         );
 
                         safeSetState(() {});
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Could not create garden: $e')),
+                            );
+                          }
+                        }
                       },
                       text: 'Create Garden',
                       icon: Icon(

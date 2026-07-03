@@ -75,7 +75,7 @@ class _SectionCardChild6WidgetState extends State<SectionCardChild6Widget> {
             title: 'Frequently Asked Questions',
             subtitle: 'Common questions answered',
             isLast: false,
-            onTap: () => context.pushNamed(HelpPageWidget.routeName),
+            onTap: () => context.pushNamed(CommonQuestionsPageWidget.routeName),
           ),
         ),
         wrapWithModel(

@@ -1,3 +1,4 @@
+import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -62,7 +63,7 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
             onTap: () async {
               final selectedMedia = await selectMediaWithSourceBottomSheet(
                 context: context,
-                storageFolderPath: 'profiles/',
+                storageFolderPath: 'profiles/$currentUserUid/',
                 allowPhoto: true,
               );
               if (selectedMedia != null &&
@@ -88,6 +89,16 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                     bucketName: 'profile-photo',
                     selectedFiles: selectedMedia,
                   );
+                } catch (e) {
+                  safeSetState(() => _model.isDataUploading_uploadDataWq4 = false);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(
+                              'Failed to upload photo. Please try again.')),
+                    );
+                  }
+                  return;
                 } finally {
                   _model.isDataUploading_uploadDataWq4 = false;
                 }

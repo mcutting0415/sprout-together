@@ -7,6 +7,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'section_card_child7_model.dart';
 export 'section_card_child7_model.dart';
 
@@ -107,6 +108,10 @@ class _SectionCardChild7WidgetState extends State<SectionCardChild7Widget> {
                       title: 'Privacy Policy',
                       subtitle: '',
                       isLast: false,
+                      onTap: () async {
+                        final uri = Uri.parse('https://sprouttogether.app/privacy-policy');
+                        if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      },
                     ),
                   ),
                 ),
@@ -124,6 +129,10 @@ class _SectionCardChild7WidgetState extends State<SectionCardChild7Widget> {
                       title: 'Terms of Service',
                       subtitle: '',
                       isLast: true,
+                      onTap: () async {
+                        final uri = Uri.parse('https://sprouttogether.app/terms-of-service');
+                        if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      },
                     ),
                   ),
                 ),

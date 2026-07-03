@@ -136,7 +136,7 @@ class _PrivacyPageTogglesWidgetState extends State<PrivacyPageTogglesWidget> {
                                 .titleLarge
                                 .fontStyle,
                           ),
-                          fontSize: 18.0,
+                          fontSize: 15.0,
                           letterSpacing: 0.0,
                           fontWeight: FlutterFlowTheme.of(context)
                               .titleLarge

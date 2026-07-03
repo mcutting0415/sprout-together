@@ -32,5 +32,7 @@ export '/final_app_pages/previous_gardens_page2/previous_gardens_page2_widget.da
 export '/final_app_pages/password_reset_page/password_reset_page_widget.dart'
     show PasswordResetPageWidget;
 export '/final_app_pages/help_page/help_page_widget.dart' show HelpPageWidget;
+export '/final_app_pages/common_questions_page/common_questions_page_widget.dart'
+    show CommonQuestionsPageWidget;
 export '/final_app_pages/update_password_page/update_password_page_widget.dart'
     show UpdatePasswordPageWidget;

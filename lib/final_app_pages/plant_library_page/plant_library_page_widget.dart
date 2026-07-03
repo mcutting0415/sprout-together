@@ -219,6 +219,35 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
                 },
               ),
               builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 48.0, horizontal: 24.0),
+                    child: Column(
+                      children: [
+                        Icon(Icons.error_outline_rounded,
+                            color: FlutterFlowTheme.of(context).error, size: 48.0),
+                        SizedBox(height: 12.0),
+                        Text(
+                          'Could not load plants',
+                          style: FlutterFlowTheme.of(context).titleMedium.override(
+                                font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                letterSpacing: 0.0,
+                              ),
+                        ),
+                        SizedBox(height: 6.0),
+                        Text(
+                          'Please check your connection and try again.',
+                          textAlign: TextAlign.center,
+                          style: FlutterFlowTheme.of(context).labelMedium.override(
+                                font: GoogleFonts.poppins(
+                                    fontWeight: FlutterFlowTheme.of(context).labelMedium.fontWeight),
+                                letterSpacing: 0.0,
+                              ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
                 if (!snapshot.hasData) {
                   return Padding(
                     padding: EdgeInsets.all(40.0),

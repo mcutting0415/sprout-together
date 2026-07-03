@@ -217,6 +217,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => HelpPageWidget(),
         ),
         FFRoute(
+          name: CommonQuestionsPageWidget.routeName,
+          path: CommonQuestionsPageWidget.routePath,
+          builder: (context, params) => CommonQuestionsPageWidget(),
+        ),
+        FFRoute(
           name: UpdatePasswordPageWidget.routeName,
           path: UpdatePasswordPageWidget.routePath,
           builder: (context, params) => UpdatePasswordPageWidget(),

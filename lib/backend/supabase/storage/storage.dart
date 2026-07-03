@@ -19,10 +19,21 @@ Future<String> uploadSupabaseStorageFile({
   required SelectedFile selectedFile,
 }) async {
   final storageBucket = SupaFlow.client.storage.from(bucketName);
+  final ext = selectedFile.storagePath.split('.').last.toLowerCase();
+  final contentType = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+    'heic': 'image/heic',
+    'heif': 'image/heif',
+  }[ext] ?? 'image/jpeg';
   await storageBucket.uploadBinary(
     selectedFile.storagePath,
     selectedFile.bytes,
-    fileOptions: FileOptions(contentType: null),
+    fileOptions: FileOptions(contentType: contentType),
+    retryAttempts: 3,
   );
   return storageBucket.getPublicUrl(selectedFile.storagePath);
 }
