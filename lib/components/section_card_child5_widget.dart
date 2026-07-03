@@ -56,8 +56,11 @@ class _SectionCardChild5WidgetState extends State<SectionCardChild5Widget> {
               size: 20.0,
             ),
             title: 'Export Garden Data',
-            subtitle: 'JSON/CSV format',
+            subtitle: 'Coming soon',
             isLast: false,
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Export feature coming soon!')),
+            ),
           ),
         ),
         wrapWithModel(
@@ -70,8 +73,11 @@ class _SectionCardChild5WidgetState extends State<SectionCardChild5Widget> {
               size: 20.0,
             ),
             title: 'Backup Account',
-            subtitle: 'Last sync: 2h ago',
+            subtitle: 'Coming soon',
             isLast: false,
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Backup feature coming soon!')),
+            ),
           ),
         ),
         wrapWithModel(
@@ -84,8 +90,11 @@ class _SectionCardChild5WidgetState extends State<SectionCardChild5Widget> {
               size: 20.0,
             ),
             title: 'Restore Data',
-            subtitle: '',
+            subtitle: 'Coming soon',
             isLast: true,
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Restore feature coming soon!')),
+            ),
           ),
         ),
       ],

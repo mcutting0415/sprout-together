@@ -42,6 +42,39 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
     super.dispose();
   }
 
+  Widget _buildSummaryRow(BuildContext context, String emoji, String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Text(emoji, style: TextStyle(fontSize: 14.0)),
+            SizedBox(width: 8.0),
+            Text(
+              label,
+              style: FlutterFlowTheme.of(context).bodyMedium.override(
+                    font: GoogleFonts.poppins(fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight),
+                    color: FlutterFlowTheme.of(context).secondaryText,
+                    fontSize: 13.0,
+                    letterSpacing: 0.0,
+                  ),
+            ),
+          ],
+        ),
+        Text(
+          value,
+          style: FlutterFlowTheme.of(context).bodyMedium.override(
+                font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                color: FlutterFlowTheme.of(context).primaryText,
+                fontSize: 13.0,
+                letterSpacing: 0.0,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
@@ -400,73 +433,55 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                   ),
                 ),
               ),
-              Align(
-                alignment: AlignmentDirectional(0.0, 0.0),
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Container(
-                    width: double.infinity,
-                    height: 180.0,
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).secondaryBackground,
-                      borderRadius: BorderRadius.circular(16.0),
-                      border: Border.all(
-                        color: FlutterFlowTheme.of(context).primaryText,
-                      ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                    borderRadius: BorderRadius.circular(20.0),
+                    border: Border.all(
+                      color: FlutterFlowTheme.of(context).alternate,
+                      width: 1.5,
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Align(
-                            alignment: AlignmentDirectional(0.0, -1.0),
-                            child: Text(
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 8.0,
+                        color: Color(0x0D000000),
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.eco_rounded, color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                            SizedBox(width: 8.0),
+                            Text(
                               'Garden Summary',
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w600,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .fontStyle,
-                                    ),
-                                    fontSize: 18.0,
+                              style: FlutterFlowTheme.of(context).titleMedium.override(
+                                    font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                    color: FlutterFlowTheme.of(context).primaryText,
                                     letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                    decoration: TextDecoration.underline,
                                   ),
                             ),
-                          ),
-                          Text(
-                            '🌱 Plants Selected: 3\n☀️ Sun Requirements: Full Sun\n💧 Watering Schedule: Every 2–3 Days\n🧺 First Harvest: 60–80 Days',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  font: GoogleFonts.poppins(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                  ),
-                                  fontSize: 16.0,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontStyle,
-                                ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                        SizedBox(height: 12.0),
+                        _buildSummaryRow(context, '🌱', 'Plants Selected', '3'),
+                        SizedBox(height: 8.0),
+                        _buildSummaryRow(context, '☀️', 'Sun Requirements', 'Full Sun'),
+                        SizedBox(height: 8.0),
+                        _buildSummaryRow(context, '💧', 'Watering Schedule', 'Every 2–3 Days'),
+                        SizedBox(height: 8.0),
+                        _buildSummaryRow(context, '🧺', 'First Harvest', '60–80 Days'),
+                      ],
                     ),
                   ),
                 ),
@@ -538,53 +553,54 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                 child: Container(
                   width: double.infinity,
-                  height: 425.0,
                   decoration: BoxDecoration(
                     color: FlutterFlowTheme.of(context).secondaryBackground,
                     boxShadow: [
                       BoxShadow(
                         blurRadius: 10.0,
-                        color: Color(0x33000000),
-                        offset: Offset(
-                          0.0,
-                          2.0,
-                        ),
+                        color: Color(0x1A000000),
+                        offset: Offset(0.0, 2.0),
                       )
                     ],
-                    borderRadius: BorderRadius.circular(16.0),
+                    borderRadius: BorderRadius.circular(20.0),
                     border: Border.all(
-                      color: FlutterFlowTheme.of(context).primaryText,
+                      color: FlutterFlowTheme.of(context).alternate,
+                      width: 1.5,
                     ),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
+                  child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Align(
-                        alignment: AlignmentDirectional(0.0, 0.0),
-                        child: Text(
+                      Row(
+                        children: [
+                          Icon(Icons.lightbulb_outline_rounded, color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                          SizedBox(width: 8.0),
+                          Text(
                           'Garden Insights',
-                          style:
-                              FlutterFlowTheme.of(context).bodyMedium.override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w600,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .fontStyle,
-                                    ),
+                          style: FlutterFlowTheme.of(context).titleMedium.override(
+                                    font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                                     color: FlutterFlowTheme.of(context).primaryText,
-                                    fontSize: 18.0,
                                     letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                    decoration: TextDecoration.underline,
                                   ),
                         ),
+                        ],
                       ),
+                      SizedBox(height: 4.0),
+                      Text(
+                        'Smart tips based on your plant selection — companion benefits, warnings, and care reminders.',
+                        style: FlutterFlowTheme.of(context).labelMedium.override(
+                              font: GoogleFonts.poppins(fontWeight: FlutterFlowTheme.of(context).labelMedium.fontWeight),
+                              letterSpacing: 0.0,
+                            ),
+                      ),
+                      SizedBox(height: 16.0),
                       Padding(
                         padding: EdgeInsets.all(14.0),
                         child: Container(
@@ -796,83 +812,66 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           ),
                         ),
                       ),
-                      FFButtonWidget(
-                        onPressed: () {
-                          context.pushNamed(CurrentGardens3Widget.routeName);
-                        },
-                        text: 'View Full Garden Analysis',
-                        options: FFButtonOptions(
-                          height: 40.0,
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              16.0, 0.0, 16.0, 0.0),
-                          iconPadding: EdgeInsetsDirectional.fromSTEB(
-                              0.0, 0.0, 0.0, 0.0),
-                          color: FlutterFlowTheme.of(context).primary,
-                          textStyle:
-                              FlutterFlowTheme.of(context).titleSmall.override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .titleSmall
-                                          .fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .titleSmall
-                                          .fontStyle,
-                                    ),
-                                    color: Colors.white,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontStyle,
-                                  ),
-                          elevation: 0.0,
-                          borderRadius: BorderRadius.circular(18.0),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: FFButtonWidget(
+                          onPressed: () {
+                            context.pushNamed(CurrentGardens3Widget.routeName);
+                          },
+                          text: 'View Full Garden Analysis',
+                          options: FFButtonOptions(
+                            height: 40.0,
+                            padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                            iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                            color: FlutterFlowTheme.of(context).primary,
+                            textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                                  font: GoogleFonts.poppins(fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight),
+                                  color: Colors.white,
+                                  letterSpacing: 0.0,
+                                ),
+                            elevation: 0.0,
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
                         ),
                       ),
                     ],
                   ),
+                  ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '📅 See upcoming harvests in Calendar →',
-                      style: FlutterFlowTheme.of(context).bodyMedium.override(
-                            font: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .fontStyle,
-                            ),
-                            color: Color(0xFF3E4B3C),
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .fontStyle,
-                          ),
-                    ),
-                    FlutterFlowIconButton(
-                      borderColor: FlutterFlowTheme.of(context).secondaryText,
-                      borderRadius: 8.0,
-                      buttonSize: 45.0,
-                      fillColor: FlutterFlowTheme.of(context).customColor3,
-                      icon: Icon(
-                        Icons.calendar_month,
-                        color: FlutterFlowTheme.of(context).warning,
-                        size: 24.0,
+              // Calendar CTA — full width button to avoid cutoff
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 24.0),
+                  child: InkWell(
+                    onTap: () => context.pushNamed(GrowingCalendarWidget.routeName),
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+                      decoration: BoxDecoration(
+                        color: FlutterFlowTheme.of(context).primary,
+                        borderRadius: BorderRadius.circular(16.0),
                       ),
-                      onPressed: () async {
-                        context.pushNamed(GrowingCalendarWidget.routeName);
-                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.calendar_month_rounded, color: Colors.white, size: 22.0),
+                          SizedBox(width: 10.0),
+                          Text(
+                            'See Upcoming Harvests in Calendar',
+                            style: FlutterFlowTheme.of(context).titleSmall.override(
+                                  font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                  color: Colors.white,
+                                  letterSpacing: 0.0,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ].divide(SizedBox(width: 10.0)),
+                  ),
                 ),
               ),
             ],

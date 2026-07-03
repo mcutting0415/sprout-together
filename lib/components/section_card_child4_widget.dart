@@ -2,6 +2,7 @@ import '/components/setting_row_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/index.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -55,9 +56,10 @@ class _SectionCardChild4WidgetState extends State<SectionCardChild4Widget> {
               color: FlutterFlowTheme.of(context).primary,
               size: 20.0,
             ),
-            title: 'Saved Gardens',
-            subtitle: '',
+            title: 'Current Gardens',
+            subtitle: 'View and manage active gardens',
             isLast: false,
+            onTap: () => context.pushNamed(CurrentGardens3Widget.routeName),
           ),
         ),
         wrapWithModel(
@@ -69,9 +71,10 @@ class _SectionCardChild4WidgetState extends State<SectionCardChild4Widget> {
               color: FlutterFlowTheme.of(context).primary,
               size: 20.0,
             ),
-            title: 'Archived Gardens',
-            subtitle: 'Past seasons',
+            title: 'Past Gardens',
+            subtitle: 'Browse previous seasons',
             isLast: false,
+            onTap: () => context.pushNamed(PreviousGardensPage2Widget.routeName),
           ),
         ),
         wrapWithModel(
@@ -84,8 +87,11 @@ class _SectionCardChild4WidgetState extends State<SectionCardChild4Widget> {
               size: 20.0,
             ),
             title: 'Garden Templates',
-            subtitle: 'Pro layouts',
+            subtitle: 'Coming soon',
             isLast: true,
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Garden Templates coming soon!')),
+            ),
           ),
         ),
       ],

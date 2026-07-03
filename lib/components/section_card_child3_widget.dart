@@ -34,8 +34,25 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
     super.initState();
     _model = createModel(context, () => SectionCardChild3Model());
 
-    _model.textController ??= TextEditingController();
+    // Pre-fill zip code and zone from account setup
+    final appState = FFAppState();
+    _model.textController ??= TextEditingController(
+      text: appState.setupZipCode.isNotEmpty ? appState.setupZipCode : '',
+    );
     _model.textFieldFocusNode ??= FocusNode();
+
+    // Pre-select zone if set during account setup
+    if (appState.setupGardeningZone.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          safeSetState(() {
+            _model.dropDownValue1 = appState.setupGardeningZone;
+            _model.dropDownValueController1 =
+                FormFieldController<String>(appState.setupGardeningZone);
+          });
+        }
+      });
+    }
   }
 
   @override

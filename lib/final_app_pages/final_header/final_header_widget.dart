@@ -318,8 +318,8 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                                       .headlineSmall
                                       .fontStyle,
                                 ),
-                                color: Color(0xFF2E4A2E),
-                                fontSize: 28.0,
+                                color: FlutterFlowTheme.of(context).primaryText,
+                                fontSize: 26.0,
                                 letterSpacing: 0.0,
                                 fontWeight: FontWeight.bold,
                                 fontStyle: FlutterFlowTheme.of(context)
@@ -329,6 +329,22 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                     ),
                   ),
                 ),
+                // Back button — only shown when there's a page to go back to
+                if (Navigator.of(context).canPop())
+                  Align(
+                    alignment: AlignmentDirectional(0.88, 0.73),
+                    child: FlutterFlowIconButton(
+                      borderRadius: 8.0,
+                      buttonSize: 40.0,
+                      fillColor: FlutterFlowTheme.of(context).primaryBackground,
+                      icon: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: FlutterFlowTheme.of(context).primary,
+                        size: 18.0,
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
               ],
             ),
           ),

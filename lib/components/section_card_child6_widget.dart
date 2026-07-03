@@ -2,9 +2,11 @@ import '/components/setting_row_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/index.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'section_card_child6_model.dart';
 export 'section_card_child6_model.dart';
@@ -56,8 +58,9 @@ class _SectionCardChild6WidgetState extends State<SectionCardChild6Widget> {
               size: 20.0,
             ),
             title: 'Help Center',
-            subtitle: '',
+            subtitle: 'Tips and how-to guides',
             isLast: false,
+            onTap: () => context.pushNamed(HelpPageWidget.routeName),
           ),
         ),
         wrapWithModel(
@@ -70,8 +73,9 @@ class _SectionCardChild6WidgetState extends State<SectionCardChild6Widget> {
               size: 20.0,
             ),
             title: 'Frequently Asked Questions',
-            subtitle: '',
+            subtitle: 'Common questions answered',
             isLast: false,
+            onTap: () => context.pushNamed(HelpPageWidget.routeName),
           ),
         ),
         wrapWithModel(
@@ -84,8 +88,12 @@ class _SectionCardChild6WidgetState extends State<SectionCardChild6Widget> {
               size: 20.0,
             ),
             title: 'Contact Support',
-            subtitle: '',
+            subtitle: 'Email us anytime',
             isLast: false,
+            onTap: () async {
+              final uri = Uri.parse('mailto:support@sprouttogether.app?subject=Support%20Request');
+              if (await canLaunchUrl(uri)) await launchUrl(uri);
+            },
           ),
         ),
         wrapWithModel(
@@ -98,8 +106,12 @@ class _SectionCardChild6WidgetState extends State<SectionCardChild6Widget> {
               size: 20.0,
             ),
             title: 'Submit Feedback',
-            subtitle: '',
+            subtitle: 'Help us improve',
             isLast: true,
+            onTap: () async {
+              final uri = Uri.parse('mailto:feedback@sprouttogether.app?subject=App%20Feedback');
+              if (await canLaunchUrl(uri)) await launchUrl(uri);
+            },
           ),
         ),
       ],

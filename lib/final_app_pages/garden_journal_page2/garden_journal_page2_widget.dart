@@ -14,6 +14,219 @@ import 'package:provider/provider.dart';
 import 'garden_journal_page2_model.dart';
 export 'garden_journal_page2_model.dart';
 
+// Helper to show the "add entry" bottom sheet
+Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) async {
+  final titleController = TextEditingController();
+  final notesController = TextEditingController();
+  String? selectedGardenId;
+  List<GardensRow> gardens = [];
+  bool isSaving = false;
+
+  try {
+    gardens = await GardensTable().queryRows(
+      queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+    );
+  } catch (_) {}
+
+  if (!context.mounted) return;
+
+  await showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (ctx) {
+      return StatefulBuilder(builder: (ctx, setModalState) {
+        return Padding(
+          padding: MediaQuery.viewInsetsOf(ctx),
+          child: Container(
+            decoration: BoxDecoration(
+              color: FlutterFlowTheme.of(ctx).secondaryBackground,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40.0,
+                        height: 4.0,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(ctx).alternate,
+                          borderRadius: BorderRadius.circular(2.0),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    Text(
+                      'New Journal Entry',
+                      style: FlutterFlowTheme.of(ctx).titleLarge.override(
+                            font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                            letterSpacing: 0.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                    SizedBox(height: 20.0),
+                    // Title field
+                    TextFormField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        labelText: 'Entry Title',
+                        hintText: 'e.g. First tomatoes sprouting!',
+                        filled: true,
+                        fillColor: FlutterFlowTheme.of(ctx).primaryBackground,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).primary, width: 2.0),
+                        ),
+                      ),
+                      style: FlutterFlowTheme.of(ctx).bodyMedium.override(
+                            font: GoogleFonts.poppins(fontWeight: FlutterFlowTheme.of(ctx).bodyMedium.fontWeight),
+                            letterSpacing: 0.0,
+                          ),
+                    ),
+                    SizedBox(height: 12.0),
+                    // Garden picker
+                    if (gardens.isNotEmpty)
+                      DropdownButtonFormField<String>(
+                        value: selectedGardenId,
+                        hint: Text('Select a garden (optional)',
+                            style: FlutterFlowTheme.of(ctx).labelMedium),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: FlutterFlowTheme.of(ctx).primaryBackground,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                          ),
+                        ),
+                        items: gardens
+                            .where((g) => g.id != null)
+                            .map((g) => DropdownMenuItem(
+                                  value: g.id,
+                                  child: Text(g.gardenName ?? 'Garden'),
+                                ))
+                            .toList(),
+                        onChanged: (val) => setModalState(() => selectedGardenId = val),
+                      ),
+                    if (gardens.isNotEmpty) SizedBox(height: 12.0),
+                    // Notes field
+                    TextFormField(
+                      controller: notesController,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        labelText: 'Notes',
+                        hintText: 'What did you notice today?',
+                        alignLabelWithHint: true,
+                        filled: true,
+                        fillColor: FlutterFlowTheme.of(ctx).primaryBackground,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).primary, width: 2.0),
+                        ),
+                      ),
+                      style: FlutterFlowTheme.of(ctx).bodyMedium.override(
+                            font: GoogleFonts.poppins(fontWeight: FlutterFlowTheme.of(ctx).bodyMedium.fontWeight),
+                            letterSpacing: 0.0,
+                          ),
+                    ),
+                    SizedBox(height: 24.0),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: FlutterFlowTheme.of(ctx).primary),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                              padding: EdgeInsets.symmetric(vertical: 14.0),
+                            ),
+                            child: Text('Cancel',
+                                style: FlutterFlowTheme.of(ctx).titleSmall.override(
+                                      font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                      color: FlutterFlowTheme.of(ctx).primary,
+                                      letterSpacing: 0.0,
+                                    )),
+                          ),
+                        ),
+                        SizedBox(width: 12.0),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: isSaving
+                                ? null
+                                : () async {
+                                    final title = titleController.text.trim();
+                                    if (title.isEmpty) return;
+                                    setModalState(() => isSaving = true);
+                                    try {
+                                      await GardenJournalEntriesTable().insert({
+                                        'user_id': currentUserUid,
+                                        'title': title,
+                                        'entry_text': notesController.text.trim(),
+                                        'garden_id': selectedGardenId,
+                                        'entry_date': DateTime.now().toIso8601String(),
+                                      });
+                                      Navigator.pop(ctx);
+                                      onSaved();
+                                    } catch (e) {
+                                      setModalState(() => isSaving = false);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Could not save entry: $e')),
+                                      );
+                                    }
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: FlutterFlowTheme.of(ctx).primary,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                              padding: EdgeInsets.symmetric(vertical: 14.0),
+                            ),
+                            child: isSaving
+                                ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                : Text('Save Entry',
+                                    style: FlutterFlowTheme.of(ctx).titleSmall.override(
+                                          font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                          color: Colors.white,
+                                          letterSpacing: 0.0,
+                                        )),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      });
+    },
+  );
+}
+
 /// Create an alternative version of my Garden Journal page for
 /// SproutTogether.
 ///
@@ -167,6 +380,21 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => _showAddEntrySheet(context, () {
+            _loadData(); // refresh after save
+          }),
+          backgroundColor: FlutterFlowTheme.of(context).primary,
+          icon: Icon(Icons.edit_rounded, color: Colors.white),
+          label: Text(
+            'New Entry',
+            style: FlutterFlowTheme.of(context).titleSmall.override(
+                  font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                  color: Colors.white,
+                  letterSpacing: 0.0,
+                ),
+          ),
+        ),
         body: SingleChildScrollView(
           primary: false,
           child: Column(

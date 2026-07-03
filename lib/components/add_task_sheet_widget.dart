@@ -43,71 +43,8 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
     _model.textController1 ??= TextEditingController();
     _model.textFieldFocusNode1 ??= FocusNode();
 
-    _model.textController2 ??= TextEditingController();
+    _model.textController2 ??= TextEditingController(text: 'Tap to select a date');
     _model.textFieldFocusNode2 ??= FocusNode();
-    _model.textFieldFocusNode2!.addListener(
-      () async {
-        final _datePickedDate = await showDatePicker(
-          context: context,
-          initialDate: getCurrentTimestamp,
-          firstDate: DateTime(1900),
-          lastDate: DateTime(2050),
-          builder: (context, child) {
-            return wrapInMaterialDatePickerTheme(
-              context,
-              child!,
-              headerBackgroundColor: FlutterFlowTheme.of(context).primary,
-              headerForegroundColor: FlutterFlowTheme.of(context).info,
-              headerTextStyle: FlutterFlowTheme.of(context)
-                  .headlineLarge
-                  .override(
-                    font: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).headlineLarge.fontStyle,
-                    ),
-                    fontSize: 32.0,
-                    letterSpacing: 0.0,
-                    fontWeight: FontWeight.w600,
-                    fontStyle:
-                        FlutterFlowTheme.of(context).headlineLarge.fontStyle,
-                  ),
-              pickerBackgroundColor:
-                  FlutterFlowTheme.of(context).secondaryBackground,
-              pickerForegroundColor: FlutterFlowTheme.of(context).primaryText,
-              selectedDateTimeBackgroundColor:
-                  FlutterFlowTheme.of(context).primary,
-              selectedDateTimeForegroundColor:
-                  FlutterFlowTheme.of(context).info,
-              actionButtonForegroundColor:
-                  FlutterFlowTheme.of(context).primaryText,
-              iconSize: 24.0,
-            );
-          },
-        );
-
-        if (_datePickedDate != null) {
-          safeSetState(() {
-            _model.datePicked = DateTime(
-              _datePickedDate.year,
-              _datePickedDate.month,
-              _datePickedDate.day,
-            );
-          });
-        } else if (_model.datePicked != null) {
-          safeSetState(() {
-            _model.datePicked = getCurrentTimestamp;
-          });
-        }
-        _model.selectedDate = _model.datePicked;
-        safeSetState(() {});
-        safeSetState(() {
-          _model.textController2?.text = _model.selectedDate != null
-              ? DateFormat('MM/dd/yyyy').format(_model.selectedDate!)
-              : 'Select a date';
-        });
-      },
-    );
     _model.textController3 ??= TextEditingController();
     _model.textFieldFocusNode3 ??= FocusNode();
   }
@@ -361,90 +298,83 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
           },
         ),
         SizedBox(height: 12.0),
-        Container(
-          width: double.infinity,
-          child: TextFormField(
-            controller: _model.textController2,
-            focusNode: _model.textFieldFocusNode2,
-            autofocus: false,
-            enabled: true,
-            readOnly: true,
-            obscureText: false,
-            decoration: InputDecoration(
-              isDense: true,
-              labelStyle: FlutterFlowTheme.of(context).labelMedium.override(
-                    font: GoogleFonts.poppins(
-                      fontWeight:
-                          FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                    ),
-                    letterSpacing: 0.0,
-                    fontWeight:
-                        FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                    fontStyle:
-                        FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                  ),
-              hintText: 'Due Date',
-              hintStyle: FlutterFlowTheme.of(context).labelMedium.override(
-                    font: GoogleFonts.poppins(
-                      fontWeight:
-                          FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                    ),
-                    letterSpacing: 0.0,
-                    fontWeight:
-                        FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                    fontStyle:
-                        FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                  ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(0x00000000),
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(8.0),
+        InkWell(
+          onTap: () async {
+            FocusScope.of(context).unfocus();
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: _model.selectedDate ?? DateTime.now(),
+              firstDate: DateTime(2020),
+              lastDate: DateTime(2030),
+              builder: (context, child) {
+                return wrapInMaterialDatePickerTheme(
+                  context,
+                  child!,
+                  headerBackgroundColor: FlutterFlowTheme.of(context).primary,
+                  headerForegroundColor: Colors.white,
+                  headerTextStyle: FlutterFlowTheme.of(context).headlineLarge.override(
+                        font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                        fontSize: 28.0,
+                        letterSpacing: 0.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                  pickerBackgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+                  pickerForegroundColor: FlutterFlowTheme.of(context).primaryText,
+                  selectedDateTimeBackgroundColor: FlutterFlowTheme.of(context).primary,
+                  selectedDateTimeForegroundColor: Colors.white,
+                  actionButtonForegroundColor: FlutterFlowTheme.of(context).primary,
+                  iconSize: 24.0,
+                );
+              },
+            );
+            if (picked != null) {
+              safeSetState(() {
+                _model.datePicked = picked;
+                _model.selectedDate = picked;
+                _model.textController2?.text = DateFormat('MM/dd/yyyy').format(picked);
+              });
+            }
+          },
+          borderRadius: BorderRadius.circular(12.0),
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+            decoration: BoxDecoration(
+              color: FlutterFlowTheme.of(context).primaryBackground,
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(
+                color: _model.selectedDate != null
+                    ? FlutterFlowTheme.of(context).primary
+                    : FlutterFlowTheme.of(context).alternate,
+                width: _model.selectedDate != null ? 2.0 : 1.0,
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(0x00000000),
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: FlutterFlowTheme.of(context).error,
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: FlutterFlowTheme.of(context).error,
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              filled: true,
-              fillColor: FlutterFlowTheme.of(context).secondaryBackground,
             ),
-            style: FlutterFlowTheme.of(context).bodyMedium.override(
-                  font: GoogleFonts.poppins(
-                    fontWeight:
-                        FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                    fontStyle:
-                        FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                  ),
-                  letterSpacing: 0.0,
-                  fontWeight:
-                      FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                  fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today_rounded,
+                  color: FlutterFlowTheme.of(context).primary,
+                  size: 18.0,
                 ),
-            cursorColor: FlutterFlowTheme.of(context).primaryText,
-            enableInteractiveSelection: true,
-            validator: _model.textController2Validator.asValidator(context),
+                SizedBox(width: 10.0),
+                Text(
+                  _model.selectedDate != null
+                      ? DateFormat('MMMM d, yyyy').format(_model.selectedDate!)
+                      : 'Select Due Date',
+                  style: FlutterFlowTheme.of(context).bodyMedium.override(
+                        font: GoogleFonts.poppins(
+                          fontWeight: _model.selectedDate != null
+                              ? FontWeight.w600
+                              : FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                        ),
+                        color: _model.selectedDate != null
+                            ? FlutterFlowTheme.of(context).primaryText
+                            : FlutterFlowTheme.of(context).secondaryText,
+                        letterSpacing: 0.0,
+                      ),
+                ),
+              ],
+            ),
           ),
         ),
         SizedBox(height: 12.0),

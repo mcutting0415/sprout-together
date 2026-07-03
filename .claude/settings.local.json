@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -f /Users/mackenziecutting/Downloads/sprout_together/.git/index.lock && echo \"Lock file removed \\(or did not exist\\)\")",
+      "Bash(git add *)"
+    ]
+  }
+}

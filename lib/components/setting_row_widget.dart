@@ -15,6 +15,7 @@ class SettingRowWidget extends StatefulWidget {
     String? title,
     String? subtitle,
     bool? isLast,
+    this.onTap,
   })  : this.title = title ?? 'Saved Gardens',
         this.subtitle = subtitle ?? '',
         this.isLast = isLast ?? false;
@@ -23,6 +24,7 @@ class SettingRowWidget extends StatefulWidget {
   final String title;
   final String subtitle;
   final bool isLast;
+  final VoidCallback? onTap;
 
   @override
   State<SettingRowWidget> createState() => _SettingRowWidgetState();
@@ -53,17 +55,20 @@ class _SettingRowWidgetState extends State<SettingRowWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 10.0),
-      child: Container(
+      padding: EdgeInsetsDirectional.fromSTEB(0.0, 6.0, 0.0, 6.0),
+      child: InkWell(
+        onTap: widget.onTap,
+        borderRadius: BorderRadius.circular(16.0),
+        child: Container(
         decoration: BoxDecoration(
           color: FlutterFlowTheme.of(context).secondaryBackground,
-          borderRadius: BorderRadius.circular(40.0),
+          borderRadius: BorderRadius.circular(16.0),
           border: Border.all(
-            color: FlutterFlowTheme.of(context).primaryText,
+            color: FlutterFlowTheme.of(context).alternate,
           ),
         ),
         child: Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(10.0, 0.0, 10.0, 0.0),
+          padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -173,6 +178,7 @@ class _SettingRowWidgetState extends State<SettingRowWidget> {
                 ),
             ],
           ),
+        ),
         ),
       ),
     );

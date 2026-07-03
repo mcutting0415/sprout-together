@@ -194,11 +194,21 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                 wrapped: true,
               ),
               FlutterFlowCalendar(
-                color: FlutterFlowTheme.of(context).warning,
-                iconColor: Color(0xFF3E4B3C),
+                key: ValueKey(_model.choiceChipsValue ?? 'default'),
+                color: FlutterFlowTheme.of(context).primary,
+                iconColor: FlutterFlowTheme.of(context).primaryText,
                 weekFormat: false,
                 weekStartsMonday: false,
                 rowHeight: 48.0,
+                initialDate: _model.choiceChipsValue != null
+                    ? () {
+                        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                        final monthIndex = months.indexOf(_model.choiceChipsValue!);
+                        if (monthIndex == -1) return null;
+                        final now = DateTime.now();
+                        return DateTime(now.year, monthIndex + 1, 1);
+                      }()
+                    : null,
                 onChange: (DateTimeRange? newSelectedDate) {
                   safeSetState(
                       () => _model.calendarSelectedDay = newSelectedDate);
