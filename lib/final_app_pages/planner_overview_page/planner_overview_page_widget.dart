@@ -7,6 +7,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:convert';
 import 'dart:ui';
+import 'package:intl/intl.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,6 +35,11 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
   // Weather state
   Map<String, dynamic>? _weatherData;
   bool _weatherLoading = true;
+
+  // Selected plants state
+  List<Map<String, dynamic>> _selectedPlants = [];
+  bool _plantsLoading = true;
+  bool _scheduling = false;
 
   static String _weatherEmoji(int code) {
     if (code == 0) return '☀️';
@@ -103,6 +109,116 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
     super.initState();
     _model = createModel(context, () => PlannerOverviewPageModel());
     _fetchWeather();
+    _loadSelectedPlants();
+  }
+
+  Future<void> _loadSelectedPlants() async {
+    setState(() => _plantsLoading = true);
+    try {
+      final selected = await UserSelectedPlantsTable().queryRows(
+        queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+      );
+      if (selected.isEmpty) {
+        if (mounted) setState(() { _selectedPlants = []; _plantsLoading = false; });
+        return;
+      }
+      final plantIds = selected.map((r) => r.plantId).toList();
+      final plants = await PlantsTable().queryRows(
+        queryFn: (q) => q.inFilterOrNull('id', plantIds),
+      );
+      final plantsById = {for (final p in plants) p.id: p};
+      final joined = selected.map((r) {
+        final plant = plantsById[r.plantId];
+        return {
+          'id': r.id,
+          'plant_id': r.plantId,
+          'plant_name': plant?.plantName ?? 'Unknown Plant',
+          'category': plant?.category ?? '',
+          'days_to_harvest': plant?.daysToHarvest,
+          'season': r.season,
+        };
+      }).toList();
+      if (mounted) setState(() { _selectedPlants = joined; _plantsLoading = false; });
+    } catch (_) {
+      if (mounted) setState(() => _plantsLoading = false);
+    }
+  }
+
+  /// Returns the optimal planting date for a plant based on its type and days_to_harvest.
+  DateTime _getPlantingDate(String? category, String? plantName, int? daysToHarvest) {
+    final now = DateTime.now();
+    final name = (plantName ?? '').toLowerCase();
+
+    // Cool season crops — can grow in cold weather
+    const coolKeywords = [
+      'lettuce', 'spinach', 'kale', 'broccoli', 'cauliflower', 'cabbage',
+      'carrot', 'radish', 'pea', 'chard', 'arugula', 'bok choy', 'cilantro',
+      'parsley', 'dill', 'beet', 'turnip', 'kohlrabi', 'mustard', 'collard',
+    ];
+    final isCool = coolKeywords.any((k) => name.contains(k));
+
+    if (!isCool) {
+      // Warm season — plant after last frost (May 1 target for US)
+      final warmTarget = DateTime(now.year, 5, 1);
+      if (now.isBefore(warmTarget)) return warmTarget;
+      // Still plantable through June 30
+      if (now.isBefore(DateTime(now.year, 6, 30))) {
+        return DateTime(now.year, now.month, now.day).add(const Duration(days: 7));
+      }
+      // Too late this year, schedule next spring
+      return DateTime(now.year + 1, 5, 1);
+    } else {
+      // Cool season: spring window = March 15, fall window = Aug 1
+      final springTarget = DateTime(now.year, 3, 15);
+      final fallTarget = DateTime(now.year, 8, 1);
+      final fallEnd = DateTime(now.year, 9, 30);
+
+      if (now.isBefore(springTarget)) return springTarget;
+      if (now.isBefore(fallTarget)) return fallTarget;
+      if (now.isBefore(fallEnd)) {
+        return DateTime(now.year, now.month, now.day).add(const Duration(days: 7));
+      }
+      return DateTime(now.year + 1, 3, 15);
+    }
+  }
+
+  Future<void> _autoSchedulePlantingTasks() async {
+    if (_selectedPlants.isEmpty) return;
+    setState(() => _scheduling = true);
+    int created = 0;
+    try {
+      for (final plant in _selectedPlants) {
+        final plantDate = _getPlantingDate(
+          plant['category'] as String?,
+          plant['plant_name'] as String?,
+          plant['days_to_harvest'] as int?,
+        );
+        await GardenTasksTable().insert({
+          'user_id': currentUserUid,
+          'task_name': 'Plant ${plant['plant_name']}',
+          'task_type': 'Plant',
+          'due_date': plantDate.toIso8601String(),
+          'completed': false,
+          'notes': 'Auto-scheduled based on growing season.',
+        });
+        created++;
+      }
+    } catch (_) {}
+    if (mounted) {
+      setState(() => _scheduling = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            created > 0
+                ? '✅ Created $created planting task${created == 1 ? '' : 's'} on your calendar!'
+                : 'No tasks created.',
+          ),
+          backgroundColor: FlutterFlowTheme.of(context).primary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        ),
+      );
+    }
   }
 
   @override
@@ -333,188 +449,161 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                     padding: EdgeInsets.all(16.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '🌱 Plants I Want To Grow',
-                          textAlign: TextAlign.center,
-                          style:
-                              FlutterFlowTheme.of(context).bodyMedium.override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w600,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .fontStyle,
-                                    ),
+                        // Header row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '🌱 Plants I Want To Grow',
+                              style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                    font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                                     fontSize: 16.0,
                                     letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
                                     decoration: TextDecoration.underline,
                                   ),
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional(-1.0, -1.0),
-                          child: Text(
-                            '🍅 Tomatoes',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  font: GoogleFonts.poppins(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                  ),
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontStyle,
-                                ),
-                          ),
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional(-1.0, -1.0),
-                          child: Text(
-                            '🌿 Basil',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  font: GoogleFonts.poppins(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                  ),
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontStyle,
-                                ),
-                          ),
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional(-1.0, -1.0),
-                          child: Text(
-                            '🥕 Carrots',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  font: GoogleFonts.poppins(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                  ),
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontStyle,
-                                ),
-                          ),
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional(-1.0, -1.0),
-                          child: Text(
-                            '🫑 Peppers',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  font: GoogleFonts.poppins(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                  ),
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontStyle,
-                                ),
-                          ),
-                        ),
-                        FFButtonWidget(
-                          onPressed: () async {
-                            context.pushNamed(
-                              PlantLibraryPageWidget.routeName,
-                              queryParameters: {
-                                'plotNumber': serializeParam(
-                                  0,
-                                  ParamType.int,
-                                ),
-                                'gardenID': serializeParam(
-                                  '',
-                                  ParamType.String,
-                                ),
-                                'plantID': serializeParam(
-                                  '',
-                                  ParamType.String,
-                                ),
-                              }.withoutNulls,
-                            );
-                          },
-                          text: 'Add Plants',
-                          icon: Icon(
-                            Icons.add,
-                            size: 15.0,
-                          ),
-                          options: FFButtonOptions(
-                            height: 40.0,
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                16.0, 0.0, 16.0, 0.0),
-                            iconAlignment: IconAlignment.start,
-                            iconPadding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 0.0),
-                            color: FlutterFlowTheme.of(context).primary,
-                            textStyle: FlutterFlowTheme.of(context)
-                                .titleSmall
-                                .override(
-                                  font: GoogleFonts.poppins(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontStyle,
-                                  ),
-                                  color: Colors.white,
-                                  fontSize: 12.0,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .titleSmall
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .titleSmall
-                                      .fontStyle,
-                                ),
-                            elevation: 0.0,
-                            borderSide: BorderSide(
-                              color: FlutterFlowTheme.of(context)
-                                  .secondaryBackground,
                             ),
-                            borderRadius: BorderRadius.circular(16.0),
-                          ),
+                            GestureDetector(
+                              onTap: _loadSelectedPlants,
+                              child: Icon(Icons.refresh_rounded,
+                                  color: FlutterFlowTheme.of(context).secondaryText,
+                                  size: 18.0),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12.0),
+                        // Plant list
+                        if (_plantsLoading)
+                          Center(child: Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: CircularProgressIndicator(strokeWidth: 2.0),
+                          ))
+                        else if (_selectedPlants.isEmpty)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              'No plants added yet. Tap "Add Plants" to get started.',
+                              style: FlutterFlowTheme.of(context).bodySmall.override(
+                                    font: GoogleFonts.poppins(),
+                                    color: FlutterFlowTheme.of(context).secondaryText,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          )
+                        else
+                          ...(_selectedPlants.map((plant) {
+                            final name = plant['plant_name'] as String? ?? 'Plant';
+                            final category = (plant['category'] as String? ?? '').toLowerCase();
+                            final days = plant['days_to_harvest'] as int?;
+                            final plantDate = _getPlantingDate(plant['category'] as String?, name, days);
+                            final emoji = category == 'herb' ? '🌿'
+                                : category == 'fruit' ? '🍓'
+                                : category == 'flower' ? '🌸'
+                                : '🌱';
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: 10.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 36.0,
+                                    height: 36.0,
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context).primary.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: Center(child: Text(emoji, style: TextStyle(fontSize: 18.0))),
+                                  ),
+                                  SizedBox(width: 10.0),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          name,
+                                          style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                                letterSpacing: 0.0,
+                                              ),
+                                        ),
+                                        Text(
+                                          'Plant by ${DateFormat('MMM d').format(plantDate)}${days != null ? ' · $days days to harvest' : ''}',
+                                          style: FlutterFlowTheme.of(context).bodySmall.override(
+                                                font: GoogleFonts.poppins(),
+                                                color: FlutterFlowTheme.of(context).primary,
+                                                fontSize: 11.0,
+                                                letterSpacing: 0.0,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList()),
+                        SizedBox(height: 8.0),
+                        // Buttons row
+                        Row(
+                          children: [
+                            Expanded(
+                              child: FFButtonWidget(
+                                onPressed: () async {
+                                  context.pushNamed(
+                                    PlantLibraryPageWidget.routeName,
+                                    queryParameters: {
+                                      'plotNumber': serializeParam(0, ParamType.int),
+                                      'gardenID': serializeParam('', ParamType.String),
+                                      'plantID': serializeParam('', ParamType.String),
+                                    }.withoutNulls,
+                                  );
+                                },
+                                text: 'Add Plants',
+                                icon: Icon(Icons.add, size: 15.0),
+                                options: FFButtonOptions(
+                                  height: 40.0,
+                                  padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
+                                  iconAlignment: IconAlignment.start,
+                                  iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                                  color: FlutterFlowTheme.of(context).primary,
+                                  textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                                        font: GoogleFonts.poppins(),
+                                        color: Colors.white,
+                                        fontSize: 12.0,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  elevation: 0.0,
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                              ),
+                            ),
+                            if (_selectedPlants.isNotEmpty) ...[
+                              SizedBox(width: 8.0),
+                              Expanded(
+                                child: FFButtonWidget(
+                                  onPressed: _scheduling ? null : _autoSchedulePlantingTasks,
+                                  text: _scheduling ? 'Scheduling…' : 'Auto-schedule',
+                                  icon: Icon(Icons.calendar_month_rounded, size: 15.0),
+                                  options: FFButtonOptions(
+                                    height: 40.0,
+                                    padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
+                                    iconAlignment: IconAlignment.start,
+                                    iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                                    color: const Color(0xFF4E7A2E),
+                                    textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                                          font: GoogleFonts.poppins(),
+                                          color: Colors.white,
+                                          fontSize: 12.0,
+                                          letterSpacing: 0.0,
+                                        ),
+                                    elevation: 0.0,
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ],
                     ),
