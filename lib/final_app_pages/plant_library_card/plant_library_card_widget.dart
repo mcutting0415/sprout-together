@@ -139,27 +139,32 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                   children: [
                     Align(
                       alignment: AlignmentDirectional(0.0, -1.0),
-                      child: Text(
-                        widget.plantName,
-                        textAlign: TextAlign.center,
-                        style: FlutterFlowTheme.of(context)
-                            .titleMedium
-                            .override(
-                              font: GoogleFonts.poppins(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          widget.plantName,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: FlutterFlowTheme.of(context)
+                              .titleMedium
+                              .override(
+                                font: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .fontStyle,
+                                ),
+                                color: FlutterFlowTheme.of(context).primaryText,
+                                fontSize: 20.0,
+                                letterSpacing: 0.0,
                                 fontWeight: FontWeight.bold,
                                 fontStyle: FlutterFlowTheme.of(context)
                                     .titleMedium
                                     .fontStyle,
+                                lineHeight: 1.4,
                               ),
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              fontSize: 20.0,
-                              letterSpacing: 0.0,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .fontStyle,
-                              lineHeight: 1.4,
-                            ),
+                        ),
                       ),
                     ),
                   ].divide(SizedBox(height: 4.0)),
@@ -173,10 +178,23 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                       color: FlutterFlowTheme.of(context).primaryText,
                       size: 18.0,
                     ),
-                    Text(
-                      widget.sunRequirement,
-                      style: FlutterFlowTheme.of(context).bodyMedium.override(
-                            font: GoogleFonts.poppins(
+                    Flexible(
+                      child: Text(
+                        widget.sunRequirement,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: FlutterFlowTheme.of(context).bodyMedium.override(
+                              font: GoogleFonts.poppins(
+                                fontWeight: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .fontWeight,
+                                fontStyle: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .fontStyle,
+                              ),
+                              color: FlutterFlowTheme.of(context).primaryText,
+                              fontSize: 12.0,
+                              letterSpacing: 0.0,
                               fontWeight: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .fontWeight,
@@ -184,16 +202,7 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                                   .bodyMedium
                                   .fontStyle,
                             ),
-                            color: FlutterFlowTheme.of(context).primaryText,
-                            fontSize: 12.0,
-                            letterSpacing: 0.0,
-                            fontWeight: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .fontWeight,
-                            fontStyle: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .fontStyle,
-                          ),
+                      ),
                     ),
                   ].divide(SizedBox(width: 3.0)),
                 ),
@@ -206,11 +215,24 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                       color: FlutterFlowTheme.of(context).primaryText,
                       size: 18.0,
                     ),
-                    Text(
-                      widget.waterRequirement,
-                      textAlign: TextAlign.start,
-                      style: FlutterFlowTheme.of(context).bodyMedium.override(
-                            font: GoogleFonts.poppins(
+                    Flexible(
+                      child: Text(
+                        widget.waterRequirement,
+                        textAlign: TextAlign.start,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: FlutterFlowTheme.of(context).bodyMedium.override(
+                              font: GoogleFonts.poppins(
+                                fontWeight: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .fontWeight,
+                                fontStyle: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .fontStyle,
+                              ),
+                              color: FlutterFlowTheme.of(context).primaryText,
+                              fontSize: 12.0,
+                              letterSpacing: 0.0,
                               fontWeight: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .fontWeight,
@@ -218,16 +240,7 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                                   .bodyMedium
                                   .fontStyle,
                             ),
-                            color: FlutterFlowTheme.of(context).primaryText,
-                            fontSize: 12.0,
-                            letterSpacing: 0.0,
-                            fontWeight: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .fontWeight,
-                            fontStyle: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .fontStyle,
-                          ),
+                      ),
                     ),
                   ],
                 ),

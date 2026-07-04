@@ -38,6 +38,8 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
 
   PlantsRow? _plant;
   bool _loadingPlant = true;
+  bool _addingToGarden = false;
+  bool _addedToGarden = false;
   List<Map<String, dynamic>> _purchaseLinks = [];
   List<String> _goodCompanions = [];
   List<String> _avoidCompanions = [];
@@ -123,6 +125,198 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
     }
   }
 
+  /// Determines watering interval in days from water_requirement text.
+  int _wateringIntervalDays(String? waterReq) {
+    final w = (waterReq ?? '').toLowerCase();
+    if (w.contains('high')) return 2;
+    if (w.contains('low to moderate') || w.contains('low to mod')) return 5;
+    if (w.contains('low')) return 7;
+    // default: regular / moderate
+    return 3;
+  }
+
+  Future<void> _addToGarden() async {
+    if (_addingToGarden || _addedToGarden) return;
+    final plant = _plant;
+    if (plant == null) return;
+
+    setState(() => _addingToGarden = true);
+    try {
+      // Check if already added
+      final existing = await SupaFlow.client
+          .from('user_selected_plants')
+          .select('id')
+          .eq('user_id', currentUserUid)
+          .eq('plant_id', plant.id!)
+          .limit(1);
+      if ((existing as List).isEmpty) {
+        await UserSelectedPlantsTable().insert({
+          'user_id': currentUserUid,
+          'plant_id': plant.id!,
+        });
+      }
+      if (!mounted) return;
+      setState(() {
+        _addingToGarden = false;
+        _addedToGarden = true;
+      });
+      // Offer auto-schedule
+      final shouldSchedule = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0)),
+          title: Text('✅ ${plant.plantName ?? 'Plant'} Added!',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+          content: Text(
+              'Would you like to auto-schedule care tasks for this plant?',
+              style: GoogleFonts.poppins(fontSize: 14.0)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('Skip',
+                  style: GoogleFonts.poppins(
+                      color: FlutterFlowTheme.of(context).secondaryText)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: FlutterFlowTheme.of(context).primary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+              ),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text('Schedule',
+                  style: GoogleFonts.poppins(color: Colors.white)),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldSchedule == true && mounted) {
+        await _autoScheduleTasks(plant);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _addingToGarden = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error adding plant: $e'),
+            backgroundColor: FlutterFlowTheme.of(context).error,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _autoScheduleTasks(PlantsRow plant) async {
+    try {
+      // Fetch the user's most recent active garden
+      final gardens = await GardensTable().queryRows(
+        queryFn: (q) => q
+            .eq('user_id', currentUserUid)
+            .eq('is_archived', false)
+            .order('created_at', ascending: false)
+            .limit(1),
+      );
+      if (!mounted) return;
+      if (gardens.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+                'No active garden found. Create a garden first to schedule tasks.'),
+            backgroundColor: FlutterFlowTheme.of(context).secondaryText,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0)),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+        return;
+      }
+      final gardenId = gardens.first.id!;
+      final userId = currentUserUid;
+      final plantName = plant.plantName ?? 'Plant';
+      final today = DateTime.now();
+      final tasks = <Map<String, dynamic>>[];
+
+      // 1. Plant date task
+      tasks.add({
+        'task_name': 'Plant $plantName',
+        'task_type': 'plant',
+        'due_date': supaSerialize<DateTime>(today),
+        'notes': 'Time to get $plantName in the ground!',
+        'user_id': userId,
+        'garden_id': gardenId,
+        'completed': false,
+      });
+
+      // 2. Watering tasks — 4 weeks starting tomorrow
+      final intervalDays = _wateringIntervalDays(plant.waterRequirement);
+      final endDate = today.add(const Duration(days: 28));
+      DateTime waterDate = today.add(Duration(days: intervalDays));
+      while (!waterDate.isAfter(endDate)) {
+        tasks.add({
+          'task_name': 'Water $plantName',
+          'task_type': 'water',
+          'due_date': supaSerialize<DateTime>(waterDate),
+          'notes': plant.waterRequirement ?? '',
+          'user_id': userId,
+          'garden_id': gardenId,
+          'completed': false,
+        });
+        waterDate = waterDate.add(Duration(days: intervalDays));
+      }
+
+      // 3. Harvest watch task
+      if (plant.daysToHarvest != null) {
+        final harvestDate = today.add(Duration(days: plant.daysToHarvest!));
+        tasks.add({
+          'task_name': 'Check $plantName for harvest',
+          'task_type': 'harvest',
+          'due_date': supaSerialize<DateTime>(harvestDate),
+          'notes': 'Expected harvest around ${plant.daysToHarvest} days after planting.',
+          'user_id': userId,
+          'garden_id': gardenId,
+          'completed': false,
+        });
+      }
+
+      // Batch insert all tasks
+      for (final task in tasks) {
+        await GardenTasksTable().insert(task);
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                '🌱 ${tasks.length} care tasks scheduled for $plantName!'),
+            backgroundColor: FlutterFlowTheme.of(context).primary,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0)),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not create tasks: $e'),
+            backgroundColor: FlutterFlowTheme.of(context).error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0)),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
     _model.dispose();
@@ -176,34 +370,40 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                                 child: Text('🌱',
                                     style: TextStyle(fontSize: 64.0))),
                           )
-                        : CachedNetworkImage(
-                            fadeInDuration: Duration.zero,
-                            fadeOutDuration: Duration.zero,
-                            imageUrl: () {
-                              final url = plant?.imageUrl ?? '';
-                              if (url.startsWith('http')) return url;
-                              final name = Uri.encodeComponent(
-                                  'Lush ${plant?.plantName ?? 'garden plant'} plant growing outdoors');
-                              return 'https://dimg.dreamflow.cloud/v1/image/$name';
-                            }(),
-                            height: 300.0,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            placeholder: (_, __) => Container(
+                        : () {
+                            final url = plant?.imageUrl ?? '';
+                            if (url.startsWith('http')) {
+                              return CachedNetworkImage(
+                                fadeInDuration: Duration.zero,
+                                fadeOutDuration: Duration.zero,
+                                imageUrl: url,
+                                height: 300.0,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                placeholder: (_, __) => Container(
+                                  height: 300.0,
+                                  color: theme.primary.withOpacity(0.12),
+                                  child: const Center(
+                                      child: Text('🌱',
+                                          style: TextStyle(fontSize: 64.0))),
+                                ),
+                                errorWidget: (_, __, ___) => Container(
+                                  height: 300.0,
+                                  color: theme.primary.withOpacity(0.12),
+                                  child: const Center(
+                                      child: Text('🌱',
+                                          style: TextStyle(fontSize: 64.0))),
+                                ),
+                              );
+                            }
+                            return Container(
                               height: 300.0,
                               color: theme.primary.withOpacity(0.12),
                               child: const Center(
                                   child: Text('🌱',
                                       style: TextStyle(fontSize: 64.0))),
-                            ),
-                            errorWidget: (_, __, ___) => Container(
-                              height: 300.0,
-                              color: theme.primary.withOpacity(0.12),
-                              child: const Center(
-                                  child: Text('🌱',
-                                      style: TextStyle(fontSize: 64.0))),
-                            ),
-                          ),
+                            );
+                          }(),
                     // Fade gradient
                     Align(
                       alignment: AlignmentDirectional(0.0, 1.0),
@@ -680,6 +880,54 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                       }),
                       const SizedBox(height: 20.0),
                     ],
+
+                    // ── Add to Garden button ──────────────────────────────
+                    if (!_loadingPlant && _plant != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 52.0,
+                          child: ElevatedButton.icon(
+                            onPressed: _addingToGarden ? null : _addToGarden,
+                            icon: _addingToGarden
+                                ? const SizedBox(
+                                    width: 18.0,
+                                    height: 18.0,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2.0,
+                                        color: Colors.white),
+                                  )
+                                : Icon(
+                                    _addedToGarden
+                                        ? Icons.check_circle_rounded
+                                        : Icons.add_circle_outline_rounded,
+                                    color: Colors.white,
+                                    size: 20.0,
+                                  ),
+                            label: Text(
+                              _addedToGarden
+                                  ? 'Added to Garden'
+                                  : 'Add to My Garden',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _addedToGarden
+                                  ? const Color(0xFF4CAF50)
+                                  : theme.primary,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14.0)),
+                              elevation: 4.0,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    const SizedBox(height: 12.0),
 
                     // ── View companion guide button ───────────────────────
                     Padding(
