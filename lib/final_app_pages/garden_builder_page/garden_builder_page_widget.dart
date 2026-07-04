@@ -49,7 +49,10 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
 
   Future<void> _loadPlots() async {
     final plots = await GardenPlotsTable().queryRows(
-      queryFn: (q) => q.eqOrNull('garden_id', widget!.gardenID),
+      queryFn: (q) => q
+          .eqOrNull('garden_id', widget!.gardenID)
+          .order('row_index', ascending: true)
+          .order('col_index', ascending: true),
     );
     safeSetState(() {
       _model.gardenPlotQuery = plots;
@@ -283,11 +286,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                                   ),
                                             ),
                                             Text(
-                                              valueOrDefault<String>(
-                                                _model.gardenPlotQuery?.length
-                                                    ?.toString(),
-                                                '0',
-                                              ),
+                                              '${valueOrDefault<String>(_model.gardenPlotQuery?.length?.toString(), '0')} squares',
                                               style: FlutterFlowTheme.of(
                                                       context)
                                                   .bodyMedium
