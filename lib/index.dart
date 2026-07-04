@@ -23,6 +23,8 @@ export '/final_app_pages/garden_journal_page2/garden_journal_page2_widget.dart'
     show GardenJournalPage2Widget;
 export '/final_app_pages/plant_details_page/plant_details_page_widget.dart'
     show PlantDetailsPageWidget;
+export '/final_app_pages/shop_page/shop_page_widget.dart'
+    show ShopPageWidget;
 export '/final_app_pages/settings_page2/settings_page2_widget.dart'
     show SettingsPage2Widget;
 export '/final_app_pages/profile_page2/profile_page2_widget.dart'

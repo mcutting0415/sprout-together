@@ -1,11 +1,13 @@
 import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
+import '/backend/supabase/storage/storage.dart';
 import '/components/journal_entry/journal_entry_widget.dart';
 import '/components/stat_pill/stat_pill_widget.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/flutter_flow/upload_data.dart';
 import 'dart:ui';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,7 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
   String? selectedGardenId;
   List<GardensRow> gardens = [];
   bool isSaving = false;
+  SelectedFile? selectedImage;
 
   try {
     gardens = await GardensTable().queryRows(
@@ -71,6 +74,58 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
                           ),
                     ),
                     SizedBox(height: 20.0),
+                    // Photo picker
+                    GestureDetector(
+                      onTap: () async {
+                        final file = await selectMediaWithSourceBottomSheet(
+                          context: ctx,
+                          maxWidth: 1200,
+                          maxHeight: 1200,
+                          imageQuality: 85,
+                          allowPhoto: true,
+                        );
+                        if (file != null) setModalState(() => selectedImage = file);
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: selectedImage != null ? 140.0 : 60.0,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(ctx).primaryBackground,
+                          borderRadius: BorderRadius.circular(12.0),
+                          border: Border.all(
+                            color: FlutterFlowTheme.of(ctx).alternate,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: selectedImage != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(11.0),
+                                child: Image.memory(
+                                  selectedImage!.bytes,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add_photo_alternate_outlined,
+                                      color: FlutterFlowTheme.of(ctx).primary, size: 22.0),
+                                  SizedBox(width: 8.0),
+                                  Text(
+                                    'Add Photo (optional)',
+                                    style: FlutterFlowTheme.of(ctx).labelMedium.override(
+                                          font: GoogleFonts.poppins(
+                                              fontWeight: FlutterFlowTheme.of(ctx).labelMedium.fontWeight),
+                                          color: FlutterFlowTheme.of(ctx).primary,
+                                          letterSpacing: 0.0,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                    SizedBox(height: 12.0),
                     // Title field
                     TextFormField(
                       controller: titleController,
@@ -183,12 +238,25 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
                                     if (title.isEmpty) return;
                                     setModalState(() => isSaving = true);
                                     try {
+                                      String? imageUrl;
+                                      if (selectedImage != null) {
+                                        final ext = selectedImage!.storagePath.split('.').last.toLowerCase();
+                                        final uploadFile = SelectedFile(
+                                          storagePath: 'journal/$currentUserUid/${DateTime.now().millisecondsSinceEpoch}.$ext',
+                                          bytes: selectedImage!.bytes,
+                                        );
+                                        imageUrl = await uploadSupabaseStorageFile(
+                                          bucketName: 'profile-photo',
+                                          selectedFile: uploadFile,
+                                        );
+                                      }
                                       await GardenJournalEntriesTable().insert({
                                         'user_id': currentUserUid,
                                         'title': title,
                                         'entry_text': notesController.text.trim(),
                                         'garden_id': selectedGardenId,
                                         'entry_date': DateTime.now().toIso8601String(),
+                                        if (imageUrl != null) 'image_url': imageUrl,
                                       });
                                       Navigator.pop(ctx);
                                       onSaved();
@@ -682,7 +750,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                             imgDesc: (entry.imageUrl != null &&
                                     entry.imageUrl!.isNotEmpty)
                                 ? entry.imageUrl!
-                                : 'https://dimg.dreamflow.cloud/v1/image/garden%20journal%20entry',
+                                : '',
                             date: _formatDate(entry.entryDate ?? entry.createdAt),
                             garden: entry.gardenId != null
                                 ? (_gardenNames[entry.gardenId!] ?? 'Garden')
@@ -695,7 +763,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
               ),
               if (!_isLoading)
                 Padding(
-                  padding: EdgeInsets.all(24.0),
+                  padding: EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 100.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,

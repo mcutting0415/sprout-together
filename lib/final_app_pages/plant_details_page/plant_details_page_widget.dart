@@ -1,3 +1,4 @@
+import '/backend/supabase/supabase.dart';
 import '/components/benefit_badge_widget.dart';
 import '/components/requirement_row_widget.dart';
 import '/components/timeline_item2_widget.dart';
@@ -11,6 +12,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'plant_details_page_model.dart';
 export 'plant_details_page_model.dart';
 
@@ -130,10 +132,37 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  List<Map<String, dynamic>> _purchaseLinks = [];
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => PlantDetailsPageModel());
+    _loadPurchaseLinks();
+  }
+
+  Future<void> _loadPurchaseLinks() async {
+    if (widget.plantID == null) return;
+    try {
+      final response = await SupabaseClient.client
+          .from('plant_purchase_links')
+          .select()
+          .eq('plant_id', widget.plantID!)
+          .eq('is_active', true)
+          .order('link_type');
+      if (mounted) {
+        setState(() {
+          _purchaseLinks = List<Map<String, dynamic>>.from(response as List);
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _openLink(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   @override
@@ -1368,6 +1397,72 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                         ),
                       ].divide(SizedBox(height: 16.0)),
                     ),
+                    // ── Affiliate: Buy Seeds + Recommended Helpers ──
+                    if (_purchaseLinks.isNotEmpty) ...[
+                      Builder(builder: (context) {
+                        final seedLinks = _purchaseLinks
+                            .where((l) => l['link_type'] == 'seeds')
+                            .toList();
+                        final helperLinks = _purchaseLinks
+                            .where((l) => l['link_type'] == 'helper')
+                            .toList();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (seedLinks.isNotEmpty) ...[
+                              Text(
+                                '🌱 Buy Seeds',
+                                style: FlutterFlowTheme.of(context)
+                                    .titleMedium
+                                    .override(
+                                      font: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold),
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryText,
+                                      letterSpacing: 0.0,
+                                      fontWeight: FontWeight.bold,
+                                      lineHeight: 1.4,
+                                    ),
+                              ),
+                              const SizedBox(height: 8.0),
+                              ...seedLinks.map((link) => _AffiliateLinkTile(
+                                    productName: link['product_name'] ?? '',
+                                    storeName: link['store_name'] ?? '',
+                                    icon: Icons.storefront_outlined,
+                                    accentColor: FlutterFlowTheme.of(context).primary,
+                                    onTap: () => _openLink(link['affiliate_url'] ?? ''),
+                                  )),
+                            ],
+                            if (helperLinks.isNotEmpty) ...[
+                              const SizedBox(height: 16.0),
+                              Text(
+                                '🛒 Recommended Helpers',
+                                style: FlutterFlowTheme.of(context)
+                                    .titleMedium
+                                    .override(
+                                      font: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold),
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryText,
+                                      letterSpacing: 0.0,
+                                      fontWeight: FontWeight.bold,
+                                      lineHeight: 1.4,
+                                    ),
+                              ),
+                              const SizedBox(height: 8.0),
+                              ...helperLinks.map((link) => _AffiliateLinkTile(
+                                    productName: link['product_name'] ?? '',
+                                    storeName: link['store_name'] ?? '',
+                                    icon: Icons.handyman_outlined,
+                                    accentColor: const Color(0xFF4A90A4),
+                                    onTap: () => _openLink(link['affiliate_url'] ?? ''),
+                                  )),
+                            ],
+                          ],
+                        );
+                      }),
+                    ],
+
                     Padding(
                       padding:
                           EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
@@ -1424,6 +1519,83 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                   ].divide(SizedBox(height: 24.0)),
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AffiliateLinkTile extends StatelessWidget {
+  final String productName;
+  final String storeName;
+  final IconData icon;
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  const _AffiliateLinkTile({
+    required this.productName,
+    required this.storeName,
+    required this.icon,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            color: accentColor.withOpacity(0.07),
+            borderRadius: BorderRadius.circular(14.0),
+            border: Border.all(color: accentColor.withOpacity(0.25)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36.0,
+                height: 36.0,
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Icon(icon, color: accentColor, size: 18.0),
+              ),
+              const SizedBox(width: 12.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      productName,
+                      style: FlutterFlowTheme.of(context).bodySmall.override(
+                            font: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600),
+                            color: FlutterFlowTheme.of(context).primaryText,
+                            fontSize: 13.0,
+                            letterSpacing: 0.0,
+                            lineHeight: 1.3,
+                          ),
+                    ),
+                    const SizedBox(height: 2.0),
+                    Text(
+                      storeName,
+                      style: FlutterFlowTheme.of(context).bodySmall.override(
+                            font: GoogleFonts.poppins(),
+                            color: FlutterFlowTheme.of(context).secondaryText,
+                            fontSize: 11.0,
+                            letterSpacing: 0.0,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.open_in_new_rounded, color: accentColor, size: 16.0),
             ],
           ),
         ),

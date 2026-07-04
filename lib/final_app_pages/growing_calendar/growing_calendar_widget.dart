@@ -27,24 +27,125 @@ class GrowingCalendarWidget extends StatefulWidget {
 
 class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
   late GrowingCalendarModel _model;
-
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  List<GardenTasksRow> _allTasks = [];
+  bool _tasksLoading = true;
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => GrowingCalendarModel());
+    _loadTasks();
+  }
+
+  Future<void> _loadTasks() async {
+    setState(() => _tasksLoading = true);
+    try {
+      final rows = await GardenTasksTable().queryRows(
+        queryFn: (q) => q
+            .eqOrNull('user_id', currentUserUid)
+            .order('due_date', ascending: true),
+      );
+      if (mounted) {
+        setState(() {
+          _allTasks = rows;
+          _tasksLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _tasksLoading = false);
+    }
+  }
+
+  List<GardenTasksRow> get _tasksForSelectedDay {
+    return _allTasks.where((t) {
+      if (t.dueDate == null) return false;
+      final d = t.dueDate!.toLocal();
+      return d.year == _selectedDate.year &&
+          d.month == _selectedDate.month &&
+          d.day == _selectedDate.day;
+    }).toList();
+  }
+
+  // Returns true if any tasks exist on a given day (for dot indicators)
+  bool _hasTasksOnDay(DateTime day) {
+    return _allTasks.any((t) {
+      if (t.dueDate == null) return false;
+      final d = t.dueDate!.toLocal();
+      return d.year == day.year && d.month == day.month && d.day == day.day;
+    });
+  }
+
+  String get _headerLabel {
+    final now = DateTime.now();
+    final d = _selectedDate;
+    if (d.year == now.year && d.month == now.month && d.day == now.day) {
+      return "Today's Tasks";
+    }
+    return 'Tasks for ${DateFormat('MMM d').format(d)}';
+  }
+
+  IconData _iconForTaskType(String? type) {
+    switch (type) {
+      case 'Water':
+        return Icons.water_drop_rounded;
+      case 'Fertilize':
+        return Icons.eco_rounded;
+      case 'Harvest':
+        return Icons.content_cut_rounded;
+      case 'Plant':
+        return Icons.grass_rounded;
+      case 'Prune':
+        return Icons.cut_rounded;
+      default:
+        return Icons.check_circle_outline_rounded;
+    }
+  }
+
+  Color _colorForTaskType(String? type) {
+    switch (type) {
+      case 'Water':
+        return const Color(0xFF4A90A4);
+      case 'Fertilize':
+        return const Color(0xFF7BA05B);
+      case 'Harvest':
+        return const Color(0xFFE0A43A);
+      case 'Plant':
+        return const Color(0xFF4E7A2E);
+      case 'Prune':
+        return const Color(0xFF9B59B6);
+      default:
+        return const Color(0xFF95A5A6);
+    }
+  }
+
+  Future<void> _toggleComplete(GardenTasksRow task) async {
+    final newVal = !(task.completed ?? false);
+    await GardenTasksTable().update(
+      data: {'completed': newVal},
+      matchingRows: (q) => q.eqOrNull('id', task.id),
+    );
+    await _loadTasks();
+  }
+
+  Future<void> _deleteTask(GardenTasksRow task) async {
+    await GardenTasksTable().delete(
+      matchingRows: (q) => q.eqOrNull('id', task.id),
+    );
+    await _loadTasks();
   }
 
   @override
   void dispose() {
-    _model.dispose();
-
+    _model.maybeDispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -52,7 +153,7 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
       },
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: Color(0xFFF6F4EC),
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             await showModalBottomSheet(
@@ -73,14 +174,14 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                   ),
                 );
               },
-            ).then((value) => safeSetState(() {}));
+            ).then((_) => _loadTasks());
           },
-          backgroundColor: Color(0xFF2D6A4F),
-          elevation: 8.0,
+          backgroundColor: FlutterFlowTheme.of(context).primary,
+          elevation: 4.0,
           child: Icon(
             Icons.add_rounded,
-            color: FlutterFlowTheme.of(context).info,
-            size: 24.0,
+            color: Colors.white,
+            size: 26.0,
           ),
         ),
         body: SingleChildScrollView(
@@ -88,111 +189,63 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
+              Container(
+                height: 1.0,
+                color: FlutterFlowTheme.of(context).alternate,
+              ),
               wrapWithModel(
                 model: _model.finalHeaderModel,
                 updateCallback: () => safeSetState(() {}),
-                child: FinalHeaderWidget(
-                  pageTitle: 'Growing Calendar',
-                ),
+                child: const FinalHeaderWidget(pageTitle: 'Growing Calendar'),
               ),
-              Align(
-                alignment: AlignmentDirectional(0.0, -1.0),
-                child: Padding(
-                  padding: EdgeInsets.all(15.0),
-                  child: Text(
-                    'Track every stage of your garden from seed to harvest.',
-                    textAlign: TextAlign.center,
-                    style: FlutterFlowTheme.of(context).bodyMedium.override(
-                          font: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w600,
-                            fontStyle: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .fontStyle,
-                          ),
-                          color: Color(0xFF5A5E5F),
-                          fontSize: 16.0,
+              // Month jump chips
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: FlutterFlowChoiceChips(
+                  options: [
+                    ChipData('Jan'), ChipData('Feb'), ChipData('Mar'),
+                    ChipData('Apr'), ChipData('May'), ChipData('Jun'),
+                    ChipData('Jul'), ChipData('Aug'), ChipData('Sep'),
+                    ChipData('Oct'), ChipData('Nov'), ChipData('Dec'),
+                  ],
+                  onChanged: (val) => safeSetState(
+                      () => _model.choiceChipsValue = val?.firstOrNull),
+                  selectedChipStyle: ChipStyle(
+                    backgroundColor: FlutterFlowTheme.of(context).primary,
+                    textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
+                          font: GoogleFonts.poppins(),
+                          color: Colors.white,
                           letterSpacing: 0.0,
-                          fontWeight: FontWeight.w600,
-                          fontStyle:
-                              FlutterFlowTheme.of(context).bodyMedium.fontStyle,
                         ),
+                    iconColor: Colors.white,
+                    iconSize: 16.0,
+                    elevation: 0.0,
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
+                  unselectedChipStyle: ChipStyle(
+                    backgroundColor:
+                        FlutterFlowTheme.of(context).secondaryBackground,
+                    textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
+                          font: GoogleFonts.poppins(),
+                          color: FlutterFlowTheme.of(context).secondaryText,
+                          letterSpacing: 0.0,
+                        ),
+                    iconColor: FlutterFlowTheme.of(context).secondaryText,
+                    iconSize: 16.0,
+                    elevation: 0.0,
+                    borderColor: FlutterFlowTheme.of(context).alternate,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  chipSpacing: 8.0,
+                  rowSpacing: 8.0,
+                  multiselect: false,
+                  alignment: WrapAlignment.center,
+                  controller: _model.choiceChipsValueController ??=
+                      FormFieldController<List<String>>([]),
+                  wrapped: true,
                 ),
               ),
-              FlutterFlowChoiceChips(
-                options: [
-                  ChipData('Jan'),
-                  ChipData('Feb'),
-                  ChipData('Mar'),
-                  ChipData('Apr'),
-                  ChipData('May'),
-                  ChipData('Jun'),
-                  ChipData('Jul'),
-                  ChipData('Aug'),
-                  ChipData('Sep'),
-                  ChipData('Oct'),
-                  ChipData('Nov'),
-                  ChipData('Dec')
-                ],
-                onChanged: (val) => safeSetState(
-                    () => _model.choiceChipsValue = val?.firstOrNull),
-                selectedChipStyle: ChipStyle(
-                  backgroundColor: Color(0xFFF58B7D),
-                  textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
-                        font: GoogleFonts.poppins(
-                          fontWeight: FlutterFlowTheme.of(context)
-                              .bodyMedium
-                              .fontWeight,
-                          fontStyle:
-                              FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                        ),
-                        color: FlutterFlowTheme.of(context).info,
-                        letterSpacing: 0.0,
-                        fontWeight:
-                            FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                      ),
-                  iconColor: FlutterFlowTheme.of(context).info,
-                  iconSize: 16.0,
-                  elevation: 0.0,
-                  borderColor: FlutterFlowTheme.of(context).primaryText,
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                unselectedChipStyle: ChipStyle(
-                  backgroundColor:
-                      FlutterFlowTheme.of(context).secondaryBackground,
-                  textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
-                        font: GoogleFonts.poppins(
-                          fontWeight: FlutterFlowTheme.of(context)
-                              .bodyMedium
-                              .fontWeight,
-                          fontStyle:
-                              FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                        ),
-                        color: FlutterFlowTheme.of(context).secondaryText,
-                        letterSpacing: 0.0,
-                        fontWeight:
-                            FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                      ),
-                  iconColor: FlutterFlowTheme.of(context).secondaryText,
-                  iconSize: 16.0,
-                  elevation: 0.0,
-                  borderColor: FlutterFlowTheme.of(context).primary,
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                chipSpacing: 8.0,
-                rowSpacing: 8.0,
-                multiselect: false,
-                alignment: WrapAlignment.center,
-                controller: _model.choiceChipsValueController ??=
-                    FormFieldController<List<String>>(
-                  [],
-                ),
-                wrapped: true,
-              ),
+              // Calendar
               FlutterFlowCalendar(
                 key: ValueKey(_model.choiceChipsValue ?? 'default'),
                 color: FlutterFlowTheme.of(context).primary,
@@ -203,300 +256,319 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                 initialDate: _model.choiceChipsValue != null
                     ? () {
                         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                        final monthIndex = months.indexOf(_model.choiceChipsValue!);
-                        if (monthIndex == -1) return null;
-                        final now = DateTime.now();
-                        return DateTime(now.year, monthIndex + 1, 1);
+                        final idx = months.indexOf(_model.choiceChipsValue!);
+                        if (idx == -1) return null;
+                        return DateTime(DateTime.now().year, idx + 1, 1);
                       }()
                     : null,
-                onChange: (DateTimeRange? newSelectedDate) {
-                  safeSetState(
-                      () => _model.calendarSelectedDay = newSelectedDate);
+                onChange: (DateTimeRange? range) {
+                  safeSetState(() {
+                    _model.calendarSelectedDay = range;
+                    if (range != null) {
+                      _selectedDate = range.start;
+                    }
+                  });
                 },
                 titleStyle: FlutterFlowTheme.of(context).titleLarge.override(
                       font: GoogleFonts.poppins(
-                        fontWeight:
-                            FlutterFlowTheme.of(context).titleLarge.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).titleLarge.fontStyle,
-                      ),
+                          fontWeight: FlutterFlowTheme.of(context)
+                              .titleLarge
+                              .fontWeight),
                       letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).titleLarge.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).titleLarge.fontStyle,
                     ),
-                dayOfWeekStyle: FlutterFlowTheme.of(context).bodyLarge.override(
-                      font: GoogleFonts.poppins(
-                        fontWeight:
-                            FlutterFlowTheme.of(context).bodyLarge.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).bodyLarge.fontStyle,
-                      ),
-                      fontSize: 14.0,
-                      letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).bodyLarge.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).bodyLarge.fontStyle,
-                    ),
+                dayOfWeekStyle:
+                    FlutterFlowTheme.of(context).bodyLarge.override(
+                          font: GoogleFonts.poppins(
+                              fontWeight: FlutterFlowTheme.of(context)
+                                  .bodyLarge
+                                  .fontWeight),
+                          fontSize: 14.0,
+                          letterSpacing: 0.0,
+                        ),
                 dateStyle: FlutterFlowTheme.of(context).bodyMedium.override(
                       font: GoogleFonts.poppins(
-                        fontWeight:
-                            FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                      ),
-                      color: Color(0xFF3E4B3C),
+                          fontWeight: FlutterFlowTheme.of(context)
+                              .bodyMedium
+                              .fontWeight),
                       letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).bodyMedium.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).bodyMedium.fontStyle,
                     ),
-                selectedDateStyle: FlutterFlowTheme.of(context)
-                    .titleSmall
-                    .override(
-                      font: GoogleFonts.poppins(
-                        fontWeight:
-                            FlutterFlowTheme.of(context).titleSmall.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).titleSmall.fontStyle,
-                      ),
-                      letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).titleSmall.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).titleSmall.fontStyle,
-                    ),
-                inactiveDateStyle: FlutterFlowTheme.of(context)
-                    .labelMedium
-                    .override(
-                      font: GoogleFonts.poppins(
-                        fontWeight:
-                            FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                        fontStyle:
-                            FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                      ),
-                      letterSpacing: 0.0,
-                      fontWeight:
-                          FlutterFlowTheme.of(context).labelMedium.fontWeight,
-                      fontStyle:
-                          FlutterFlowTheme.of(context).labelMedium.fontStyle,
-                    ),
+                selectedDateStyle:
+                    FlutterFlowTheme.of(context).titleSmall.override(
+                          font: GoogleFonts.poppins(
+                              fontWeight: FlutterFlowTheme.of(context)
+                                  .titleSmall
+                                  .fontWeight),
+                          letterSpacing: 0.0,
+                        ),
+                inactiveDateStyle:
+                    FlutterFlowTheme.of(context).labelMedium.override(
+                          font: GoogleFonts.poppins(
+                              fontWeight: FlutterFlowTheme.of(context)
+                                  .labelMedium
+                                  .fontWeight),
+                          letterSpacing: 0.0,
+                        ),
               ),
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Padding(
-                    padding:
-                        EdgeInsetsDirectional.fromSTEB(0.0, 20.0, 0.0, 0.0),
-                    child: Text(
-                      'Today\'s Garden Tasks',
-                      style: FlutterFlowTheme.of(context).bodyMedium.override(
+              // Tasks section
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _headerLabel,
+                      style: FlutterFlowTheme.of(context).titleMedium.override(
                             font: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .fontStyle,
-                            ),
-                            color: Color(0xFF3E4B3C),
-                            fontSize: 20.0,
+                                fontWeight: FontWeight.bold),
+                            color: FlutterFlowTheme.of(context).primaryText,
                             letterSpacing: 0.0,
                             fontWeight: FontWeight.bold,
-                            fontStyle: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .fontStyle,
-                            decoration: TextDecoration.underline,
                           ),
                     ),
-                  ),
-                ],
-              ),
-              FutureBuilder<List<GardenTasksRow>>(
-                future: GardenTasksTable().queryRows(
-                  queryFn: (q) => q
-                      .eqOrNull(
-                        'user_id',
-                        currentUserUid,
-                      )
-                      .order('due_date', ascending: true),
-                ),
-                builder: (context, snapshot) {
-                  // Customize what your widget looks like when it's loading.
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child: SizedBox(
-                        width: 50.0,
-                        height: 50.0,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            FlutterFlowTheme.of(context).primary,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                  List<GardenTasksRow> listViewGardenTasksRowList =
-                      snapshot.data!;
-
-                  return ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    itemCount: listViewGardenTasksRowList.length,
-                    itemBuilder: (context, listViewIndex) {
-                      final listViewGardenTasksRow =
-                          listViewGardenTasksRowList[listViewIndex];
-                      return Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Container(
-                          width: double.infinity,
-                          height: 60.0,
-                          decoration: BoxDecoration(
-                            color: FlutterFlowTheme.of(context)
-                                .secondaryBackground,
-                            borderRadius: BorderRadius.circular(16.0),
-                            border: Border.all(
-                              color: FlutterFlowTheme.of(context).primaryText,
+                    if (_tasksForSelectedDay.isNotEmpty)
+                      Text(
+                        '${_tasksForSelectedDay.length} task${_tasksForSelectedDay.length == 1 ? '' : 's'}',
+                        style: FlutterFlowTheme.of(context).bodySmall.override(
+                              font: GoogleFonts.poppins(),
+                              color:
+                                  FlutterFlowTheme.of(context).secondaryText,
+                              letterSpacing: 0.0,
                             ),
+                      ),
+                  ],
+                ),
+              ),
+              if (_tasksLoading)
+                const Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (_tasksForSelectedDay.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 48.0),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(28.0),
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context)
+                          .secondaryBackground,
+                      borderRadius: BorderRadius.circular(20.0),
+                      border: Border.all(
+                          color: FlutterFlowTheme.of(context).alternate),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.event_available_rounded,
+                          size: 40.0,
+                          color: FlutterFlowTheme.of(context).secondaryText,
+                        ),
+                        const SizedBox(height: 12.0),
+                        Text(
+                          'No tasks for this day',
+                          style: FlutterFlowTheme.of(context)
+                              .titleSmall
+                              .override(
+                                font: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600),
+                                color: FlutterFlowTheme.of(context)
+                                    .primaryText,
+                                letterSpacing: 0.0,
+                              ),
+                        ),
+                        const SizedBox(height: 6.0),
+                        Text(
+                          'Tap the + button to add a task.',
+                          style: FlutterFlowTheme.of(context)
+                              .bodySmall
+                              .override(
+                                font: GoogleFonts.poppins(),
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryText,
+                                letterSpacing: 0.0,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 80.0),
+                  child: Column(
+                    children: _tasksForSelectedDay.map((task) {
+                      final isComplete = task.completed ?? false;
+                      final taskColor = _colorForTaskType(task.taskType);
+                      return Dismissible(
+                        key: Key(task.id ?? UniqueKey().toString()),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20.0),
+                          margin: const EdgeInsets.only(bottom: 12.0),
+                          decoration: BoxDecoration(
+                            color: FlutterFlowTheme.of(context).error,
+                            borderRadius: BorderRadius.circular(16.0),
                           ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
+                          child: const Icon(Icons.delete_outline_rounded,
+                              color: Colors.white, size: 24.0),
+                        ),
+                        onDismissed: (_) => _deleteTask(task),
+                        child: GestureDetector(
+                          onTap: () => _toggleComplete(task),
+                          child: Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(bottom: 12.0),
+                            padding: const EdgeInsets.all(14.0),
+                            decoration: BoxDecoration(
+                              color: isComplete
+                                  ? FlutterFlowTheme.of(context)
+                                      .secondaryBackground
+                                      .withOpacity(0.6)
+                                  : FlutterFlowTheme.of(context)
+                                      .secondaryBackground,
+                              borderRadius: BorderRadius.circular(16.0),
+                              border: Border.all(
+                                color: isComplete
+                                    ? FlutterFlowTheme.of(context).alternate
+                                    : taskColor.withOpacity(0.35),
+                                width: 1.0,
+                              ),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Type icon
+                                Container(
+                                  width: 40.0,
+                                  height: 40.0,
+                                  decoration: BoxDecoration(
+                                    color: isComplete
+                                        ? FlutterFlowTheme.of(context)
+                                            .alternate
+                                        : taskColor.withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  child: Icon(
+                                    _iconForTaskType(task.taskType),
+                                    color: isComplete
+                                        ? FlutterFlowTheme.of(context)
+                                            .secondaryText
+                                        : taskColor,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const SizedBox(width: 12.0),
+                                // Task details
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            5.0, 3.0, 0.0, 0.0),
-                                        child: Icon(
-                                          Icons.water_drop,
-                                          color: FlutterFlowTheme.of(context)
-                                              .primaryText,
-                                          size: 24.0,
+                                      Text(
+                                        task.taskName ?? 'Task',
+                                        style: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              font: GoogleFonts.poppins(
+                                                  fontWeight: FontWeight.w600),
+                                              color: isComplete
+                                                  ? FlutterFlowTheme.of(context)
+                                                      .secondaryText
+                                                  : FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                              letterSpacing: 0.0,
+                                              decoration: isComplete
+                                                  ? TextDecoration.lineThrough
+                                                  : null,
+                                            ),
+                                      ),
+                                      if ((task.notes ?? '').isNotEmpty) ...[
+                                        const SizedBox(height: 3.0),
+                                        Text(
+                                          task.notes!,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodySmall
+                                              .override(
+                                                font: GoogleFonts.poppins(),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryText,
+                                                fontSize: 12.0,
+                                                letterSpacing: 0.0,
+                                              ),
                                         ),
+                                      ],
+                                      const SizedBox(height: 4.0),
+                                      Row(
+                                        children: [
+                                          if (task.taskType != null)
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0,
+                                                      vertical: 2.0),
+                                              decoration: BoxDecoration(
+                                                color: taskColor
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(6.0),
+                                              ),
+                                              child: Text(
+                                                task.taskType!,
+                                                style: TextStyle(
+                                                  color: taskColor,
+                                                  fontSize: 11.0,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        0.0, 5.0, 0.0, 0.0),
-                                    child: Text(
-                                      valueOrDefault<String>(
-                                        listViewGardenTasksRow.taskName,
-                                        'Task',
-                                      ),
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                            font: GoogleFonts.poppins(
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontStyle,
-                                            ),
-                                            fontSize: 16.0,
-                                            letterSpacing: 0.0,
-                                            fontWeight:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMedium
-                                                    .fontWeight,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMedium
-                                                    .fontStyle,
-                                          ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        60.0, 0.0, 0.0, 0.0),
-                                    child: SelectionArea(
-                                        child: Text(
-                                      'Add To Calendar',
-                                      textAlign: TextAlign.center,
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                            font: GoogleFonts.poppins(
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontStyle,
-                                            ),
-                                            color: FlutterFlowTheme.of(context)
-                                                .warning,
-                                            letterSpacing: 0.0,
-                                            fontWeight:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMedium
-                                                    .fontWeight,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMedium
-                                                    .fontStyle,
-                                          ),
-                                    )),
-                                  ),
-                                ].divide(SizedBox(width: 5.0)),
-                              ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    5.0, 0.0, 0.0, 5.0),
-                                child: Text(
-                                  valueOrDefault<String>(
-                                    listViewGardenTasksRow.dueDate?.toString(),
-                                    'No date',
-                                  ),
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        font: GoogleFonts.poppins(
-                                          fontWeight:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontWeight,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontStyle,
-                                        ),
-                                        color: FlutterFlowTheme.of(context)
-                                            .warning,
-                                        fontSize: 12.0,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontStyle,
-                                      ),
                                 ),
-                              ),
-                            ].divide(SizedBox(height: 10.0)),
+                                // Complete checkbox
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: AnimatedContainer(
+                                    duration:
+                                        const Duration(milliseconds: 200),
+                                    width: 24.0,
+                                    height: 24.0,
+                                    decoration: BoxDecoration(
+                                      color: isComplete
+                                          ? FlutterFlowTheme.of(context)
+                                              .primary
+                                          : Colors.transparent,
+                                      borderRadius:
+                                          BorderRadius.circular(6.0),
+                                      border: Border.all(
+                                        color: isComplete
+                                            ? FlutterFlowTheme.of(context)
+                                                .primary
+                                            : FlutterFlowTheme.of(context)
+                                                .alternate,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                    child: isComplete
+                                        ? const Icon(Icons.check_rounded,
+                                            color: Colors.white, size: 14.0)
+                                        : null,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
-                    },
-                  );
-                },
-              ),
+                    }).toList(),
+                  ),
+                ),
             ],
           ),
         ),

@@ -5,10 +5,12 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:convert';
 import 'dart:ui';
 import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'planner_overview_page_model.dart';
 export 'planner_overview_page_model.dart';
@@ -29,10 +31,78 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // Weather state
+  Map<String, dynamic>? _weatherData;
+  bool _weatherLoading = true;
+
+  static String _weatherEmoji(int code) {
+    if (code == 0) return '☀️';
+    if (code <= 3) return '⛅';
+    if (code <= 48) return '🌫️';
+    if (code <= 67) return '🌧️';
+    if (code <= 77) return '❄️';
+    if (code <= 82) return '🌦️';
+    return '⛈️';
+  }
+
+  static String _weatherDesc(int code) {
+    if (code == 0) return 'Sunny';
+    if (code <= 3) return 'Partly Cloudy';
+    if (code <= 48) return 'Foggy';
+    if (code <= 67) return 'Rainy';
+    if (code <= 77) return 'Snowy';
+    if (code <= 82) return 'Showers';
+    return 'Thunderstorm';
+  }
+
+  static String _dayLabel(String isoDate) {
+    final date = DateTime.tryParse(isoDate);
+    if (date == null) return '';
+    final now = DateTime.now();
+    final diff = date.difference(DateTime(now.year, now.month, now.day)).inDays;
+    if (diff == 0) return 'Today';
+    if (diff == 1) return 'Tomorrow';
+    return const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][date.weekday - 1];
+  }
+
+  Future<void> _fetchWeather() async {
+    try {
+      final locResp = await http.get(Uri.parse('http://ip-api.com/json')).timeout(const Duration(seconds: 5));
+      final loc = json.decode(locResp.body) as Map<String, dynamic>;
+      final lat = loc['lat'];
+      final lon = loc['lon'];
+      final city = (loc['city'] ?? 'Your Location') as String;
+
+      final wxResp = await http.get(Uri.parse(
+        'https://api.open-meteo.com/v1/forecast'
+        '?latitude=$lat&longitude=$lon'
+        '&current=temperature_2m,weathercode'
+        '&daily=temperature_2m_max,temperature_2m_min,weathercode'
+        '&temperature_unit=fahrenheit&timezone=auto&forecast_days=3',
+      )).timeout(const Duration(seconds: 5));
+      final wx = json.decode(wxResp.body) as Map<String, dynamic>;
+
+      if (mounted) {
+        setState(() {
+          _weatherData = {
+            'city': city,
+            'temp': (wx['current']['temperature_2m'] as num).round(),
+            'code': wx['current']['weathercode'] as int,
+            'daily': wx['daily'] as Map<String, dynamic>,
+          };
+          _weatherLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _weatherLoading = false);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => PlannerOverviewPageModel());
+    _fetchWeather();
   }
 
   @override
@@ -72,6 +142,47 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
               ),
         ),
       ],
+    );
+  }
+
+  Widget _insightBox(BuildContext context, {required Color color, required IconData icon, required String text}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.0),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(18.0),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 1.0),
+                child: Icon(icon, color: color, size: 20.0),
+              ),
+              SizedBox(width: 10.0),
+              Expanded(
+                child: Text(
+                  text,
+                  style: FlutterFlowTheme.of(context).bodyMedium.override(
+                        font: GoogleFonts.poppins(
+                          fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                          fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                        ),
+                        color: FlutterFlowTheme.of(context).primaryText,
+                        fontSize: 13.0,
+                        letterSpacing: 0.0,
+                        lineHeight: 1.4,
+                      ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -146,94 +257,71 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                 ),
               ),
               Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 20.0),
+                padding: EdgeInsetsDirectional.fromSTEB(16.0, 10.0, 16.0, 20.0),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    FFButtonWidget(
-                      onPressed: () async {
-                        context.pushNamed(CurrentGardens3Widget.routeName);
-                      },
-                      text: 'View Current Garden',
-                      options: FFButtonOptions(
-                        height: 40.0,
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                            16.0, 0.0, 16.0, 0.0),
-                        iconPadding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                        color: FlutterFlowTheme.of(context).primary,
-                        textStyle:
-                            FlutterFlowTheme.of(context).titleSmall.override(
-                                  font: GoogleFonts.poppins(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontStyle,
-                                  ),
-                                  color: Colors.white,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .titleSmall
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .titleSmall
-                                      .fontStyle,
-                                ),
-                        elevation: 0.0,
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 5.0, 0.0),
+                    Expanded(
                       child: FFButtonWidget(
                         onPressed: () async {
-                          context
-                              .pushNamed(PreviousGardensPage2Widget.routeName);
+                          context.pushNamed(CurrentGardens3Widget.routeName);
                         },
-                        text: 'View Past Gardens',
+                        text: 'View Current Garden',
                         options: FFButtonOptions(
+                          width: double.infinity,
                           height: 40.0,
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              16.0, 0.0, 16.0, 0.0),
-                          iconPadding: EdgeInsetsDirectional.fromSTEB(
-                              0.0, 0.0, 0.0, 0.0),
+                          padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
+                          iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
                           color: FlutterFlowTheme.of(context).primary,
-                          textStyle:
-                              FlutterFlowTheme.of(context).titleSmall.override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .titleSmall
-                                          .fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .titleSmall
-                                          .fontStyle,
-                                    ),
-                                    color: Colors.white,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontStyle,
-                                  ),
+                          textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                                font: GoogleFonts.poppins(
+                                  fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                                  fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                                ),
+                                color: Colors.white,
+                                fontSize: 13.0,
+                                letterSpacing: 0.0,
+                              ),
                           elevation: 0.0,
                           borderRadius: BorderRadius.circular(16.0),
                         ),
                       ),
                     ),
-                  ].divide(SizedBox(width: 5.0)),
+                    SizedBox(width: 8.0),
+                    Expanded(
+                      child: FFButtonWidget(
+                        onPressed: () async {
+                          context.pushNamed(PreviousGardensPage2Widget.routeName);
+                        },
+                        text: 'View Past Gardens',
+                        options: FFButtonOptions(
+                          width: double.infinity,
+                          height: 40.0,
+                          padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
+                          iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                          color: FlutterFlowTheme.of(context).primary,
+                          textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                                font: GoogleFonts.poppins(
+                                  fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                                  fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                                ),
+                                color: Colors.white,
+                                fontSize: 13.0,
+                                letterSpacing: 0.0,
+                              ),
+                          elevation: 0.0,
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Container(
                   width: double.infinity,
-                  height: 180.0,
                   decoration: BoxDecoration(
                     color: FlutterFlowTheme.of(context).secondaryBackground,
                     borderRadius: BorderRadius.circular(16.0),
@@ -499,56 +587,142 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Today in Your Garden...',
-                          style:
-                              FlutterFlowTheme.of(context).bodyMedium.override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w600,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .fontStyle,
+                    child: _weatherLoading
+                        ? Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12.0),
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    FlutterFlowTheme.of(context).primary),
+                                strokeWidth: 2.0,
+                              ),
+                            ),
+                          )
+                        : _weatherData == null
+                            ? Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Today in Your Garden...',
+                                    style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                          font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                          color: FlutterFlowTheme.of(context).primaryText,
+                                          fontSize: 20.0,
+                                          letterSpacing: 0.0,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                  SizedBox(height: 8.0),
+                                  Text(
+                                    'Weather unavailable — check your connection.',
+                                    textAlign: TextAlign.center,
+                                    style: FlutterFlowTheme.of(context).bodySmall.override(
+                                          font: GoogleFonts.poppins(
+                                              fontWeight: FlutterFlowTheme.of(context).bodySmall.fontWeight),
+                                          color: FlutterFlowTheme.of(context).secondaryText,
+                                          letterSpacing: 0.0,
+                                        ),
+                                  ),
+                                ],
+                              )
+                            : Builder(builder: (context) {
+                                final city = _weatherData!['city'] as String;
+                                final temp = _weatherData!['temp'] as int;
+                                final code = _weatherData!['code'] as int;
+                                final daily = _weatherData!['daily'] as Map<String, dynamic>;
+                                final dates = (daily['time'] as List).cast<String>();
+                                final maxTemps = (daily['temperature_2m_max'] as List).cast<num>();
+                                final minTemps = (daily['temperature_2m_min'] as List).cast<num>();
+                                final codes = (daily['weathercode'] as List).cast<int>();
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(Icons.location_on_rounded,
+                                            color: FlutterFlowTheme.of(context).primary, size: 16.0),
+                                        SizedBox(width: 4.0),
+                                        Text(
+                                          city,
+                                          style: FlutterFlowTheme.of(context).labelMedium.override(
+                                                font: GoogleFonts.poppins(
+                                                    fontWeight: FlutterFlowTheme.of(context).labelMedium.fontWeight),
+                                                letterSpacing: 0.0,
+                                              ),
+                                        ),
+                                      ],
                                     ),
-                                    color: FlutterFlowTheme.of(context).primaryText,
-                                    fontSize: 20.0,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.w600,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                  ),
-                        ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              0.0, 12.0, 0.0, 0.0),
-                          child: Text(
-                            '☀️ 64° Sunny\n🌱 Great week for planting lettuce & herbs\n💧 Rain expected Friday',
-                            textAlign: TextAlign.center,
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  font: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                  ),
-                                  color: FlutterFlowTheme.of(context).secondaryText,
-                                  fontSize: 16.0,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontStyle,
-                                  lineHeight: 1.6,
-                                ),
-                          ),
-                        ),
-                      ],
-                    ),
+                                    SizedBox(height: 8.0),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          _weatherEmoji(code),
+                                          style: TextStyle(fontSize: 36.0),
+                                        ),
+                                        SizedBox(width: 12.0),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              '$temp°F',
+                                              style: FlutterFlowTheme.of(context).displaySmall.override(
+                                                    font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                                                    letterSpacing: 0.0,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                            Text(
+                                              _weatherDesc(code),
+                                              style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                    font: GoogleFonts.poppins(
+                                                        fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight),
+                                                    color: FlutterFlowTheme.of(context).secondaryText,
+                                                    letterSpacing: 0.0,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 16.0),
+                                    Divider(color: FlutterFlowTheme.of(context).alternate, thickness: 1.0),
+                                    SizedBox(height: 12.0),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: List.generate(dates.length.clamp(0, 3), (i) {
+                                        return Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              _dayLabel(dates[i]),
+                                              style: FlutterFlowTheme.of(context).labelSmall.override(
+                                                    font: GoogleFonts.poppins(
+                                                        fontWeight: FlutterFlowTheme.of(context).labelSmall.fontWeight),
+                                                    letterSpacing: 0.0,
+                                                  ),
+                                            ),
+                                            SizedBox(height: 4.0),
+                                            Text(_weatherEmoji(codes[i]),
+                                                style: TextStyle(fontSize: 22.0)),
+                                            SizedBox(height: 4.0),
+                                            Text(
+                                              '${maxTemps[i].round()}° / ${minTemps[i].round()}°',
+                                              style: FlutterFlowTheme.of(context).bodySmall.override(
+                                                    font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                                    letterSpacing: 0.0,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                            ),
+                                          ],
+                                        );
+                                      }),
+                                    ),
+                                  ],
+                                );
+                              }),
                   ),
                 ),
               ),
@@ -601,216 +775,29 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                             ),
                       ),
                       SizedBox(height: 16.0),
-                      Padding(
-                        padding: EdgeInsets.all(14.0),
-                        child: Container(
-                          width: double.infinity,
-                          height: 60.0,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF7BA05B).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline_outlined,
-                                color: Color(0xFF7BA05B),
-                                size: 24.0,
-                              ),
-                              Align(
-                                alignment: AlignmentDirectional(-1.0, 0.0),
-                                child: Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'Basil improves tomato growth nearby.',
-                                    textAlign: TextAlign.start,
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          font: GoogleFonts.poppins(
-                                            fontWeight:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMedium
-                                                    .fontWeight,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMedium
-                                                    .fontStyle,
-                                          ),
-                                          color: FlutterFlowTheme.of(context).primaryText,
-                                          fontSize: 12.0,
-                                          letterSpacing: 0.0,
-                                          fontWeight:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontWeight,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontStyle,
-                                          lineHeight: 1.4,
-                                        ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      _insightBox(
+                        context,
+                        color: Color(0xFF7BA05B),
+                        icon: Icons.check_circle_outline_outlined,
+                        text: 'Basil improves tomato growth nearby.',
                       ),
-                      Padding(
-                        padding: EdgeInsets.all(14.0),
-                        child: Container(
-                          width: double.infinity,
-                          height: 60.0,
-                          decoration: BoxDecoration(
-                            color: Color(0xFFD9534F).withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Icon(
-                                Icons.warning_amber_rounded,
-                                color: Color(0xFFD9534F),
-                                size: 24.0,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(5.0),
-                                child: Text(
-                                  'Potatoes may spread disease to tomatoes.',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        font: GoogleFonts.poppins(
-                                          fontWeight:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontWeight,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontStyle,
-                                        ),
-                                        color: FlutterFlowTheme.of(context).primaryText,
-                                        fontSize: 12.0,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontStyle,
-                                        lineHeight: 1.4,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      _insightBox(
+                        context,
+                        color: Color(0xFFD9534F),
+                        icon: Icons.warning_amber_rounded,
+                        text: 'Potatoes may spread disease to tomatoes.',
                       ),
-                      Padding(
-                        padding: EdgeInsets.all(14.0),
-                        child: Container(
-                          width: double.infinity,
-                          height: 60.0,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF4A90A4).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Icon(
-                                Icons.water_drop,
-                                color: Color(0xFF4A90A4),
-                                size: 24.0,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(5.0),
-                                child: Text(
-                                  'Water peppers deeply tomorrow morning.',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        font: GoogleFonts.poppins(
-                                          fontWeight:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontWeight,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontStyle,
-                                        ),
-                                        color: FlutterFlowTheme.of(context).primaryText,
-                                        fontSize: 12.0,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontStyle,
-                                        lineHeight: 1.4,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      _insightBox(
+                        context,
+                        color: Color(0xFF4A90A4),
+                        icon: Icons.water_drop,
+                        text: 'Water peppers deeply tomorrow morning.',
                       ),
-                      Padding(
-                        padding: EdgeInsets.all(14.0),
-                        child: Container(
-                          width: double.infinity,
-                          height: 60.0,
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE0A43A).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Icon(
-                                Icons.wb_sunny,
-                                color: Color(0xFFE0A43A),
-                                size: 24.0,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(5.0),
-                                child: Text(
-                                  'Your garden receives ideal afternoon sunlight.',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        font: GoogleFonts.poppins(
-                                          fontWeight:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontWeight,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontStyle,
-                                        ),
-                                        color: FlutterFlowTheme.of(context).primaryText,
-                                        fontSize: 12.0,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontStyle,
-                                        lineHeight: 1.4,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      _insightBox(
+                        context,
+                        color: Color(0xFFE0A43A),
+                        icon: Icons.wb_sunny,
+                        text: 'Your garden receives ideal afternoon sunlight.',
                       ),
                       Align(
                         alignment: Alignment.centerRight,
@@ -839,6 +826,41 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                   ),
                 ),
               ),
+              // Shop CTA
+              Padding(
+                padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
+                child: InkWell(
+                  onTap: () => context.pushNamed(ShopPageWidget.routeName),
+                  borderRadius: BorderRadius.circular(16.0),
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF4A90A4).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16.0),
+                      border: Border.all(color: Color(0xFF4A90A4).withOpacity(0.35)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.storefront_outlined, color: Color(0xFF4A90A4), size: 22.0),
+                        SizedBox(width: 10.0),
+                        Text(
+                          'Shop Seeds, Tools & More',
+                          style: FlutterFlowTheme.of(context).titleSmall.override(
+                                font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                color: Color(0xFF4A90A4),
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        Spacer(),
+                        Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF4A90A4), size: 14.0),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               // Calendar CTA — full width button to avoid cutoff
               SafeArea(
                 top: false,
@@ -859,14 +881,17 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                         children: [
                           Icon(Icons.calendar_month_rounded, color: Colors.white, size: 22.0),
                           SizedBox(width: 10.0),
-                          Text(
-                            'See Upcoming Harvests in Calendar',
-                            style: FlutterFlowTheme.of(context).titleSmall.override(
-                                  font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                                  color: Colors.white,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                          Flexible(
+                            child: Text(
+                              'See Upcoming Harvests in Calendar',
+                              textAlign: TextAlign.center,
+                              style: FlutterFlowTheme.of(context).titleSmall.override(
+                                    font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                    color: Colors.white,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
                           ),
                         ],
                       ),

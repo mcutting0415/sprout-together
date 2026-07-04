@@ -169,6 +169,7 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                     child: ListView(
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       children: [
                         Column(

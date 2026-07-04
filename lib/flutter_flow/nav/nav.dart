@@ -192,6 +192,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           ),
         ),
         FFRoute(
+          name: ShopPageWidget.routeName,
+          path: ShopPageWidget.routePath,
+          builder: (context, params) => ShopPageWidget(),
+        ),
+        FFRoute(
           name: SettingsPage2Widget.routeName,
           path: SettingsPage2Widget.routePath,
           builder: (context, params) => SettingsPage2Widget(),

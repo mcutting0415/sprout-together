@@ -17,8 +17,7 @@ class JournalEntryWidget extends StatefulWidget {
     String? garden,
     String? title,
     String? preview,
-  })  : this.imgDesc = imgDesc ??
-            'https://dimg.dreamflow.cloud/v1/image/basket%20of%20red%20tomatoes%20on%20a%20wooden%20bench',
+  })  : this.imgDesc = imgDesc ?? '',
         this.date = date ?? 'October 12, 2023',
         this.garden = garden ?? 'Backyard Veggies',
         this.title = title ?? 'First Tomato Harvest!',
@@ -123,16 +122,54 @@ class _JournalEntryWidgetState extends State<JournalEntryWidget> {
                               FlutterFlowTheme.of(context).secondaryBackground,
                           shape: BoxShape.rectangle,
                         ),
-                        child: CachedNetworkImage(
-                          fadeInDuration: Duration(milliseconds: 0),
-                          fadeOutDuration: Duration(milliseconds: 0),
-                          imageUrl: valueOrDefault<String>(
-                            widget!.imgDesc,
-                            'https://dimg.dreamflow.cloud/v1/image/basket%20of%20red%20tomatoes%20on%20a%20wooden%20bench',
-                          ),
-                          fit: BoxFit.cover,
-                          alignment: Alignment(0.0, 0.0),
-                        ),
+                        child: (widget.imgDesc.isEmpty ||
+                                widget.imgDesc.startsWith('http') == false)
+                            ? Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(0xFF7BA05B),
+                                      Color(0xFF4E7A2E),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.eco_rounded,
+                                          color: Colors.white.withOpacity(0.9),
+                                          size: 36.0),
+                                      SizedBox(height: 6.0),
+                                      Text(
+                                        'Garden Journal',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.85),
+                                          fontSize: 13.0,
+                                          fontWeight: FontWeight.w600,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : CachedNetworkImage(
+                                fadeInDuration: Duration(milliseconds: 300),
+                                fadeOutDuration: Duration(milliseconds: 0),
+                                imageUrl: widget.imgDesc,
+                                fit: BoxFit.cover,
+                                alignment: Alignment(0.0, 0.0),
+                                errorWidget: (context, url, error) => Container(
+                                  color: Color(0xFF7BA05B).withOpacity(0.2),
+                                  child: Center(
+                                    child: Icon(Icons.eco_rounded,
+                                        color: Color(0xFF7BA05B), size: 36.0),
+                                  ),
+                                ),
+                              ),
                       ),
                       Padding(
                         padding: EdgeInsets.all(16.0),
