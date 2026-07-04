@@ -56,10 +56,10 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
       // If no initial goals exist yet, seed them from the profile's goals array
       final hasInitial = rows.any((r) => r.goalType == 'initial');
       if (!hasInitial) {
-        final profile = await ProfilesTable().querySingleRow(
+        final profileRows = await ProfilesTable().querySingleRow(
           queryFn: (q) => q.eqOrNull('id', currentUserUid),
         );
-        final profileGoals = (profile?.goals ?? []).cast<String>();
+        final profileGoals = profileRows.firstOrNull?.goals ?? [];
         if (profileGoals.isNotEmpty) {
           for (final g in profileGoals) {
             await UserGoalsTable().insert({
