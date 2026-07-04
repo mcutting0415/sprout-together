@@ -84,7 +84,7 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
                           imageQuality: 85,
                           allowPhoto: true,
                         );
-                        if (file != null) setModalState(() => selectedImage = file);
+                        if (file != null && file.isNotEmpty) setModalState(() => selectedImage = file.first);
                       },
                       child: Container(
                         width: double.infinity,

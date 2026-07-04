@@ -1,16 +1,11 @@
 import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
-import '/components/garden_card2/garden_card2_widget.dart';
-import '/components/insight_item/insight_item_widget.dart';
-import '/draft_pages/garden_detail_drawer/garden_detail_drawer_widget.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'current_gardens3_model.dart';
 export 'current_gardens3_model.dart';
@@ -27,40 +22,235 @@ class CurrentGardens3Widget extends StatefulWidget {
 
 class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
   late CurrentGardens3Model _model;
-
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  ProfilesRow? _profile;
+  List<GardensRow> _gardens = [];
+  List<UserSelectedPlantsRow> _selectedPlants = [];
+  List<PlantsRow> _plantDetails = [];
+  List<GardenTasksRow> _upcomingTasks = [];
+  List<GardenJournalEntriesRow> _recentJournal = [];
+  List<UserGoalsRow> _goals = [];
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => CurrentGardens3Model());
+    _loadData();
+  }
 
-    // On page load action.
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.currentGardensQuery = await GardensTable().queryRows(
-        queryFn: (q) => q
-            .eqOrNull(
-              'user_id',
-              currentUserUid,
-            )
-            .eqOrNull(
-              'is_archived',
-              false,
-            ),
+  Future<void> _loadData() async {
+    if (!mounted) return;
+    setState(() => _loading = true);
+    try {
+      final now = DateTime.now();
+      final weekLater = now.add(const Duration(days: 7));
+
+      final profileRows = await ProfilesTable().queryRows(
+        queryFn: (q) => q.eqOrNull('id', currentUserUid),
       );
-    });
+      final gardens = await GardensTable().queryRows(
+        queryFn: (q) =>
+            q.eqOrNull('user_id', currentUserUid).eqOrNull('is_archived', false),
+      );
+      final tasks = await GardenTasksTable().queryRows(
+        queryFn: (q) => q
+            .eqOrNull('user_id', currentUserUid)
+            .eqOrNull('completed', false)
+            .gte('due_date', now.toIso8601String())
+            .lte('due_date', weekLater.toIso8601String())
+            .order('due_date'),
+      );
+      final selectedPlants = await UserSelectedPlantsTable().queryRows(
+        queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+      );
+      final journal = await GardenJournalEntriesTable().queryRows(
+        queryFn: (q) => q
+            .eqOrNull('user_id', currentUserUid)
+            .order('entry_date', ascending: false)
+            .limit(3),
+      );
+      final goals = await UserGoalsTable().queryRows(
+        queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+      );
+      final plants = await PlantsTable().queryRows(
+        queryFn: (q) => q.order('plant_name'),
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _profile = profileRows.isNotEmpty ? profileRows.first : null;
+        _gardens = gardens;
+        _upcomingTasks = tasks;
+        _selectedPlants = selectedPlants;
+        _recentJournal = journal;
+        _goals = goals;
+        _plantDetails = plants;
+        _loading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  PlantsRow? _plantById(String plantId) {
+    try {
+      return _plantDetails.firstWhere((p) => p.id == plantId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String get _experienceLevel {
+    if (_profile?.experienceLevel != null &&
+        _profile!.experienceLevel!.isNotEmpty) {
+      return _profile!.experienceLevel!;
+    }
+    final appLevel = FFAppState().setupExperienceLevel;
+    return appLevel.isNotEmpty ? appLevel : 'Beginner';
+  }
+
+  List<Map<String, dynamic>> get _tips {
+    switch (_experienceLevel) {
+      case 'Advanced':
+        return [
+          {
+            'icon': Icons.science_rounded,
+            'color': const Color(0xFF4E7A2E),
+            'text':
+                'Rotate plant families each season to break pest and disease cycles naturally.',
+          },
+          {
+            'icon': Icons.water_rounded,
+            'color': const Color(0xFF4A90A4),
+            'text':
+                'Monitor soil pH weekly — most vegetables thrive between 6.0 and 7.0.',
+          },
+          {
+            'icon': Icons.layers_rounded,
+            'color': const Color(0xFFE0A43A),
+            'text':
+                'Layer green and brown compost 1:2 to maintain 55–65°C and speed decomposition.',
+          },
+          {
+            'icon': Icons.bug_report_rounded,
+            'color': const Color(0xFFD9534F),
+            'text':
+                'Introduce beneficial insects like lacewings or parasitic wasps for long-term pest suppression.',
+          },
+        ];
+      case 'Intermediate':
+        return [
+          {
+            'icon': Icons.grass_rounded,
+            'color': const Color(0xFF4E7A2E),
+            'text':
+                'Pinch suckers on tomatoes weekly to redirect energy into fruit production.',
+          },
+          {
+            'icon': Icons.pest_control_rounded,
+            'color': const Color(0xFFD9534F),
+            'text':
+                'Check leaf undersides for aphids — a strong blast of water dislodges most colonies.',
+          },
+          {
+            'icon': Icons.thermostat_rounded,
+            'color': const Color(0xFF4A90A4),
+            'text':
+                'Harden off seedlings over 7–10 days to prevent transplant shock before moving outdoors.',
+          },
+          {
+            'icon': Icons.compost_rounded,
+            'color': const Color(0xFFE0A43A),
+            'text':
+                'Side-dress heavy feeders like corn and squash with compost mid-season.',
+          },
+        ];
+      default: // Beginner
+        return [
+          {
+            'icon': Icons.water_drop_rounded,
+            'color': const Color(0xFF4A90A4),
+            'text':
+                'Water in the morning so leaves dry before nighttime — this prevents mold and fungal disease.',
+          },
+          {
+            'icon': Icons.wb_sunny_rounded,
+            'color': const Color(0xFFE0A43A),
+            'text':
+                'Most vegetables need 6–8 hours of direct sun per day. Track which spots in your yard get shade.',
+          },
+          {
+            'icon': Icons.eco_rounded,
+            'color': const Color(0xFF4E7A2E),
+            'text':
+                'Start with easy wins: lettuce, radishes, and zucchini grow fast and are hard to mess up.',
+          },
+          {
+            'icon': Icons.spa_rounded,
+            'color': const Color(0xFF9C6EA3),
+            'text':
+                'Mulch around plants keeps soil moist, suppresses weeds, and keeps roots cool in summer.',
+          },
+        ];
+    }
+  }
+
+  String _taskDayLabel(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final d = DateTime(date.year, date.month, date.day);
+    final diff = d.difference(today).inDays;
+    if (diff == 0) return 'Today';
+    if (diff == 1) return 'Tomorrow';
+    return DateFormat('EEE, MMM d').format(date);
+  }
+
+  IconData _taskIcon(String? type) {
+    switch (type) {
+      case 'Water':
+        return Icons.water_drop_rounded;
+      case 'Fertilize':
+        return Icons.eco_rounded;
+      case 'Prune':
+        return Icons.content_cut_rounded;
+      case 'Harvest':
+        return Icons.grass_rounded;
+      case 'Plant':
+        return Icons.spa_rounded;
+      default:
+        return Icons.check_circle_outline_rounded;
+    }
+  }
+
+  Color _taskColor(String? type) {
+    switch (type) {
+      case 'Water':
+        return const Color(0xFF4A90A4);
+      case 'Fertilize':
+        return const Color(0xFF4E7A2E);
+      case 'Prune':
+        return const Color(0xFFE0A43A);
+      case 'Harvest':
+        return const Color(0xFF7BA05B);
+      case 'Plant':
+        return const Color(0xFF9C6EA3);
+      default:
+        return const Color(0xFF888888);
+    }
   }
 
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
+    final theme = FlutterFlowTheme.of(context);
 
     return GestureDetector(
       onTap: () {
@@ -69,252 +259,647 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
       },
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        body: Stack(
+        backgroundColor: theme.primaryBackground,
+        body: Column(
           children: [
-            SingleChildScrollView(
-              primary: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(
-                    height: 1.0,
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).alternate,
-                      shape: BoxShape.rectangle,
-                    ),
-                  ),
-                  wrapWithModel(
-                    model: _model.finalHeaderModel,
-                    updateCallback: () => safeSetState(() {}),
-                    child: FinalHeaderWidget(
-                      pageTitle: 'Current Gardens',
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsetsDirectional.fromSTEB(0.0, 20.0, 0.0, 10.0),
-                    child: FutureBuilder<List<GardensRow>>(
-                      future: GardensTable().queryRows(
-                        queryFn: (q) => q.eqOrNull(
-                          'user_id',
-                          currentUserUid,
+            Container(
+              height: 1.0,
+              color: theme.alternate,
+            ),
+            wrapWithModel(
+              model: _model.finalHeaderModel,
+              updateCallback: () => safeSetState(() {}),
+              child: const FinalHeaderWidget(
+                pageTitle: 'Garden Insights',
+              ),
+            ),
+            Expanded(
+              child: _loading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(theme.primary),
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _loadData,
+                      color: theme.primary,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: 40.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildStatsRow(theme),
+                            const SizedBox(height: 8.0),
+                            _buildTipsSection(theme),
+                            _buildUpcomingTasksSection(theme),
+                            _buildGardensSection(theme),
+                            _buildPlantsSection(theme),
+                            _buildJournalSection(theme),
+                          ],
                         ),
                       ),
-                      builder: (context, snapshot) {
-                        // Customize what your widget looks like when it's loading.
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: SizedBox(
-                              width: 50.0,
-                              height: 50.0,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  FlutterFlowTheme.of(context).primary,
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-                        List<GardensRow> listViewGardensRowList =
-                            snapshot.data!;
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-                        return ListView.separated(
-                          padding: EdgeInsets.zero,
-                          shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          itemCount: listViewGardensRowList.length,
-                          separatorBuilder: (_, __) => SizedBox(height: 10.0),
-                          itemBuilder: (context, listViewIndex) {
-                            final listViewGardensRow =
-                                listViewGardensRowList[listViewIndex];
-                            return InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                FFAppState().selectedGardenIDForDetail =
-                                    listViewGardensRow.id!;
-                                FFAppState().isGardenDetailOpen = true;
-                                safeSetState(() {});
-                              },
-                              child: wrapWithModel(
-                                model: _model.gardenCardModels1.getModel(
-                                  listViewIndex.toString(),
-                                  listViewIndex,
-                                ),
-                                updateCallback: () => safeSetState(() {}),
-                                child: GardenCard2Widget(
-                                  key: Key(
-                                    'Key53v_${listViewIndex.toString()}',
-                                  ),
-                                  emoji: '',
-                                  title: listViewGardensRow.gardenName,
-                                  count:
-                                      '${listViewGardensRow.width?.toString()}${listViewGardensRow.length?.toString()}',
-                                  status: '',
-                                  plants: '',
-                                  gardenID: listViewGardensRow.gardenName!,
+  // ── STATS ROW ──────────────────────────────────────────────────────────────
+  Widget _buildStatsRow(FlutterFlowTheme theme) {
+    final completedGoals = _goals.where((g) => g.completed).length;
+    final totalGoals = _goals.length;
+    final goalsText = totalGoals == 0
+        ? '–'
+        : '$completedGoals/$totalGoals';
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 8.0),
+      child: Row(
+        children: [
+          _statCard(theme, icon: Icons.yard_rounded, label: 'Gardens',
+              value: '${_gardens.length}', color: const Color(0xFF4E7A2E)),
+          const SizedBox(width: 10.0),
+          _statCard(theme, icon: Icons.local_florist_rounded, label: 'Plants',
+              value: '${_selectedPlants.length}', color: const Color(0xFF7BA05B)),
+          const SizedBox(width: 10.0),
+          _statCard(theme, icon: Icons.calendar_today_rounded, label: 'Due This Week',
+              value: '${_upcomingTasks.length}', color: const Color(0xFF4A90A4)),
+          const SizedBox(width: 10.0),
+          _statCard(theme, icon: Icons.flag_rounded, label: 'Goals',
+              value: goalsText, color: const Color(0xFFE0A43A)),
+        ],
+      ),
+    );
+  }
+
+  Widget _statCard(
+    FlutterFlowTheme theme, {
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(14.0),
+          border: Border.all(color: color.withOpacity(0.25)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 22.0),
+            const SizedBox(height: 4.0),
+            Text(
+              value,
+              style: GoogleFonts.poppins(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: theme.primaryText,
+              ),
+            ),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 10.0,
+                color: theme.secondaryText,
+                height: 1.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── TIPS FOR YOUR LEVEL ────────────────────────────────────────────────────
+  Widget _buildTipsSection(FlutterFlowTheme theme) {
+    final tips = _tips;
+    final levelColor = _experienceLevel == 'Advanced'
+        ? const Color(0xFF9C6EA3)
+        : _experienceLevel == 'Intermediate'
+            ? const Color(0xFFE0A43A)
+            : const Color(0xFF4A90A4);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionHeader(
+            theme,
+            icon: Icons.lightbulb_rounded,
+            title: 'Tips for You',
+            badge: _experienceLevel,
+            badgeColor: levelColor,
+          ),
+          const SizedBox(height: 12.0),
+          ...tips.map((tip) => _tipCard(theme, tip)),
+          const SizedBox(height: 24.0),
+        ],
+      ),
+    );
+  }
+
+  Widget _tipCard(FlutterFlowTheme theme, Map<String, dynamic> tip) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10.0),
+      padding: const EdgeInsets.all(14.0),
+      decoration: BoxDecoration(
+        color: (tip['color'] as Color).withOpacity(0.08),
+        borderRadius: BorderRadius.circular(14.0),
+        border: Border.all(color: (tip['color'] as Color).withOpacity(0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 36.0,
+            height: 36.0,
+            decoration: BoxDecoration(
+              color: (tip['color'] as Color).withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(tip['icon'] as IconData,
+                color: tip['color'] as Color, size: 18.0),
+          ),
+          const SizedBox(width: 12.0),
+          Expanded(
+            child: Text(
+              tip['text'] as String,
+              style: GoogleFonts.poppins(
+                fontSize: 13.0,
+                height: 1.5,
+                color: theme.primaryText,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── UPCOMING TASKS ─────────────────────────────────────────────────────────
+  Widget _buildUpcomingTasksSection(FlutterFlowTheme theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionHeader(
+            theme,
+            icon: Icons.calendar_month_rounded,
+            title: 'Upcoming Tasks',
+            subtitle: 'Next 7 days',
+          ),
+          const SizedBox(height: 12.0),
+          if (_upcomingTasks.isEmpty)
+            _emptyState(theme,
+                icon: Icons.calendar_today_rounded,
+                message: 'No tasks due this week.\nAdd tasks in the Growing Calendar.')
+          else
+            Column(
+              children: _upcomingTasks.map((task) {
+                final color = _taskColor(task.taskType);
+                final dueDate = task.dueDate;
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14.0, vertical: 12.0),
+                  decoration: BoxDecoration(
+                    color: theme.secondaryBackground,
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(color: theme.alternate),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 34.0,
+                        height: 34.0,
+                        decoration: BoxDecoration(
+                          color: color.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(_taskIcon(task.taskType),
+                            color: color, size: 16.0),
+                      ),
+                      const SizedBox(width: 12.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              task.taskName ?? 'Task',
+                              style: GoogleFonts.poppins(
+                                fontSize: 13.0,
+                                fontWeight: FontWeight.w600,
+                                color: theme.primaryText,
+                              ),
+                            ),
+                            if (dueDate != null)
+                              Text(
+                                _taskDayLabel(dueDate),
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11.0,
+                                  color: theme.secondaryText,
                                 ),
                               ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(24.0),
-                    child: ListView(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.lightbulb_rounded,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  size: 20.0,
-                                ),
-                                Text(
-                                  'Garden Insights',
-                                  style: FlutterFlowTheme.of(context)
-                                      .titleMedium
-                                      .override(
-                                        font: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.bold,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .titleMedium
-                                                  .fontStyle,
-                                        ),
-                                        color: FlutterFlowTheme.of(context)
-                                            .primaryText,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .titleMedium
-                                            .fontStyle,
-                                        lineHeight: 1.4,
-                                      ),
-                                ),
-                              ].divide(SizedBox(width: 8.0)),
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                wrapWithModel(
-                                  model: _model.insightItemModel1,
-                                  updateCallback: () => safeSetState(() {}),
-                                  child: InsightItemWidget(
-                                    tone: FlutterFlowTheme.of(context).info,
-                                    icon: Icon(
-                                      Icons.water_drop_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      size: 18.0,
-                                    ),
-                                    message: 'Water Patio Containers Tomorrow',
-                                  ),
-                                ),
-                                wrapWithModel(
-                                  model: _model.insightItemModel2,
-                                  updateCallback: () => safeSetState(() {}),
-                                  child: InsightItemWidget(
-                                    tone: FlutterFlowTheme.of(context).tertiary,
-                                    icon: Icon(
-                                      Icons.content_cut_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      size: 18.0,
-                                    ),
-                                    message: 'Tomatoes Ready To Prune',
-                                  ),
-                                ),
-                                wrapWithModel(
-                                  model: _model.insightItemModel3,
-                                  updateCallback: () => safeSetState(() {}),
-                                  child: InsightItemWidget(
-                                    tone: FlutterFlowTheme.of(context).success,
-                                    icon: Icon(
-                                      Icons.eco_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      size: 18.0,
-                                    ),
-                                    message: 'Basil Ready To Harvest',
-                                  ),
-                                ),
-                              ].divide(SizedBox(height: 8.0)),
-                            ),
-                          ].divide(SizedBox(height: 16.0)),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      if (task.taskType != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 3.0),
+                          decoration: BoxDecoration(
+                            color: color.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Text(
+                            task.taskType!,
+                            style: GoogleFonts.poppins(
+                              fontSize: 10.0,
+                              fontWeight: FontWeight.w600,
+                              color: color,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                  Container(
-                    height: 24.0,
+                );
+              }).toList(),
+            ),
+          const SizedBox(height: 24.0),
+        ],
+      ),
+    );
+  }
+
+  // ── YOUR GARDENS ──────────────────────────────────────────────────────────
+  Widget _buildGardensSection(FlutterFlowTheme theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionHeader(
+            theme,
+            icon: Icons.yard_rounded,
+            title: 'Your Gardens',
+          ),
+          const SizedBox(height: 12.0),
+          if (_gardens.isEmpty)
+            _emptyState(theme,
+                icon: Icons.yard_outlined,
+                message: 'No gardens yet. Create your first garden to get started.')
+          else
+            Column(
+              children: _gardens.map((g) => _gardenCard(theme, g)).toList(),
+            ),
+          const SizedBox(height: 24.0),
+        ],
+      ),
+    );
+  }
+
+  Widget _gardenCard(FlutterFlowTheme theme, GardensRow garden) {
+    final size = (garden.width != null && garden.length != null)
+        ? '${garden.width} × ${garden.length} ${garden.measurementUnit ?? 'ft'}'
+        : null;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10.0),
+      padding: const EdgeInsets.all(14.0),
+      decoration: BoxDecoration(
+        color: theme.secondaryBackground,
+        borderRadius: BorderRadius.circular(14.0),
+        border: Border.all(color: theme.alternate),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42.0,
+            height: 42.0,
+            decoration: BoxDecoration(
+              color: const Color(0xFF4E7A2E).withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: const Icon(Icons.yard_rounded,
+                color: Color(0xFF4E7A2E), size: 22.0),
+          ),
+          const SizedBox(width: 12.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  garden.gardenName ?? 'Garden',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w600,
+                    color: theme.primaryText,
+                  ),
+                ),
+                Row(
+                  children: [
+                    if (garden.gardenType != null) ...[
+                      Text(
+                        garden.gardenType!,
+                        style: GoogleFonts.poppins(
+                            fontSize: 11.0, color: theme.secondaryText),
+                      ),
+                      if (size != null)
+                        Text(' · ',
+                            style: GoogleFonts.poppins(
+                                fontSize: 11.0, color: theme.secondaryText)),
+                    ],
+                    if (size != null)
+                      Text(
+                        size,
+                        style: GoogleFonts.poppins(
+                            fontSize: 11.0, color: theme.secondaryText),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          if (garden.sunExposure != null)
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE0A43A).withOpacity(0.15),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.wb_sunny_rounded,
+                      color: Color(0xFFE0A43A), size: 12.0),
+                  const SizedBox(width: 3.0),
+                  Text(
+                    garden.sunExposure!,
+                    style: GoogleFonts.poppins(
+                      fontSize: 10.0,
+                      color: const Color(0xFFE0A43A),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
             ),
-            if (FFAppState().isGardenDetailOpen)
-              FutureBuilder<List<GardensRow>>(
-                future: GardensTable().querySingleRow(
-                  queryFn: (q) => q.eqOrNull(
-                    'user_id',
-                    currentUserUid,
+        ],
+      ),
+    );
+  }
+
+  // ── PLANTS YOU WANT TO GROW ────────────────────────────────────────────────
+  Widget _buildPlantsSection(FlutterFlowTheme theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionHeader(
+            theme,
+            icon: Icons.local_florist_rounded,
+            title: 'Plants to Grow',
+            subtitle: '${_selectedPlants.length} selected',
+          ),
+          const SizedBox(height: 12.0),
+          if (_selectedPlants.isEmpty)
+            _emptyState(theme,
+                icon: Icons.local_florist_outlined,
+                message:
+                    'No plants selected yet. Add plants in the Planner to see insights here.')
+          else
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
+              children: _selectedPlants.map((sp) {
+                final plant = _plantById(sp.plantId);
+                final name = plant?.plantName ?? 'Unknown Plant';
+                final dth = plant?.daysToHarvest;
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 8.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4E7A2E).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20.0),
+                    border: Border.all(
+                        color: const Color(0xFF4E7A2E).withOpacity(0.25)),
                   ),
-                ),
-                builder: (context, snapshot) {
-                  // Customize what your widget looks like when it's loading.
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child: SizedBox(
-                        width: 50.0,
-                        height: 50.0,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            FlutterFlowTheme.of(context).primary,
-                          ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.eco_rounded,
+                          color: Color(0xFF4E7A2E), size: 14.0),
+                      const SizedBox(width: 6.0),
+                      Text(
+                        name,
+                        style: GoogleFonts.poppins(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w500,
+                          color: theme.primaryText,
                         ),
                       ),
-                    );
-                  }
-                  List<GardensRow> gardenDetailDrawerGardensRowList =
-                      snapshot.data!;
+                      if (dth != null) ...[
+                        const SizedBox(width: 4.0),
+                        Text(
+                          '· ${dth}d',
+                          style: GoogleFonts.poppins(
+                            fontSize: 11.0,
+                            color: theme.secondaryText,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          const SizedBox(height: 24.0),
+        ],
+      ),
+    );
+  }
 
-                  final gardenDetailDrawerGardensRow =
-                      gardenDetailDrawerGardensRowList.isNotEmpty
-                          ? gardenDetailDrawerGardensRowList.first
-                          : null;
+  // ── RECENT JOURNAL ─────────────────────────────────────────────────────────
+  Widget _buildJournalSection(FlutterFlowTheme theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionHeader(
+            theme,
+            icon: Icons.menu_book_rounded,
+            title: 'Recent Journal',
+          ),
+          const SizedBox(height: 12.0),
+          if (_recentJournal.isEmpty)
+            _emptyState(theme,
+                icon: Icons.menu_book_outlined,
+                message: 'No journal entries yet.\nStart logging your garden progress.')
+          else
+            Column(
+              children: _recentJournal.map((e) => _journalCard(theme, e)).toList(),
+            ),
+          const SizedBox(height: 24.0),
+        ],
+      ),
+    );
+  }
 
-                  return wrapWithModel(
-                    model: _model.gardenDetailDrawerModel,
-                    updateCallback: () => safeSetState(() {}),
-                    child: GardenDetailDrawerWidget(
-                      gardenID: gardenDetailDrawerGardensRow!.id!,
-                      gardenName: gardenDetailDrawerGardensRow!.gardenName!,
+  Widget _journalCard(FlutterFlowTheme theme, GardenJournalEntriesRow entry) {
+    final dateStr = entry.entryDate != null
+        ? DateFormat('MMM d, yyyy').format(entry.entryDate!)
+        : entry.createdAt != null
+            ? DateFormat('MMM d, yyyy').format(entry.createdAt!)
+            : '';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.all(14.0),
+      decoration: BoxDecoration(
+        color: theme.secondaryBackground,
+        borderRadius: BorderRadius.circular(14.0),
+        border: Border.all(color: theme.alternate),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 34.0,
+            height: 34.0,
+            decoration: BoxDecoration(
+              color: const Color(0xFF9C6EA3).withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.edit_note_rounded,
+                color: Color(0xFF9C6EA3), size: 18.0),
+          ),
+          const SizedBox(width: 12.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entry.title ?? 'Journal Entry',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13.0,
+                    fontWeight: FontWeight.w600,
+                    color: theme.primaryText,
+                  ),
+                ),
+                if (entry.entryText != null)
+                  Text(
+                    entry.entryText!.length > 80
+                        ? '${entry.entryText!.substring(0, 80)}…'
+                        : entry.entryText!,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12.0,
+                      color: theme.secondaryText,
+                      height: 1.4,
                     ),
-                  );
-                },
-              ),
-          ],
+                  ),
+                if (dateStr.isNotEmpty)
+                  Text(
+                    dateStr,
+                    style: GoogleFonts.poppins(
+                      fontSize: 10.0,
+                      color: theme.secondaryText,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── SHARED HELPERS ─────────────────────────────────────────────────────────
+  Widget _sectionHeader(
+    FlutterFlowTheme theme, {
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    String? badge,
+    Color? badgeColor,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(icon, color: theme.primary, size: 20.0),
+        const SizedBox(width: 8.0),
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: theme.primaryText,
+          ),
         ),
+        const Spacer(),
+        if (badge != null)
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
+            decoration: BoxDecoration(
+              color: (badgeColor ?? theme.primary).withOpacity(0.15),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Text(
+              badge,
+              style: GoogleFonts.poppins(
+                fontSize: 11.0,
+                fontWeight: FontWeight.w600,
+                color: badgeColor ?? theme.primary,
+              ),
+            ),
+          ),
+        if (subtitle != null)
+          Text(
+            subtitle,
+            style: GoogleFonts.poppins(
+              fontSize: 12.0,
+              color: theme.secondaryText,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _emptyState(FlutterFlowTheme theme,
+      {required IconData icon, required String message}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 16.0),
+      decoration: BoxDecoration(
+        color: theme.secondaryBackground,
+        borderRadius: BorderRadius.circular(14.0),
+        border: Border.all(color: theme.alternate),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: theme.secondaryText, size: 32.0),
+          const SizedBox(height: 8.0),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 13.0,
+              color: theme.secondaryText,
+              height: 1.5,
+            ),
+          ),
+        ],
       ),
     );
   }

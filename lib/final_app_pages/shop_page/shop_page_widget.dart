@@ -50,7 +50,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
 
   Future<void> _loadProducts() async {
     try {
-      final response = await SupabaseClient.client
+      final response = await SupaFlow.client
           .from('shop_products')
           .select()
           .eq('is_active', true)

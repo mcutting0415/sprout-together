@@ -144,7 +144,7 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
   Future<void> _loadPurchaseLinks() async {
     if (widget.plantID == null) return;
     try {
-      final response = await SupabaseClient.client
+      final response = await SupaFlow.client
           .from('plant_purchase_links')
           .select()
           .eq('plant_id', widget.plantID!)
