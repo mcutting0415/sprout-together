@@ -38,3 +38,7 @@ export '/final_app_pages/common_questions_page/common_questions_page_widget.dart
     show CommonQuestionsPageWidget;
 export '/final_app_pages/update_password_page/update_password_page_widget.dart'
     show UpdatePasswordPageWidget;
+export '/final_app_pages/garden_goals_page/garden_goals_page_widget.dart'
+    show GardenGoalsPageWidget;
+export '/final_app_pages/garden_tips_page/garden_tips_page_widget.dart'
+    show GardenTipsPageWidget;

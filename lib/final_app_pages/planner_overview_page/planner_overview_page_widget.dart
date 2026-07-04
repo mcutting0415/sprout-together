@@ -12,6 +12,7 @@ import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'planner_overview_page_model.dart';
 export 'planner_overview_page_model.dart';
@@ -73,11 +74,80 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
 
   Future<void> _fetchWeather() async {
     try {
-      final locResp = await http.get(Uri.parse('http://ip-api.com/json')).timeout(const Duration(seconds: 5));
-      final loc = json.decode(locResp.body) as Map<String, dynamic>;
-      final lat = loc['lat'];
-      final lon = loc['lon'];
-      final city = (loc['city'] ?? 'Your Location') as String;
+      double? lat;
+      double? lon;
+      String city = 'Your Location';
+
+      // Try GPS first
+      try {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+        if (permission == LocationPermission.whileInUse ||
+            permission == LocationPermission.always) {
+          final pos = await Geolocator.getCurrentPosition(
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.low,
+              timeLimit: Duration(seconds: 8),
+            ),
+          );
+          lat = pos.latitude;
+          lon = pos.longitude;
+          // Reverse-geocode city name via open-meteo geocoding isn't available;
+          // use ip-api just for city name after we have coords
+          try {
+            final nameResp = await http
+                .get(Uri.parse(
+                    'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lon&format=json'))
+                .timeout(const Duration(seconds: 5));
+            final nameData = json.decode(nameResp.body) as Map<String, dynamic>;
+            final address = nameData['address'] as Map<String, dynamic>?;
+            city = (address?['city'] ??
+                    address?['town'] ??
+                    address?['village'] ??
+                    address?['county'] ??
+                    'Your Location') as String;
+          } catch (_) {}
+        }
+      } catch (_) {}
+
+      // Fall back to user's zip code (from onboarding) if GPS not available
+      if (lat == null || lon == null) {
+        try {
+          final profiles = await ProfilesTable().queryRows(
+            queryFn: (q) => q.eqOrNull('id', currentUserUid),
+          );
+          final zipCode = profiles.firstOrNull?.zipCode;
+          if (zipCode != null && zipCode.isNotEmpty) {
+            final geoResp = await http
+                .get(Uri.parse(
+                    'https://nominatim.openstreetmap.org/search?postalcode=${Uri.encodeComponent(zipCode)}&country=us&format=json&limit=1'))
+                .timeout(const Duration(seconds: 5));
+            final geoData = json.decode(geoResp.body) as List<dynamic>;
+            if (geoData.isNotEmpty) {
+              final place = geoData.first as Map<String, dynamic>;
+              lat = double.tryParse(place['lat'] as String? ?? '');
+              lon = double.tryParse(place['lon'] as String? ?? '');
+              city = (place['display_name'] as String? ?? 'Your Location')
+                  .split(',')
+                  .first
+                  .trim();
+            }
+          }
+        } catch (_) {}
+      }
+
+      // Last resort: IP geolocation
+      if (lat == null || lon == null) {
+        final locResp = await http
+            .get(Uri.parse('http://ip-api.com/json'))
+            .timeout(const Duration(seconds: 5));
+        final loc = json.decode(locResp.body) as Map<String, dynamic>;
+        lat = (loc['lat'] as num).toDouble();
+        lon = (loc['lon'] as num).toDouble();
+        city = (loc['city'] ?? 'Your Location') as String;
+      }
 
       final wxResp = await http.get(Uri.parse(
         'https://api.open-meteo.com/v1/forecast'
@@ -590,7 +660,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                     padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
                                     iconAlignment: IconAlignment.start,
                                     iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                                    color: const Color(0xFF4E7A2E),
+                                    color: const Color(0xFFD4685F),
                                     textStyle: FlutterFlowTheme.of(context).titleSmall.override(
                                           font: GoogleFonts.poppins(),
                                           color: Colors.white,

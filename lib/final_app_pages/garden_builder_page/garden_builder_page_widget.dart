@@ -47,6 +47,118 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
     });
   }
 
+  String? _containerPlantId;
+  String? _containerPlantName;
+
+  Future<void> _showContainerPlantPicker() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.6,
+          decoration: BoxDecoration(
+            color: FlutterFlowTheme.of(context).primaryBackground,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24.0),
+              topRight: Radius.circular(24.0),
+            ),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 8.0),
+              Container(
+                width: 40.0,
+                height: 4.0,
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).alternate,
+                  borderRadius: BorderRadius.circular(2.0),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.local_florist_rounded,
+                        color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                    const SizedBox(width: 8.0),
+                    Text(
+                      'Pick a Plant for Container',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold, fontSize: 15.0),
+                    ),
+                    const Spacer(),
+                    if (_containerPlantId != null)
+                      TextButton(
+                        onPressed: () {
+                          safeSetState(() {
+                            _containerPlantId = null;
+                            _containerPlantName = null;
+                          });
+                          Navigator.pop(sheetContext);
+                        },
+                        child: Text('Clear',
+                            style: GoogleFonts.poppins(
+                                color: FlutterFlowTheme.of(context).error)),
+                      ),
+                  ],
+                ),
+              ),
+              Divider(height: 1.0, color: FlutterFlowTheme.of(context).alternate),
+              Expanded(
+                child: FutureBuilder<List<PlantsRow>>(
+                  future: PlantsTable().queryRows(
+                    queryFn: (q) => q.order('plant_name', ascending: true),
+                  ),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              FlutterFlowTheme.of(context).primary),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final plant = snapshot.data![index];
+                        return ListTile(
+                          leading: Container(
+                            width: 36.0,
+                            height: 36.0,
+                            decoration: BoxDecoration(
+                              color: Color(0x1A6F8F72),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Icon(Icons.local_florist_rounded,
+                                color: FlutterFlowTheme.of(context).primary,
+                                size: 18.0),
+                          ),
+                          title: Text(plant.plantName ?? 'Unknown',
+                              style: GoogleFonts.poppins(fontSize: 14.0)),
+                          onTap: () {
+                            safeSetState(() {
+                              _containerPlantId = plant.id;
+                              _containerPlantName = plant.plantName;
+                            });
+                            Navigator.pop(sheetContext);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _loadPlots() async {
     final plots = await GardenPlotsTable().queryRows(
       queryFn: (q) => q
@@ -124,6 +236,9 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                         updateCallback: () => safeSetState(() {}),
                         child: FinalHeaderWidget(
                           pageTitle: 'Garden Builder',
+                          saveAction: () {
+                            context.pushNamed('CurrentGardens3');
+                          },
                         ),
                       ),
                       Padding(
@@ -336,8 +451,162 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                           FlutterFlowTheme.of(context).primary,
                                       size: 20.0,
                                     ),
-                                    onPressed: () {
-                                      print('IconButton pressed ...');
+                                    onPressed: () async {
+                                      final currentName = gardenBuilderPageGardensRow?.gardenName ?? '';
+                                      final currentWidth = gardenBuilderPageGardensRow?.width?.toString() ?? '';
+                                      final currentLength = gardenBuilderPageGardensRow?.length?.toString() ?? '';
+                                      final nameController = TextEditingController(text: currentName);
+                                      final widthController = TextEditingController(text: currentWidth);
+                                      final lengthController = TextEditingController(text: currentLength);
+                                      await showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (ctx) => Padding(
+                                          padding: MediaQuery.viewInsetsOf(ctx),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: FlutterFlowTheme.of(context).secondaryBackground,
+                                              borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+                                            ),
+                                            child: SafeArea(
+                                              top: false,
+                                              child: Padding(
+                                                padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Center(
+                                                      child: Container(
+                                                        width: 40.0, height: 4.0,
+                                                        decoration: BoxDecoration(
+                                                          color: FlutterFlowTheme.of(context).alternate,
+                                                          borderRadius: BorderRadius.circular(2.0),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 16.0),
+                                                    Text('Edit Garden',
+                                                        style: GoogleFonts.poppins(
+                                                            fontSize: 18.0,
+                                                            fontWeight: FontWeight.bold,
+                                                            color: FlutterFlowTheme.of(context).primaryText)),
+                                                    const SizedBox(height: 16.0),
+                                                    Text('Garden Name',
+                                                        style: GoogleFonts.poppins(
+                                                            fontSize: 12.0,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: FlutterFlowTheme.of(context).secondaryText)),
+                                                    const SizedBox(height: 6.0),
+                                                    TextField(
+                                                      controller: nameController,
+                                                      autofocus: true,
+                                                      decoration: InputDecoration(
+                                                        hintText: 'Garden name',
+                                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
+                                                        enabledBorder: OutlineInputBorder(
+                                                          borderRadius: BorderRadius.circular(12.0),
+                                                          borderSide: BorderSide(color: FlutterFlowTheme.of(context).alternate),
+                                                        ),
+                                                        focusedBorder: OutlineInputBorder(
+                                                          borderRadius: BorderRadius.circular(12.0),
+                                                          borderSide: BorderSide(color: FlutterFlowTheme.of(context).primary, width: 1.5),
+                                                        ),
+                                                      ),
+                                                      style: GoogleFonts.poppins(color: FlutterFlowTheme.of(context).primaryText),
+                                                    ),
+                                                    const SizedBox(height: 14.0),
+                                                    Text('Dimensions (ft)',
+                                                        style: GoogleFonts.poppins(
+                                                            fontSize: 12.0,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: FlutterFlowTheme.of(context).secondaryText)),
+                                                    const SizedBox(height: 6.0),
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: TextField(
+                                                            controller: widthController,
+                                                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                                            decoration: InputDecoration(
+                                                              labelText: 'Width',
+                                                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
+                                                              enabledBorder: OutlineInputBorder(
+                                                                borderRadius: BorderRadius.circular(12.0),
+                                                                borderSide: BorderSide(color: FlutterFlowTheme.of(context).alternate),
+                                                              ),
+                                                              focusedBorder: OutlineInputBorder(
+                                                                borderRadius: BorderRadius.circular(12.0),
+                                                                borderSide: BorderSide(color: FlutterFlowTheme.of(context).primary, width: 1.5),
+                                                              ),
+                                                            ),
+                                                            style: GoogleFonts.poppins(color: FlutterFlowTheme.of(context).primaryText),
+                                                          ),
+                                                        ),
+                                                        const Padding(
+                                                          padding: EdgeInsets.symmetric(horizontal: 12.0),
+                                                          child: Text('×', style: TextStyle(fontSize: 18.0)),
+                                                        ),
+                                                        Expanded(
+                                                          child: TextField(
+                                                            controller: lengthController,
+                                                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                                            decoration: InputDecoration(
+                                                              labelText: 'Length',
+                                                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
+                                                              enabledBorder: OutlineInputBorder(
+                                                                borderRadius: BorderRadius.circular(12.0),
+                                                                borderSide: BorderSide(color: FlutterFlowTheme.of(context).alternate),
+                                                              ),
+                                                              focusedBorder: OutlineInputBorder(
+                                                                borderRadius: BorderRadius.circular(12.0),
+                                                                borderSide: BorderSide(color: FlutterFlowTheme.of(context).primary, width: 1.5),
+                                                              ),
+                                                            ),
+                                                            style: GoogleFonts.poppins(color: FlutterFlowTheme.of(context).primaryText),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 20.0),
+                                                    SizedBox(
+                                                      width: double.infinity,
+                                                      child: ElevatedButton(
+                                                        onPressed: () async {
+                                                          final newName = nameController.text.trim();
+                                                          final newWidth = double.tryParse(widthController.text.trim());
+                                                          final newLength = double.tryParse(lengthController.text.trim());
+                                                          final data = <String, dynamic>{};
+                                                          if (newName.isNotEmpty) data['garden_name'] = newName;
+                                                          if (newWidth != null) data['width'] = newWidth;
+                                                          if (newLength != null) data['length'] = newLength;
+                                                          if (data.isNotEmpty) {
+                                                            await GardensTable().update(
+                                                              data: data,
+                                                              matchingRows: (rows) =>
+                                                                  rows.eqOrNull('id', widget!.gardenID),
+                                                            );
+                                                          }
+                                                          if (ctx.mounted) Navigator.pop(ctx);
+                                                          safeSetState(() {});
+                                                        },
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: FlutterFlowTheme.of(context).primary,
+                                                          padding: const EdgeInsets.symmetric(vertical: 14.0),
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
+                                                        ),
+                                                        child: Text('Save Changes',
+                                                            style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15.0)),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
                                     },
                                   ),
                                 ].divide(SizedBox(width: 16.0)),
@@ -475,7 +744,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                     updateCallback: () => safeSetState(() {}),
                                     child: PlotSquareWidget(
                                       key: Key(
-                                        'Keyeqt_${plotItemIndex.toString()}',
+                                        'Keyeqt_${plotItemItem.id}',
                                       ),
                                       isEmpty: plotItemItem.plantId == null ||
                                           plotItemItem.plantId!.isEmpty,
@@ -484,6 +753,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                       ),
                                       gardenID: widget!.gardenID!,
                                       plotID: plotItemItem.id!,
+                                      plantId: plotItemItem.plantId,
                                       rowIndex: plotItemItem.rowIndex!,
                                       colIndex: plotItemItem.colIndex!,
                                       onPlantAssigned: () => _loadPlots(),
@@ -506,366 +776,16 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                         children: [
                           FFButtonWidget(
                             onPressed: () async {
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      0,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      0,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      0,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      1,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      0,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      2,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      0,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      3,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      1,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      0,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      1,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      1,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      1,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      2,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      1,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      3,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      2,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      0,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      2,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      1,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      2,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      2,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      2,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      3,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      3,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      0,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      3,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      1,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      3,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      2,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      3,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      3,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      4,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      0,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      4,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      1,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      4,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      2,
-                                    ),
-                              );
-                              await GardenPlotsTable().update(
-                                data: {
-                                  'plant_id': '',
-                                },
-                                matchingRows: (rows) => rows
-                                    .eqOrNull(
-                                      'garden_id',
-                                      widget!.gardenID,
-                                    )
-                                    .eqOrNull(
-                                      'row_index',
-                                      4,
-                                    )
-                                    .eqOrNull(
-                                      'col_index',
-                                      3,
-                                    ),
-                              );
+                              // Clear all plants from this garden in one pass
+                              final plots = _model.gardenPlotQuery ?? [];
+                              for (final plot in plots) {
+                                await GardenPlotsTable().update(
+                                  data: {'plant_id': null},
+                                  matchingRows: (rows) =>
+                                      rows.eqOrNull('id', plot.id),
+                                );
+                              }
+                              await _loadPlots();
                             },
                             text: 'Clear Layout',
                             icon: FaIcon(
@@ -932,20 +852,25 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                     lineHeight: 1.4,
                                   ),
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(context)
-                                    .secondaryBackground,
-                                borderRadius: BorderRadius.circular(24.0),
-                                shape: BoxShape.rectangle,
-                                border: Border.all(
-                                  color: FlutterFlowTheme.of(context).alternate,
-                                  width: 1.0,
+                            GestureDetector(
+                              onTap: _showContainerPlantPicker,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: _containerPlantId != null
+                                      ? Color(0x1A6F8F72)
+                                      : FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                  borderRadius: BorderRadius.circular(24.0),
+                                  shape: BoxShape.rectangle,
+                                  border: Border.all(
+                                    color: _containerPlantId != null
+                                        ? Color(0xFF6F8F72)
+                                        : FlutterFlowTheme.of(context).alternate,
+                                    width: 1.0,
+                                  ),
                                 ),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Container(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16.0),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.max,
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -1009,7 +934,9 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                                   ),
                                             ),
                                             Text(
-                                              'Tap to assign plant',
+                                              _containerPlantId != null
+                                                  ? (_containerPlantName ?? 'Plant assigned')
+                                                  : 'Tap to assign plant',
                                               style: FlutterFlowTheme.of(
                                                       context)
                                                   .labelSmall
@@ -1047,8 +974,12 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                         ),
                                       ),
                                       Icon(
-                                        Icons.add_circle_outline_rounded,
-                                        color: FlutterFlowTheme.of(context).primary,
+                                        _containerPlantId != null
+                                            ? Icons.check_circle_rounded
+                                            : Icons.add_circle_outline_rounded,
+                                        color: _containerPlantId != null
+                                            ? Color(0xFF6F8F72)
+                                            : FlutterFlowTheme.of(context).primary,
                                         size: 24.0,
                                       ),
                                     ].divide(SizedBox(width: 16.0)),

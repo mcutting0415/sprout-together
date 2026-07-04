@@ -15,17 +15,19 @@ class PlotSquareWidget extends StatefulWidget {
     bool? isEmpty,
     this.icon,
     String? plantName,
+    this.plantId,
     required this.gardenID,
     required this.plotID,
     required this.rowIndex,
     required this.colIndex,
     this.onPlantAssigned,
   })  : this.isEmpty = isEmpty ?? false,
-        this.plantName = plantName ?? 'Tomato';
+        this.plantName = plantName ?? '';
 
   final bool isEmpty;
   final Widget? icon;
   final String plantName;
+  final String? plantId;
   final String? gardenID;
   final String? plotID;
   final int? rowIndex;
@@ -38,6 +40,7 @@ class PlotSquareWidget extends StatefulWidget {
 
 class _PlotSquareWidgetState extends State<PlotSquareWidget> {
   late PlotSquareModel _model;
+  String? _displayName;
 
   @override
   void setState(VoidCallback callback) {
@@ -49,6 +52,33 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => PlotSquareModel());
+    if (!widget.isEmpty && widget.plantId != null && widget.plantId!.isNotEmpty) {
+      _loadPlantName(widget.plantId!);
+    }
+  }
+
+  @override
+  void didUpdateWidget(PlotSquareWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.plantId != oldWidget.plantId) {
+      if (!widget.isEmpty && widget.plantId != null && widget.plantId!.isNotEmpty) {
+        _loadPlantName(widget.plantId!);
+      } else {
+        setState(() => _displayName = null);
+      }
+    }
+  }
+
+  Future<void> _loadPlantName(String plantId) async {
+    try {
+      final rows = await PlantsTable().querySingleRow(
+        queryFn: (q) => q.eqOrNull('id', plantId),
+      );
+      final plant = rows.firstOrNull;
+      if (mounted && plant?.plantName != null) {
+        setState(() => _displayName = plant!.plantName);
+      }
+    } catch (_) {}
   }
 
   @override
@@ -213,6 +243,9 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                               matchingRows: (rows) =>
                                   rows.eqOrNull('id', widget.plotID),
                             );
+                            if (mounted) {
+                              setState(() => _displayName = plant.plantName);
+                            }
                             Navigator.of(sheetContext).pop(true);
                           },
                         );
@@ -280,7 +313,7 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                   widget!.icon!,
                   Text(
                     valueOrDefault<String>(
-                      widget!.plantName,
+                      _displayName ?? widget.plantName,
                       'Plant',
                     ),
                     maxLines: 1,

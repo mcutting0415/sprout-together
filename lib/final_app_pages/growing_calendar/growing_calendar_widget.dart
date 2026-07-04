@@ -248,7 +248,7 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
               // Calendar
               FlutterFlowCalendar(
                 key: ValueKey(_model.choiceChipsValue ?? 'default'),
-                color: FlutterFlowTheme.of(context).primary,
+                color: const Color(0xFFD4685F),
                 iconColor: FlutterFlowTheme.of(context).primaryText,
                 weekFormat: false,
                 weekStartsMonday: false,

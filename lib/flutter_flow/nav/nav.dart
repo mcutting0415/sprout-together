@@ -230,7 +230,19 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: UpdatePasswordPageWidget.routeName,
           path: UpdatePasswordPageWidget.routePath,
           builder: (context, params) => UpdatePasswordPageWidget(),
-        )
+        ),
+        FFRoute(
+          name: GardenGoalsPageWidget.routeName,
+          path: GardenGoalsPageWidget.routePath,
+          builder: (context, params) => GardenGoalsPageWidget(),
+        ),
+        FFRoute(
+          name: GardenTipsPageWidget.routeName,
+          path: GardenTipsPageWidget.routePath,
+          builder: (context, params) => GardenTipsPageWidget(
+            experienceLevel: params.getParam('experienceLevel', ParamType.String),
+          ),
+        ),
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
 

@@ -46,6 +46,10 @@
     <string>In order to take a picture or video, this app requires permission to access the camera.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
     <string>In order to upload data, this app requires permission to access the photo library.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>SproutTogether uses your location to show local weather and personalized planting recommendations for your area.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>SproutTogether uses your location to show local weather and personalized planting recommendations for your area.</string>
 
 
 

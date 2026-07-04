@@ -1,7 +1,9 @@
 import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
+import '/final_app_pages/garden_goals_page/garden_goals_page_widget.dart';
 import '/final_app_pages/garden_journal_page2/garden_journal_page2_widget.dart';
+import '/final_app_pages/garden_tips_page/garden_tips_page_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
@@ -341,8 +343,30 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
           _statCard(theme, icon: Icons.calendar_today_rounded, label: "This Week's\nTo-Do's",
               value: '${_upcomingTasks.length}', color: const Color(0xFF4A90A4)),
           const SizedBox(width: 10.0),
-          _statCard(theme, icon: Icons.flag_rounded, label: 'Goals',
-              value: goalsText, color: const Color(0xFFE0A43A)),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => context.pushNamed(GardenGoalsPageWidget.routeName),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE0A43A).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(14.0),
+                  border: Border.all(color: const Color(0xFFE0A43A).withOpacity(0.25)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.flag_rounded, color: Color(0xFFE0A43A), size: 22.0),
+                    const SizedBox(height: 4.0),
+                    Text(goalsText,
+                        style: GoogleFonts.poppins(fontSize: 16.0, fontWeight: FontWeight.bold, color: theme.primaryText)),
+                    Text('Goals', textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(fontSize: 10.0, color: theme.secondaryText, height: 1.2)),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -414,6 +438,28 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
           ),
           const SizedBox(height: 12.0),
           ...tips.map((tip) => _tipCard(theme, tip)),
+          const SizedBox(height: 4.0),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () => context.pushNamed(
+                GardenTipsPageWidget.routeName,
+                queryParameters: {'experienceLevel': _experienceLevel},
+              ),
+              icon: const Icon(Icons.arrow_forward_rounded, size: 14.0),
+              iconAlignment: IconAlignment.end,
+              label: const Text('View all tips & hacks'),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF4E7A2E),
+                textStyle: GoogleFonts.poppins(
+                  fontSize: 13.0,
+                  fontWeight: FontWeight.w600,
+                ),
+                padding: EdgeInsets.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+          ),
           const SizedBox(height: 24.0),
         ],
       ),
@@ -889,7 +935,11 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
         : entry.createdAt != null
             ? DateFormat('MMM d, yyyy').format(entry.createdAt!)
             : '';
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        context.pushNamed(GardenJournalPage2Widget.routeName);
+      },
+      child: Container(
       margin: const EdgeInsets.only(bottom: 8.0),
       padding: const EdgeInsets.all(14.0),
       decoration: BoxDecoration(
@@ -945,7 +995,10 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
               ],
             ),
           ),
+          Icon(Icons.chevron_right_rounded,
+              color: const Color(0xFF9C6EA3), size: 18.0),
         ],
+      ),
       ),
     );
   }

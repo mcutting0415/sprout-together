@@ -15,9 +15,12 @@ class FinalHeaderWidget extends StatefulWidget {
   const FinalHeaderWidget({
     super.key,
     String? pageTitle,
+    this.saveAction,
   }) : this.pageTitle = pageTitle ?? 'Page Title';
 
   final String pageTitle;
+  /// When set, replaces the back button with a green Save button.
+  final VoidCallback? saveAction;
 
   @override
   State<FinalHeaderWidget> createState() => _FinalHeaderWidgetState();
@@ -345,22 +348,23 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                     ),
                   ),
                 ),
-                // Back button — only shown when there's a page to go back to
-                if (Navigator.of(context).canPop())
+                // Save button OR back button in top-right
+                if (widget.saveAction != null)
                   Align(
                     alignment: AlignmentDirectional(0.88, 0.73),
                     child: FlutterFlowIconButton(
                       borderRadius: 8.0,
                       buttonSize: 40.0,
-                      fillColor: FlutterFlowTheme.of(context).primaryBackground,
+                      fillColor: FlutterFlowTheme.of(context).primary,
                       icon: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: FlutterFlowTheme.of(context).primary,
-                        size: 18.0,
+                        Icons.check_rounded,
+                        color: Colors.white,
+                        size: 20.0,
                       ),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: widget.saveAction,
                     ),
-                  ),
+                  )
+                // No automatic back button — navigation lives in the menu.
               ],
             ),
           ),

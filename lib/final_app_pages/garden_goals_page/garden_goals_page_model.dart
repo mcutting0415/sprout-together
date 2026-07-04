@@ -1,11 +1,9 @@
 import '/final_app_pages/final_header/final_header_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'companion_guide_page2_widget.dart' show CompanionGuidePage2Widget;
+import 'garden_goals_page_widget.dart' show GardenGoalsPageWidget;
 import 'package:flutter/material.dart';
 
-class CompanionGuidePage2Model
-    extends FlutterFlowModel<CompanionGuidePage2Widget> {
-  // Model for FinalHeader component.
+class GardenGoalsPageModel extends FlutterFlowModel<GardenGoalsPageWidget> {
   late FinalHeaderModel finalHeaderModel;
 
   @override
