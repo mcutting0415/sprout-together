@@ -207,6 +207,22 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                                   },
                                 ),
                                 ListTile(
+                                  leading: Icon(Icons.storefront_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primary),
+                                  title: Text('Garden Shop',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(
+                                        ShopPageWidget.routeName);
+                                  },
+                                ),
+                                ListTile(
                                   leading: Icon(Icons.settings_rounded,
                                       color: FlutterFlowTheme.of(context)
                                           .primary),

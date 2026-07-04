@@ -223,23 +223,21 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                     ),
                     Align(
                       alignment: AlignmentDirectional(-1.0, -1.0),
-                      child: Container(
+                      child: SafeArea(
                         child: Padding(
-                          padding: EdgeInsets.all(24.0),
-                          child: Container(
-                            child: FlutterFlowIconButton(
-                              borderRadius: 9999.0,
-                              buttonSize: 40.0,
-                              fillColor: Color(0xCCFFFFFF),
-                              icon: Icon(
-                                Icons.arrow_back_ios_new_rounded,
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                size: 20.0,
-                              ),
-                              onPressed: () async {
-                                context.safePop();
-                              },
+                          padding: EdgeInsets.all(16.0),
+                          child: FlutterFlowIconButton(
+                            borderRadius: 9999.0,
+                            buttonSize: 40.0,
+                            fillColor: Color(0xCCFFFFFF),
+                            icon: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: FlutterFlowTheme.of(context).primaryText,
+                              size: 20.0,
                             ),
+                            onPressed: () async {
+                              context.safePop();
+                            },
                           ),
                         ),
                       ),

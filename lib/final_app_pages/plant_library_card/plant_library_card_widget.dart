@@ -54,6 +54,31 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
     super.dispose();
   }
 
+  Widget _plantPlaceholder(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 135.0,
+      color: FlutterFlowTheme.of(context).primary.withOpacity(0.08),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('🌱', style: TextStyle(fontSize: 48.0)),
+          const SizedBox(height: 4.0),
+          Text(
+            widget.plantName,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11.0,
+              color: FlutterFlowTheme.of(context).secondaryText,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -85,31 +110,26 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                 alignment: AlignmentDirectional(0.0, 0.77),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(30.0),
-                  child: Image.network(
-                    widget.plantImage.startsWith('http')
-                        ? widget.plantImage
-                        : 'https://picsum.photos/seed/${widget.plantName}/600',
-                    width: double.infinity,
-                    height: 135.0,
-                    fit: BoxFit.fill,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      width: double.infinity,
-                      height: 135.0,
-                      color: FlutterFlowTheme.of(context).alternate,
-                      child: Icon(Icons.local_florist,
-                          color: FlutterFlowTheme.of(context).primary,
-                          size: 40.0),
-                    ),
-                  ),
+                  child: widget.plantImage.startsWith('http')
+                      ? Image.network(
+                          widget.plantImage,
+                          width: double.infinity,
+                          height: 135.0,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              _plantPlaceholder(context),
+                        )
+                      : _plantPlaceholder(context),
                 ),
               ),
             ),
           ),
-          Container(
-            height: 185.0,
+          Expanded(
+            child: Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Column(
@@ -271,6 +291,7 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
               ].divide(SizedBox(height: 16.0)),
             ),
           ),
+        ),
         ],
       ),
     );

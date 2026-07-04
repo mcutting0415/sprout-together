@@ -21,7 +21,7 @@ class GardenCardWidget extends StatefulWidget {
   })  : this.imageDesc = imageDesc ??
             'https://dimg.dreamflow.cloud/v1/image/Lush%20vegetable%20garden%20with%20tomatoes%20and%20peppers',
         this.tag = tag ?? 'Completed',
-        this.season = season ?? 'Summer 2026',
+        this.season = season ?? '',
         this.name = name ?? 'South-Side Salsa Patch',
         this.info = info ?? 'Completed • 18 Plants';
 
@@ -158,11 +158,9 @@ class _GardenCardWidgetState extends State<GardenCardWidget> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          if (widget.season.isNotEmpty)
                           Text(
-                            valueOrDefault<String>(
-                              widget!.season,
-                              'Summer 2026',
-                            ),
+                            widget.season,
                             style: FlutterFlowTheme.of(context)
                                 .labelSmall
                                 .override(

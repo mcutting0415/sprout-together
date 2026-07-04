@@ -326,6 +326,15 @@ class _AccountSetupPage2WidgetState extends State<AccountSetupPage2Widget> {
                                     },
                                     matchingRows: (rows) => rows.eq('id', currentUserUid),
                                   );
+                                  // Save selected goals to user_goals table
+                                  for (final goal in FFAppState().setupGoals) {
+                                    await UserGoalsTable().insert({
+                                      'user_id': currentUserUid,
+                                      'goal_text': goal,
+                                      'goal_type': 'initial',
+                                      'completed': false,
+                                    });
+                                  }
                                   FFAppState().hasCompletedProfileSetup = true;
                                   safeSetState(() {});
 

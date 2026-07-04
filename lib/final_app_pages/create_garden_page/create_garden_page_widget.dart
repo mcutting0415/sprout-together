@@ -1331,11 +1331,13 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                         _model.newGarden = await GardensTable().insert({
                           'garden_name': _model.textController1.text,
                           'garden_type': _model.choiceChipsValue1,
-                          'measurement_unit': _model.choiceChipsValue2,
+                          'measurement_unit': _model.choiceChipsValue2 ?? 'ft',
                           'width': int.tryParse(_model.textController2.text),
                           'length': int.tryParse(_model.textController3.text),
                           'orientation': _model.choiceChipsValue3,
+                          'sun_exposure': _model.choiceChipsValue4,
                           'user_id': currentUserUid,
+                          'is_archived': false,
                         });
                         FFAppState().currentGardenID = _model.newGarden!.id!;
                         safeSetState(() {});
@@ -1343,121 +1345,121 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 0,
                           'col_index': 0,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 0,
                           'col_index': 1,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 0,
                           'col_index': 2,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 0,
                           'col_index': 3,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 1,
                           'col_index': 0,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 1,
                           'col_index': 1,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 1,
                           'col_index': 2,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 1,
                           'col_index': 3,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 2,
                           'col_index': 0,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 2,
                           'col_index': 1,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 2,
                           'col_index': 2,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 2,
                           'col_index': 3,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 3,
                           'col_index': 0,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 3,
                           'col_index': 1,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 3,
                           'col_index': 2,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 3,
                           'col_index': 3,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 4,
                           'col_index': 0,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 4,
                           'col_index': 1,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 4,
                           'col_index': 2,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
                         await GardenPlotsTable().insert({
                                                     'garden_id': _model.newGarden?.id,
                           'row_index': 4,
                           'col_index': 3,
-                          'plant_id': '',
+                          'plant_id': null,
                         });
 
                         context.pushNamed(

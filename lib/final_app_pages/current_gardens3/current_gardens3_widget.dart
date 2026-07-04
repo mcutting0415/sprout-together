@@ -1,6 +1,7 @@
 import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
+import '/final_app_pages/garden_journal_page2/garden_journal_page2_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
@@ -118,26 +119,30 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
           {
             'icon': Icons.science_rounded,
             'color': const Color(0xFF4E7A2E),
-            'text':
-                'Rotate plant families each season to break pest and disease cycles naturally.',
+            'text': 'Rotate plant families each season to break pest and disease cycles naturally.',
+            'detail': 'Divide plants into families: nightshades (tomato, pepper, eggplant), brassicas (cabbage, broccoli, kale), alliums (onion, garlic), and cucurbits (cucumber, squash). Move each family to a new bed each season. After 3–4 rotations, many soil-borne diseases and pests that target specific families are starved out.',
+            'action': null,
           },
           {
             'icon': Icons.water_rounded,
             'color': const Color(0xFF4A90A4),
-            'text':
-                'Monitor soil pH weekly — most vegetables thrive between 6.0 and 7.0.',
+            'text': 'Monitor soil pH weekly — most vegetables thrive between 6.0 and 7.0.',
+            'detail': 'Use a digital pH meter or test strips. If pH is too low (acidic), add garden lime. If too high (alkaline), add sulfur or peat moss. Check after heavy rains, which can leach lime and drop pH. Record readings in your Garden Journal to spot trends over the season.',
+            'action': 'journal',
           },
           {
             'icon': Icons.layers_rounded,
             'color': const Color(0xFFE0A43A),
-            'text':
-                'Layer green and brown compost 1:2 to maintain 55–65°C and speed decomposition.',
+            'text': 'Layer green and brown compost 1:2 to maintain 55–65°C and speed decomposition.',
+            'detail': 'Greens: kitchen scraps, fresh grass clippings, coffee grounds. Browns: dry leaves, cardboard, straw. The 1:2 green-to-brown ratio keeps nitrogen and carbon balanced so microbes thrive. Turn the pile every 3–5 days to introduce oxygen and sustain heat. At 55–65°C, weed seeds and most pathogens are destroyed.',
+            'action': null,
           },
           {
             'icon': Icons.bug_report_rounded,
             'color': const Color(0xFFD9534F),
-            'text':
-                'Introduce beneficial insects like lacewings or parasitic wasps for long-term pest suppression.',
+            'text': 'Introduce beneficial insects like lacewings or parasitic wasps for long-term pest suppression.',
+            'detail': 'Lacewings eat aphids, whiteflies, and small caterpillars. Parasitic wasps lay eggs inside hornworms and aphids, killing them from within. Attract them by planting dill, fennel, or yarrow near your vegetables. Avoid broad-spectrum pesticides — they kill beneficial insects too.',
+            'action': null,
           },
         ];
       case 'Intermediate':
@@ -145,26 +150,30 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
           {
             'icon': Icons.grass_rounded,
             'color': const Color(0xFF4E7A2E),
-            'text':
-                'Pinch suckers on tomatoes weekly to redirect energy into fruit production.',
+            'text': 'Pinch suckers on tomatoes weekly to redirect energy into fruit production.',
+            'detail': 'Suckers are small shoots that grow in the "V" between the main stem and a branch. Left unchecked, they become full branches and dilute the plant\'s energy. Pinch them off when small (under 2 inches) with your fingers. Focus especially on suckers below the first flower cluster. Indeterminate varieties benefit most from this.',
+            'action': null,
           },
           {
             'icon': Icons.pest_control_rounded,
             'color': const Color(0xFFD9534F),
-            'text':
-                'Check leaf undersides for aphids — a strong blast of water dislodges most colonies.',
+            'text': 'Check leaf undersides for aphids — a strong blast of water dislodges most colonies.',
+            'detail': 'Aphids cluster on tender new growth and leaf undersides, sucking sap and leaving sticky honeydew behind. Check weekly. A forceful spray of water removes 90% of them without chemicals. For persistent infestations, spray neem oil in the evening when bees are inactive. Log what you find in your journal to catch patterns early.',
+            'action': 'journal',
           },
           {
             'icon': Icons.thermostat_rounded,
             'color': const Color(0xFF4A90A4),
-            'text':
-                'Harden off seedlings over 7–10 days to prevent transplant shock before moving outdoors.',
+            'text': 'Harden off seedlings over 7–10 days to prevent transplant shock before moving outdoors.',
+            'detail': 'Seedlings grown indoors are not used to direct sun, wind, or temperature swings. Start by placing them outside in shade for 1–2 hours a day. Over 7–10 days, gradually increase sun exposure and duration. By day 10 they should be outside most of the day. This prevents wilting, sunscald, and root stress after transplanting.',
+            'action': null,
           },
           {
             'icon': Icons.compost_rounded,
             'color': const Color(0xFFE0A43A),
-            'text':
-                'Side-dress heavy feeders like corn and squash with compost mid-season.',
+            'text': 'Side-dress heavy feeders like corn and squash with compost mid-season.',
+            'detail': 'Side-dressing means spreading a 1–2 inch band of compost around the base of the plant, 4–6 inches from the stem, then watering it in. Do this when corn is knee-high and when squash starts setting fruit. It gives a slow-release nitrogen boost at the exact moment the plant needs it most for fruit development.',
+            'action': null,
           },
         ];
       default: // Beginner
@@ -172,26 +181,30 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
           {
             'icon': Icons.water_drop_rounded,
             'color': const Color(0xFF4A90A4),
-            'text':
-                'Water in the morning so leaves dry before nighttime — this prevents mold and fungal disease.',
+            'text': 'Water in the morning so leaves dry before nighttime — this prevents mold and fungal disease.',
+            'detail': 'Wet foliage overnight creates the perfect conditions for powdery mildew, botrytis, and other fungal diseases. Morning watering gives leaves the whole day to dry. Water at the base of the plant when possible — a soaker hose or watering can aimed at the soil keeps leaves dry entirely. If you must water in the evening, water only the soil.',
+            'action': null,
           },
           {
             'icon': Icons.wb_sunny_rounded,
             'color': const Color(0xFFE0A43A),
-            'text':
-                'Most vegetables need 6–8 hours of direct sun per day. Track which spots in your yard get shade.',
+            'text': 'Most plants need 6–8 hours of direct sun per day. Track which spots in your yard get shade.',
+            'detail': 'Walk your yard at 10am, 12pm, 2pm, and 4pm and note which areas are sunny vs. shaded. Tall fences, trees, and the house itself cast moving shadows throughout the day. "Full sun" means 6+ hours of direct sun. "Part shade" means 3–6 hours. Knowing your sun patterns helps you place the right plants in the right spots.',
+            'action': 'journal',
           },
           {
             'icon': Icons.eco_rounded,
             'color': const Color(0xFF4E7A2E),
-            'text':
-                'Start with easy wins: lettuce, radishes, and zucchini grow fast and are hard to mess up.',
+            'text': 'Start with easy wins: lettuce, radishes, and zucchini grow fast and are hard to mess up.',
+            'detail': 'Radishes are ready in just 25–30 days. Lettuce can be harvested leaf by leaf in 30–45 days. Zucchini grows so vigorously that beginners often have more than they can eat. These plants give you quick feedback and confidence. Once you\'ve grown them, move on to tomatoes, peppers, or herbs — which need a bit more attention.',
+            'action': null,
           },
           {
             'icon': Icons.spa_rounded,
             'color': const Color(0xFF9C6EA3),
-            'text':
-                'Mulch around plants keeps soil moist, suppresses weeds, and keeps roots cool in summer.',
+            'text': 'Mulch around plants keeps soil moist, suppresses weeds, and keeps roots cool.',
+            'detail': 'Apply 2–3 inches of straw, wood chips, or shredded leaves around (not touching) plant stems. Mulch cuts watering frequency roughly in half, keeps soil temperature 10°F cooler on hot days, and smothers weed seeds. Refresh it mid-season if it thins out. Avoid piling mulch against stems — it can cause rot.',
+            'action': null,
           },
         ];
     }
@@ -325,7 +338,7 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
           _statCard(theme, icon: Icons.local_florist_rounded, label: 'Plants',
               value: '${_selectedPlants.length}', color: const Color(0xFF7BA05B)),
           const SizedBox(width: 10.0),
-          _statCard(theme, icon: Icons.calendar_today_rounded, label: 'Due This Week',
+          _statCard(theme, icon: Icons.calendar_today_rounded, label: "This Week's\nTo-Do's",
               value: '${_upcomingTasks.length}', color: const Color(0xFF4A90A4)),
           const SizedBox(width: 10.0),
           _statCard(theme, icon: Icons.flag_rounded, label: 'Goals',
@@ -408,39 +421,152 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
   }
 
   Widget _tipCard(FlutterFlowTheme theme, Map<String, dynamic> tip) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10.0),
-      padding: const EdgeInsets.all(14.0),
-      decoration: BoxDecoration(
-        color: (tip['color'] as Color).withOpacity(0.08),
-        borderRadius: BorderRadius.circular(14.0),
-        border: Border.all(color: (tip['color'] as Color).withOpacity(0.2)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 36.0,
-            height: 36.0,
-            decoration: BoxDecoration(
-              color: (tip['color'] as Color).withOpacity(0.15),
-              shape: BoxShape.circle,
+    final color = tip['color'] as Color;
+    final detail = tip['detail'] as String? ?? '';
+    final action = tip['action'] as String?;
+    return GestureDetector(
+      onTap: () => _showTipDetail(theme, tip),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10.0),
+        padding: const EdgeInsets.all(14.0),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(14.0),
+          border: Border.all(color: color.withOpacity(0.2)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 36.0,
+              height: 36.0,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(tip['icon'] as IconData, color: color, size: 18.0),
             ),
-            child: Icon(tip['icon'] as IconData,
-                color: tip['color'] as Color, size: 18.0),
-          ),
-          const SizedBox(width: 12.0),
-          Expanded(
-            child: Text(
-              tip['text'] as String,
-              style: GoogleFonts.poppins(
-                fontSize: 13.0,
-                height: 1.5,
-                color: theme.primaryText,
+            const SizedBox(width: 12.0),
+            Expanded(
+              child: Text(
+                tip['text'] as String,
+                style: GoogleFonts.poppins(
+                  fontSize: 13.0,
+                  height: 1.5,
+                  color: theme.primaryText,
+                ),
               ),
             ),
+            Icon(Icons.chevron_right_rounded, color: color, size: 18.0),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showTipDetail(FlutterFlowTheme theme, Map<String, dynamic> tip) {
+    final color = tip['color'] as Color;
+    final action = tip['action'] as String?;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        margin: const EdgeInsets.only(top: 80.0),
+        decoration: BoxDecoration(
+          color: theme.secondaryBackground,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+          border: Border.all(color: theme.alternate),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40, height: 4,
+                    decoration: BoxDecoration(
+                      color: theme.secondaryText.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                Row(
+                  children: [
+                    Container(
+                      width: 44.0, height: 44.0,
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(tip['icon'] as IconData, color: color, size: 22.0),
+                    ),
+                    const SizedBox(width: 14.0),
+                    Expanded(
+                      child: Text(
+                        tip['text'] as String,
+                        style: GoogleFonts.poppins(
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.w600,
+                          color: theme.primaryText,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20.0),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(16.0),
+                    border: Border.all(color: color.withOpacity(0.15)),
+                  ),
+                  child: Text(
+                    tip['detail'] as String? ?? '',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14.0,
+                      height: 1.6,
+                      color: theme.primaryText,
+                    ),
+                  ),
+                ),
+                if (action == 'journal') ...[
+                  const SizedBox(height: 20.0),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        context.pushNamed(GardenJournalPage2Widget.routeName);
+                      },
+                      icon: const Icon(Icons.menu_book_rounded, size: 18.0),
+                      label: const Text('Log a Note in Garden Journal'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: color,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14.0),
+                        ),
+                        textStyle: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 8.0),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

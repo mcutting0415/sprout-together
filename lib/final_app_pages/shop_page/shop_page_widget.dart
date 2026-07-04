@@ -239,6 +239,68 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
   }
 }
 
+Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
+  final rawUrl = (product['image_url'] ?? '') as String;
+  final productName = (product['name'] ?? 'garden product') as String;
+  final category = (product['category'] ?? '') as String;
+
+  // Map categories to emojis for the placeholder
+  final emoji = category == 'Seeds' ? '🌱'
+      : category == 'Tools' ? '🔧'
+      : category == 'Soil & Amendments' ? '🪱'
+      : category == 'Pots & Containers' ? '🪴'
+      : category == 'Pest Control' ? '🐛'
+      : category == 'Grow Lights' ? '💡'
+      : category == 'Outdoor Lighting' ? '🔆'
+      : '🛍️';
+
+  Widget placeholder() => Container(
+    height: 120.0,
+    width: double.infinity,
+    decoration: BoxDecoration(
+      color: FlutterFlowTheme.of(context).primary.withOpacity(0.08),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(16.0),
+        topRight: Radius.circular(16.0),
+      ),
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 36.0)),
+        const SizedBox(height: 4.0),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(
+            productName,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 10.0,
+              color: FlutterFlowTheme.of(context).secondaryText,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  // If no URL, generate one via dreamflow
+  final imageUrl = rawUrl.isNotEmpty
+      ? rawUrl
+      : 'https://dimg.dreamflow.cloud/v1/image/${Uri.encodeComponent(productName)}';
+
+  return CachedNetworkImage(
+    imageUrl: imageUrl,
+    height: 120.0,
+    width: double.infinity,
+    fit: BoxFit.cover,
+    placeholder: (context, url) => placeholder(),
+    errorWidget: (context, url, error) => placeholder(),
+  );
+}
+
 class _ProductCard extends StatelessWidget {
   final Map<String, dynamic> product;
   final VoidCallback onTap;
@@ -280,23 +342,7 @@ class _ProductCard extends StatelessWidget {
                     topLeft: Radius.circular(16.0),
                     topRight: Radius.circular(16.0),
                   ),
-                  child: CachedNetworkImage(
-                    imageUrl: product['image_url'] ?? '',
-                    height: 120.0,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => Container(
-                      height: 120.0,
-                      color: FlutterFlowTheme.of(context).primary.withOpacity(0.1),
-                      child: Center(
-                        child: Icon(
-                          Icons.storefront_outlined,
-                          color: FlutterFlowTheme.of(context).primary,
-                          size: 32.0,
-                        ),
-                      ),
-                    ),
-                  ),
+                  child: _shopProductImage(context, product),
                 ),
                 if (isFeatured)
                   Positioned(

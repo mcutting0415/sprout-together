@@ -53,6 +53,32 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
             .eqOrNull('user_id', currentUserUid)
             .order('created_at', ascending: true),
       );
+      // If no initial goals exist yet, seed them from the profile's goals array
+      final hasInitial = rows.any((r) => r.goalType == 'initial');
+      if (!hasInitial) {
+        final profile = await ProfilesTable().querySingleRow(
+          queryFn: (q) => q.eqOrNull('id', currentUserUid),
+        );
+        final profileGoals = (profile?.goals ?? []).cast<String>();
+        if (profileGoals.isNotEmpty) {
+          for (final g in profileGoals) {
+            await UserGoalsTable().insert({
+              'user_id': currentUserUid,
+              'goal_text': g,
+              'goal_type': 'initial',
+              'completed': false,
+            });
+          }
+          // Reload after seeding
+          final updated = await UserGoalsTable().queryRows(
+            queryFn: (q) => q
+                .eqOrNull('user_id', currentUserUid)
+                .order('created_at', ascending: true),
+          );
+          if (mounted) setState(() { _goals = updated; _goalsLoading = false; });
+          return;
+        }
+      }
       if (mounted) setState(() { _goals = rows; _goalsLoading = false; });
     } catch (_) {
       if (mounted) setState(() => _goalsLoading = false);

@@ -660,14 +660,23 @@ class _PreviousGardensPage2WidgetState
                       )
                     else
                       ..._filteredGardens.map((garden) {
-                        final createdYear =
-                            garden.createdAt?.year.toString() ?? '';
+                        final createdAt = garden.createdAt;
+                        String seasonLabel = '';
+                        if (createdAt != null) {
+                          final m = createdAt.month;
+                          final y = createdAt.year;
+                          final s = (m >= 3 && m <= 5) ? 'Spring'
+                              : (m >= 6 && m <= 8) ? 'Summer'
+                              : (m >= 9 && m <= 11) ? 'Fall'
+                              : 'Winter';
+                          seasonLabel = '$s $y';
+                        }
                         return GardenCardWidget(
                           key: ValueKey(garden.id),
                           imageDesc:
                               'https://dimg.dreamflow.cloud/v1/image/${Uri.encodeComponent(garden.gardenType ?? 'Garden')}',
                           tag: 'Archived',
-                          season: createdYear,
+                          season: seasonLabel,
                           name: garden.gardenName ?? 'Unnamed Garden',
                           info:
                               'Archived • ${garden.gardenType ?? 'Garden'} • ${garden.width ?? 0}×${garden.length ?? 0}',

@@ -1,3 +1,4 @@
+import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
 import '/final_app_pages/plant_library_card/plant_library_card_widget.dart';
@@ -36,6 +37,56 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
   late PlantLibraryPageModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final Set<String> _addedPlantIds = {};
+
+  // "Wish list mode" — arriving from Planner's Add Plants button (gardenID empty)
+  bool get _wishListMode =>
+      (widget.gardenID == null || widget.gardenID!.isEmpty) &&
+      (widget.plotNumber == null || widget.plotNumber == 0);
+
+  Future<void> _addToWishList(BuildContext context, String plantId, String plantName) async {
+    try {
+      // Check if already added
+      final existing = await UserSelectedPlantsTable().queryRows(
+        queryFn: (q) =>
+            q.eqOrNull('user_id', currentUserUid).eqOrNull('plant_id', plantId),
+      );
+      if (existing.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$plantName is already in your list!'),
+            backgroundColor: FlutterFlowTheme.of(context).secondaryText,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
+      await UserSelectedPlantsTable().insert({
+        'user_id': currentUserUid,
+        'plant_id': plantId,
+      });
+      if (mounted) {
+        setState(() => _addedPlantIds.add(plantId));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ $plantName added to your list!'),
+            backgroundColor: FlutterFlowTheme.of(context).primary,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not add plant. Try again.')),
+        );
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -311,13 +362,55 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
                     itemCount: plants.length,
                     itemBuilder: (context, index) {
                       final plant = plants[index];
-                      return PlantLibraryCardWidget(
-                        key: ValueKey(plant.id),
+                      final pid = plant.id ?? '';
+                      final pname = plant.plantName ?? 'Plant';
+                      final isAdded = _addedPlantIds.contains(pid);
+                      final card = PlantLibraryCardWidget(
+                        key: ValueKey(pid),
                         plantImage: plant.imageUrl ?? '',
-                        plantName: plant.plantName ?? 'Plant',
+                        plantName: pname,
                         sunRequirement: plant.sunRequirement ?? 'Full Sun',
                         waterRequirement: plant.waterRequirement ?? 'Moderate',
-                        plantID: plant.id,
+                        plantID: pid,
+                      );
+                      if (!_wishListMode) return card;
+                      // Wish-list mode: overlay a "+" add button
+                      return Stack(
+                        children: [
+                          card,
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: GestureDetector(
+                              onTap: () => _addToWishList(context, pid, pname),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                width: 34,
+                                height: 34,
+                                decoration: BoxDecoration(
+                                  color: isAdded
+                                      ? FlutterFlowTheme.of(context).primary
+                                      : Colors.white.withOpacity(0.92),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.12),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  isAdded ? Icons.check_rounded : Icons.add_rounded,
+                                  color: isAdded
+                                      ? Colors.white
+                                      : FlutterFlowTheme.of(context).primary,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
