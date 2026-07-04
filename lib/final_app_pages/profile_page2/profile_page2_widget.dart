@@ -42,6 +42,389 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => ProfilePage2Model());
+    _loadGoals();
+  }
+
+  Future<void> _loadGoals() async {
+    setState(() => _goalsLoading = true);
+    try {
+      final rows = await UserGoalsTable().queryRows(
+        queryFn: (q) => q
+            .eqOrNull('user_id', currentUserUid)
+            .order('created_at', ascending: true),
+      );
+      if (mounted) setState(() { _goals = rows; _goalsLoading = false; });
+    } catch (_) {
+      if (mounted) setState(() => _goalsLoading = false);
+    }
+  }
+
+  Future<void> _toggleGoal(UserGoalsRow goal) async {
+    final newVal = !goal.completed;
+    await UserGoalsTable().update(
+      data: {
+        'completed': newVal,
+        'completed_at': newVal ? DateTime.now().toIso8601String() : null,
+      },
+      matchingRows: (q) => q.eqOrNull('id', goal.id),
+    );
+    await _loadGoals();
+  }
+
+  Future<void> _deleteGoal(UserGoalsRow goal) async {
+    await UserGoalsTable().delete(
+      matchingRows: (q) => q.eqOrNull('id', goal.id),
+    );
+    await _loadGoals();
+  }
+
+  Future<void> _showAddGoalSheet() async {
+    final controller = TextEditingController();
+    String goalType = 'custom';
+    String? season;
+
+    // Current season label
+    final now = DateTime.now();
+    final seasonLabel = now.month >= 3 && now.month <= 5 ? 'Spring ${now.year}'
+        : now.month >= 6 && now.month <= 8 ? 'Summer ${now.year}'
+        : now.month >= 9 && now.month <= 11 ? 'Fall ${now.year}'
+        : 'Winter ${now.year}';
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
+          child: Container(
+            decoration: BoxDecoration(
+              color: FlutterFlowTheme.of(context).secondaryBackground,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+            ),
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40.0, height: 4.0,
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).alternate,
+                      borderRadius: BorderRadius.circular(2.0),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                Text('Add a Goal', style: FlutterFlowTheme.of(context).titleMedium.override(
+                  font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  letterSpacing: 0.0,
+                )),
+                const SizedBox(height: 16.0),
+                // Type selector
+                Row(
+                  children: [
+                    _typeChip(ctx, setSheetState, label: 'Personal', value: 'custom',
+                        selected: goalType == 'custom',
+                        onTap: () { setSheetState(() { goalType = 'custom'; season = null; }); }),
+                    const SizedBox(width: 8.0),
+                    _typeChip(ctx, setSheetState, label: 'Seasonal', value: 'seasonal',
+                        selected: goalType == 'seasonal',
+                        onTap: () { setSheetState(() { goalType = 'seasonal'; season = seasonLabel; }); }),
+                  ],
+                ),
+                if (goalType == 'seasonal') ...[
+                  const SizedBox(height: 10.0),
+                  Text('Season: $seasonLabel',
+                      style: FlutterFlowTheme.of(context).bodySmall.override(
+                        font: GoogleFonts.poppins(),
+                        color: FlutterFlowTheme.of(context).primary,
+                        letterSpacing: 0.0,
+                      )),
+                ],
+                const SizedBox(height: 16.0),
+                TextField(
+                  controller: controller,
+                  autofocus: true,
+                  maxLines: 2,
+                  decoration: InputDecoration(
+                    hintText: goalType == 'seasonal'
+                        ? 'e.g. Grow 10 tomatoes this summer'
+                        : 'e.g. Learn composting techniques',
+                    hintStyle: TextStyle(color: FlutterFlowTheme.of(context).secondaryText),
+                    filled: true,
+                    fillColor: FlutterFlowTheme.of(context).primaryBackground,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.all(14.0),
+                  ),
+                  style: FlutterFlowTheme.of(context).bodyMedium.override(
+                    font: GoogleFonts.poppins(),
+                    letterSpacing: 0.0,
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: FlutterFlowTheme.of(context).primary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+                      padding: const EdgeInsets.symmetric(vertical: 14.0),
+                    ),
+                    onPressed: () async {
+                      final text = controller.text.trim();
+                      if (text.isEmpty) return;
+                      Navigator.pop(ctx);
+                      await UserGoalsTable().insert({
+                        'user_id': currentUserUid,
+                        'goal_text': text,
+                        'goal_type': goalType,
+                        'season': season,
+                        'completed': false,
+                      });
+                      await _loadGoals();
+                    },
+                    child: Text('Add Goal', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _typeChip(BuildContext ctx, StateSetter setSheetState,
+      {required String label, required String value, required bool selected, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          color: selected ? FlutterFlowTheme.of(context).primary : FlutterFlowTheme.of(context).primaryBackground,
+          borderRadius: BorderRadius.circular(20.0),
+          border: Border.all(
+            color: selected ? FlutterFlowTheme.of(context).primary : FlutterFlowTheme.of(context).alternate,
+          ),
+        ),
+        child: Text(label, style: TextStyle(
+          color: selected ? Colors.white : FlutterFlowTheme.of(context).primaryText,
+          fontWeight: FontWeight.w600,
+          fontSize: 13.0,
+        )),
+      ),
+    );
+  }
+
+  Widget _buildGoalsSection() {
+    final completed = _goals.where((g) => g.completed).length;
+    final total = _goals.length;
+    final progress = total > 0 ? completed / total : 0.0;
+
+    // Group by: initial, then seasonal by season name, then custom
+    final initialGoals = _goals.where((g) => g.goalType == 'initial').toList();
+    final customGoals = _goals.where((g) => g.goalType == 'custom').toList();
+    final seasonalMap = <String, List<UserGoalsRow>>{};
+    for (final g in _goals.where((g) => g.goalType == 'seasonal')) {
+      seasonalMap.putIfAbsent(g.season ?? 'Seasonal', () => []).add(g);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('My Goals',
+                style: FlutterFlowTheme.of(context).titleMedium.override(
+                  font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  color: FlutterFlowTheme.of(context).primaryText,
+                  letterSpacing: 0.0,
+                  decoration: TextDecoration.underline,
+                )),
+            GestureDetector(
+              onTap: _showAddGoalSheet,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).primary,
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add_rounded, color: Colors.white, size: 14.0),
+                    const SizedBox(width: 4.0),
+                    Text('Add Goal', style: TextStyle(color: Colors.white, fontSize: 12.0, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14.0),
+        // Progress bar
+        if (total > 0) ...[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('$completed of $total completed',
+                  style: FlutterFlowTheme.of(context).bodySmall.override(
+                    font: GoogleFonts.poppins(),
+                    color: FlutterFlowTheme.of(context).secondaryText,
+                    letterSpacing: 0.0,
+                  )),
+              Text('${(progress * 100).round()}%',
+                  style: FlutterFlowTheme.of(context).bodySmall.override(
+                    font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                    color: FlutterFlowTheme.of(context).primary,
+                    letterSpacing: 0.0,
+                  )),
+            ],
+          ),
+          const SizedBox(height: 6.0),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6.0),
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: FlutterFlowTheme.of(context).alternate,
+              color: FlutterFlowTheme.of(context).primary,
+              minHeight: 8.0,
+            ),
+          ),
+          const SizedBox(height: 16.0),
+        ],
+        // Empty state
+        if (total == 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Text(
+              'No goals yet. Tap "Add Goal" to get started.',
+              style: FlutterFlowTheme.of(context).bodySmall.override(
+                font: GoogleFonts.poppins(),
+                color: FlutterFlowTheme.of(context).secondaryText,
+                letterSpacing: 0.0,
+              ),
+            ),
+          ),
+        // Initial goals
+        if (initialGoals.isNotEmpty) ...[
+          _sectionLabel('🌱 Initial Goals'),
+          ...initialGoals.map((g) => _goalTile(g)),
+          const SizedBox(height: 8.0),
+        ],
+        // Seasonal goals grouped by season
+        ...seasonalMap.entries.map((entry) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _sectionLabel('🗓 ${entry.key}'),
+            ...entry.value.map((g) => _goalTile(g)),
+            const SizedBox(height: 8.0),
+          ],
+        )),
+        // Custom/personal goals
+        if (customGoals.isNotEmpty) ...[
+          _sectionLabel('✏️ Personal Goals'),
+          ...customGoals.map((g) => _goalTile(g)),
+        ],
+      ],
+    );
+  }
+
+  Widget _sectionLabel(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6.0),
+      child: Text(label,
+          style: FlutterFlowTheme.of(context).bodySmall.override(
+            font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            color: FlutterFlowTheme.of(context).secondaryText,
+            fontSize: 11.0,
+            letterSpacing: 0.5,
+          )),
+    );
+  }
+
+  Widget _goalTile(UserGoalsRow goal) {
+    return Dismissible(
+      key: Key(goal.id ?? UniqueKey().toString()),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 16.0),
+        margin: const EdgeInsets.only(bottom: 8.0),
+        decoration: BoxDecoration(
+          color: FlutterFlowTheme.of(context).error,
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: const Icon(Icons.delete_outline_rounded, color: Colors.white, size: 20.0),
+      ),
+      onDismissed: (_) => _deleteGoal(goal),
+      child: GestureDetector(
+        onTap: () => _toggleGoal(goal),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            color: goal.completed
+                ? FlutterFlowTheme.of(context).primaryBackground
+                : FlutterFlowTheme.of(context).secondaryBackground,
+            borderRadius: BorderRadius.circular(12.0),
+            border: Border.all(
+              color: goal.completed
+                  ? FlutterFlowTheme.of(context).primary.withOpacity(0.4)
+                  : FlutterFlowTheme.of(context).alternate,
+            ),
+          ),
+          child: Row(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 22.0,
+                height: 22.0,
+                decoration: BoxDecoration(
+                  color: goal.completed ? FlutterFlowTheme.of(context).primary : Colors.transparent,
+                  borderRadius: BorderRadius.circular(6.0),
+                  border: Border.all(
+                    color: goal.completed
+                        ? FlutterFlowTheme.of(context).primary
+                        : FlutterFlowTheme.of(context).alternate,
+                    width: 2.0,
+                  ),
+                ),
+                child: goal.completed
+                    ? const Icon(Icons.check_rounded, color: Colors.white, size: 13.0)
+                    : null,
+              ),
+              const SizedBox(width: 12.0),
+              Expanded(
+                child: Text(
+                  goal.goalText,
+                  style: FlutterFlowTheme.of(context).bodyMedium.override(
+                    font: GoogleFonts.poppins(),
+                    color: goal.completed
+                        ? FlutterFlowTheme.of(context).secondaryText
+                        : FlutterFlowTheme.of(context).primaryText,
+                    letterSpacing: 0.0,
+                    decoration: goal.completed ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+              ),
+              if (goal.completed)
+                Icon(Icons.emoji_events_rounded,
+                    color: FlutterFlowTheme.of(context).primary.withOpacity(0.7),
+                    size: 16.0),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _handlePhotoUpload() async {
@@ -608,183 +991,11 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                           width: 1.0,
                         ),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(24.0),
-                            child: Container(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'My Goals',
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleMedium
-                                            .override(
-                                              font: GoogleFonts.poppins(
-                                                fontWeight: FontWeight.bold,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .titleMedium
-                                                        .fontStyle,
-                                              ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.bold,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleMedium
-                                                      .fontStyle,
-                                              decoration:
-                                                  TextDecoration.underline,
-                                              lineHeight: 1.4,
-                                            ),
-                                      ),
-                                    ].divide(SizedBox(width: 8.0)),
-                                  ),
-                                ].divide(SizedBox(height: 16.0)),
-                              ),
-                            ),
-                          ),
-                          Wrap(
-                            spacing: 0.0,
-                            runSpacing: 0.0,
-                            alignment: WrapAlignment.start,
-                            crossAxisAlignment: WrapCrossAlignment.start,
-                            direction: Axis.horizontal,
-                            runAlignment: WrapAlignment.start,
-                            verticalDirection: VerticalDirection.down,
-                            clipBehavior: Clip.none,
-                            children: [
-                              FutureBuilder<List<ProfilesRow>>(
-                                future: ProfilesTable().querySingleRow(
-                                  queryFn: (q) => q.eqOrNull(
-                                    'id',
-                                    currentUserUid,
-                                  ),
-                                ),
-                                builder: (context, snapshot) {
-                                  // Customize what your widget looks like when it's loading.
-                                  if (!snapshot.hasData) {
-                                    return Center(
-                                      child: SizedBox(
-                                        width: 50.0,
-                                        height: 50.0,
-                                        child: CircularProgressIndicator(
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                            FlutterFlowTheme.of(context)
-                                                .primary,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  List<ProfilesRow> containerProfilesRowList =
-                                      snapshot.data!;
-
-                                  final containerProfilesRow =
-                                      containerProfilesRowList.isNotEmpty
-                                          ? containerProfilesRowList.first
-                                          : null;
-
-                                  return Container(
-                                    width: double.infinity,
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 12.0, horizontal: 16.0),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      borderRadius: BorderRadius.circular(24.0),
-                                      border: Border.all(
-                                        color: FlutterFlowTheme.of(context)
-                                            .primaryText,
-                                      ),
-                                    ),
-                                    child: Wrap(
-                                      spacing: 8.0,
-                                      runSpacing: 8.0,
-                                      alignment: WrapAlignment.center,
-                                      children: (containerProfilesRow!.goals
-                                              .isEmpty)
-                                          ? [
-                                              Text(
-                                                'No goals set yet',
-                                                textAlign: TextAlign.center,
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          font:
-                                                              GoogleFonts.poppins(
-                                                            fontWeight: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodyMedium
-                                                                .fontWeight,
-                                                            fontStyle: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodyMedium
-                                                                .fontStyle,
-                                                          ),
-                                                          color: Colors.white,
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                              )
-                                            ]
-                                          : containerProfilesRow!.goals
-                                              .map((goal) => Container(
-                                                    padding: EdgeInsets.symmetric(
-                                                        horizontal: 12.0,
-                                                        vertical: 6.0),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white
-                                                          .withOpacity(0.2),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20.0),
-                                                    ),
-                                                    child: Text(
-                                                      goal,
-                                                      style: FlutterFlowTheme
-                                                              .of(context)
-                                                          .bodySmall
-                                                          .override(
-                                                            font: GoogleFonts
-                                                                .poppins(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontStyle: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .bodySmall
-                                                                  .fontStyle,
-                                                            ),
-                                                            color: Colors.white,
-                                                            letterSpacing: 0.0,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                    ),
-                                                  ))
-                                              .toList(),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: _goalsLoading
+                            ? Center(child: CircularProgressIndicator(strokeWidth: 2.0))
+                            : _buildGoalsSection(),
                       ),
                     ),
                     Container(
