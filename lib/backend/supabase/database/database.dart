@@ -13,3 +13,4 @@ export 'tables/plant_companions.dart';
 export 'tables/plants.dart';
 export 'tables/profiles.dart';
 export 'tables/user_selected_plants.dart';
+export 'tables/user_goals.dart';

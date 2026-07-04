@@ -34,6 +34,10 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
   bool _isUploadingPhoto = false;
   String? _localImageUrl;
 
+  // Goals state
+  List<UserGoalsRow> _goals = [];
+  bool _goalsLoading = true;
+
   @override
   void initState() {
     super.initState();
