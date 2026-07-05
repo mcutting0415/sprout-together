@@ -106,8 +106,8 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
     }
 
     // Match against user's selected plants
-    if (_selectedPlants.isNotEmpty && isWarm && !isRainy) {
-      final warmPlants = _selectedPlants.where((p) {
+    if (_wantToGrow.isNotEmpty && isWarm && !isRainy) {
+      final warmPlants = _wantToGrow.where((p) {
         final name = (p['plant_name'] as String? ?? '').toLowerCase();
         const warmKeywords = ['tomato', 'pepper', 'cucumber', 'squash', 'basil', 'eggplant', 'bean', 'corn'];
         return warmKeywords.any((k) => name.contains(k));
@@ -267,6 +267,75 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
     }
   }
 
+  // Plants still on the "want to grow" list
+  List<Map<String, dynamic>> get _wantToGrow =>
+      _selectedPlants.where((p) => (p['season'] as String?) != 'planted').toList();
+
+  // Plants marked as planted
+  List<Map<String, dynamic>> get _plantedList =>
+      _selectedPlants.where((p) => (p['season'] as String?) == 'planted').toList();
+
+  Future<void> _removePlant(Map<String, dynamic> plant) async {
+    final rowId = plant['id'] as String?;
+    if (rowId == null) return;
+    try {
+      await UserSelectedPlantsTable().delete(
+        matchingRows: (q) => q.eqOrNull('id', rowId),
+      );
+      if (mounted) {
+        setState(() => _selectedPlants.removeWhere((p) => p['id'] == rowId));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('${plant['plant_name']} removed'),
+          backgroundColor: FlutterFlowTheme.of(context).secondaryText,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          duration: const Duration(seconds: 2),
+        ));
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _markAsPlanted(Map<String, dynamic> plant) async {
+    final rowId = plant['id'] as String?;
+    if (rowId == null) return;
+    try {
+      await UserSelectedPlantsTable().update(
+        data: {'season': 'planted'},
+        matchingRows: (q) => q.eqOrNull('id', rowId),
+      );
+      if (mounted) {
+        setState(() {
+          final idx = _selectedPlants.indexWhere((p) => p['id'] == rowId);
+          if (idx != -1) _selectedPlants[idx] = {..._selectedPlants[idx], 'season': 'planted'};
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('${plant['plant_name']} marked as planted! 🌱'),
+          backgroundColor: FlutterFlowTheme.of(context).primary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          duration: const Duration(seconds: 2),
+        ));
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _unmarkAsPlanted(Map<String, dynamic> plant) async {
+    final rowId = plant['id'] as String?;
+    if (rowId == null) return;
+    try {
+      await UserSelectedPlantsTable().update(
+        data: {'season': null},
+        matchingRows: (q) => q.eqOrNull('id', rowId),
+      );
+      if (mounted) {
+        setState(() {
+          final idx = _selectedPlants.indexWhere((p) => p['id'] == rowId);
+          if (idx != -1) _selectedPlants[idx] = {..._selectedPlants[idx], 'season': null};
+        });
+      }
+    } catch (_) {}
+  }
+
   /// Returns the optimal planting date for a plant based on its type and days_to_harvest.
   DateTime _getPlantingDate(String? category, String? plantName, int? daysToHarvest) {
     final now = DateTime.now();
@@ -306,7 +375,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
   }
 
   Future<void> _autoSchedulePlantingTasks() async {
-    if (_selectedPlants.isEmpty) return;
+    if (_wantToGrow.isEmpty) return;
     setState(() => _scheduling = true);
     int created = 0;
     try {
@@ -330,8 +399,9 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
         return;
       }
       final gardenName = gardens.firstOrNull?.gardenName ?? 'your garden';
-      for (int i = 0; i < _selectedPlants.length; i++) {
-        final plant = _selectedPlants[i];
+      final toSchedule = _wantToGrow;
+      for (int i = 0; i < toSchedule.length; i++) {
+        final plant = toSchedule[i];
         final plantDate = _getPlantingDate(
           plant['category'] as String?,
           plant['plant_name'] as String?,
@@ -382,8 +452,8 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
 
   // ── DYNAMIC GARDEN SUMMARY HELPERS ─────────────────────────────────────────
   String get _summarySunReq {
-    if (_selectedPlants.isEmpty) return '—';
-    final suns = _selectedPlants
+    if (_wantToGrow.isEmpty) return '—';
+    final suns = _wantToGrow
         .map((p) => (p['sun_requirement'] as String?) ?? '')
         .where((s) => s.isNotEmpty)
         .toList();
@@ -395,8 +465,8 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
   }
 
   String get _summaryWaterReq {
-    if (_selectedPlants.isEmpty) return '—';
-    final waters = _selectedPlants
+    if (_wantToGrow.isEmpty) return '—';
+    final waters = _wantToGrow
         .map((p) => (p['water_requirement'] as String?) ?? '')
         .where((s) => s.isNotEmpty)
         .toList();
@@ -408,8 +478,8 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
   }
 
   String get _summaryHarvestRange {
-    if (_selectedPlants.isEmpty) return '—';
-    final days = _selectedPlants
+    if (_wantToGrow.isEmpty) return '—';
+    final days = _wantToGrow
         .map((p) => p['days_to_harvest'] as int?)
         .whereType<int>()
         .toList();
@@ -420,15 +490,15 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
   }
 
   List<Map<String, dynamic>> get _dynamicInsights {
-    if (_selectedPlants.isEmpty) return [];
+    if (_wantToGrow.isEmpty) return [];
     final insights = <Map<String, dynamic>>[];
-    final count = _selectedPlants.length;
+    final count = _wantToGrow.length;
     insights.add({
       'color': const Color(0xFF7BA05B),
       'icon': Icons.check_circle_outline_rounded,
       'text': '$count plant${count == 1 ? '' : 's'} in your planner. Tap "Auto-schedule" to create planting tasks.',
     });
-    final suns = _selectedPlants
+    final suns = _wantToGrow
         .map((p) => (p['sun_requirement'] as String?) ?? '')
         .where((s) => s.isNotEmpty)
         .toSet();
@@ -439,7 +509,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
         'text': 'Your plants have mixed sun needs (${suns.join(', ')}). Group by sun exposure for best results.',
       });
     }
-    final days = _selectedPlants
+    final days = _wantToGrow
         .map((p) => p['days_to_harvest'] as int?)
         .whereType<int>()
         .toList();
@@ -453,7 +523,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
         'text': 'Earliest possible harvest around $fmt (${days.first} days). Plan ahead!',
       });
     }
-    final categories = _selectedPlants
+    final categories = _wantToGrow
         .map((p) => (p['category'] as String?) ?? '')
         .where((c) => c.isNotEmpty)
         .toSet();
@@ -718,13 +788,13 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           ],
                         ),
                         SizedBox(height: 12.0),
-                        // Plant list
+                        // Plant list — want to grow
                         if (_plantsLoading)
                           Center(child: Padding(
                             padding: EdgeInsets.all(12.0),
                             child: CircularProgressIndicator(strokeWidth: 2.0),
                           ))
-                        else if (_selectedPlants.isEmpty)
+                        else if (_wantToGrow.isEmpty && _plantedList.isEmpty)
                           Padding(
                             padding: EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
@@ -737,7 +807,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                             ),
                           )
                         else
-                          ...(_selectedPlants.map((plant) {
+                          ...(_wantToGrow.map((plant) {
                             final name = plant['plant_name'] as String? ?? 'Plant';
                             final category = (plant['category'] as String? ?? '').toLowerCase();
                             final days = plant['days_to_harvest'] as int?;
@@ -783,10 +853,140 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                       ],
                                     ),
                                   ),
+                                  // Mark as planted
+                                  GestureDetector(
+                                    onTap: () => _markAsPlanted(plant),
+                                    child: Tooltip(
+                                      message: 'Mark as planted',
+                                      child: Container(
+                                        width: 32.0,
+                                        height: 32.0,
+                                        margin: EdgeInsets.only(left: 6.0),
+                                        decoration: BoxDecoration(
+                                          color: FlutterFlowTheme.of(context).primary.withOpacity(0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(Icons.check_rounded,
+                                            color: FlutterFlowTheme.of(context).primary, size: 16.0),
+                                      ),
+                                    ),
+                                  ),
+                                  // Delete
+                                  GestureDetector(
+                                    onTap: () => _removePlant(plant),
+                                    child: Container(
+                                      width: 32.0,
+                                      height: 32.0,
+                                      margin: EdgeInsets.only(left: 6.0),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFD4685F).withOpacity(0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(Icons.delete_outline_rounded,
+                                          color: const Color(0xFFD4685F), size: 16.0),
+                                    ),
+                                  ),
                                 ],
                               ),
                             );
                           }).toList()),
+                        // Planted section
+                        if (!_plantsLoading && _plantedList.isNotEmpty) ...[
+                          SizedBox(height: 8.0),
+                          Divider(color: FlutterFlowTheme.of(context).alternate, thickness: 1.0),
+                          SizedBox(height: 8.0),
+                          Text(
+                            '🌿 Plants I\'ve Planted',
+                            style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                  font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                  fontSize: 14.0,
+                                  letterSpacing: 0.0,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                          SizedBox(height: 8.0),
+                          ...(_plantedList.map((plant) {
+                            final name = plant['plant_name'] as String? ?? 'Plant';
+                            final category = (plant['category'] as String? ?? '').toLowerCase();
+                            final emoji = category == 'herb' ? '🌿'
+                                : category == 'fruit' ? '🍓'
+                                : category == 'flower' ? '🌸'
+                                : '🌱';
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: 10.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 36.0,
+                                    height: 36.0,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF4E7A2E).withOpacity(0.12),
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: Center(child: Text(emoji, style: TextStyle(fontSize: 18.0))),
+                                  ),
+                                  SizedBox(width: 10.0),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          name,
+                                          style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                                letterSpacing: 0.0,
+                                              ),
+                                        ),
+                                        Text(
+                                          'Planted ✓',
+                                          style: FlutterFlowTheme.of(context).bodySmall.override(
+                                                font: GoogleFonts.poppins(),
+                                                color: const Color(0xFF4E7A2E),
+                                                fontSize: 11.0,
+                                                letterSpacing: 0.0,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Undo planted
+                                  GestureDetector(
+                                    onTap: () => _unmarkAsPlanted(plant),
+                                    child: Tooltip(
+                                      message: 'Move back to want-to-grow',
+                                      child: Container(
+                                        width: 32.0,
+                                        height: 32.0,
+                                        margin: EdgeInsets.only(left: 6.0),
+                                        decoration: BoxDecoration(
+                                          color: FlutterFlowTheme.of(context).alternate.withOpacity(0.5),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(Icons.undo_rounded,
+                                            color: FlutterFlowTheme.of(context).secondaryText, size: 16.0),
+                                      ),
+                                    ),
+                                  ),
+                                  // Delete permanently
+                                  GestureDetector(
+                                    onTap: () => _removePlant(plant),
+                                    child: Container(
+                                      width: 32.0,
+                                      height: 32.0,
+                                      margin: EdgeInsets.only(left: 6.0),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFD4685F).withOpacity(0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(Icons.delete_outline_rounded,
+                                          color: const Color(0xFFD4685F), size: 16.0),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList()),
+                        ],
                         SizedBox(height: 8.0),
                         // Buttons row
                         Row(
@@ -824,7 +1024,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                 ),
                               ),
                             ),
-                            if (_selectedPlants.isNotEmpty) ...[
+                            if (_wantToGrow.isNotEmpty) ...[
                               SizedBox(width: 8.0),
                               Expanded(
                                 child: GestureDetector(
@@ -903,7 +1103,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           ],
                         ),
                         SizedBox(height: 12.0),
-                        _buildSummaryRow(context, '🌱', 'Plants Selected', _selectedPlants.isEmpty ? '0' : '${_selectedPlants.length}'),
+                        _buildSummaryRow(context, '🌱', 'Plants Selected', _wantToGrow.isEmpty ? '0' : '${_wantToGrow.length}'),
                         SizedBox(height: 8.0),
                         _buildSummaryRow(context, '☀️', 'Sun Requirements', _summarySunReq),
                         SizedBox(height: 8.0),
@@ -1166,7 +1366,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                             ),
                       ),
                       SizedBox(height: 16.0),
-                      if (_selectedPlants.isEmpty)
+                      if (_wantToGrow.isEmpty)
                         _insightBox(
                           context,
                           color: Color(0xFF4A90A4),

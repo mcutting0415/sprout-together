@@ -38,6 +38,8 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final Set<String> _addedPlantIds = {};
+  final ScrollController _scrollController = ScrollController();
+  bool _showBackToTop = false;
 
   // "Wish list mode" — arriving from Planner's Add Plants button (gardenID empty)
   bool get _wishListMode =>
@@ -100,12 +102,83 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
 
     _model.textController ??= TextEditingController();
     _model.textFieldFocusNode ??= FocusNode();
+
+    _scrollController.addListener(() {
+      final show = _scrollController.offset > 300;
+      if (show != _showBackToTop) setState(() => _showBackToTop = show);
+    });
+
+    // Pre-load any plants already in the wish list so they show as selected
+    if (_wishListMode) _loadExistingSelections();
+  }
+
+  Future<void> _loadExistingSelections() async {
+    try {
+      final rows = await UserSelectedPlantsTable().queryRows(
+        queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+      );
+      if (mounted) {
+        setState(() {
+          for (final row in rows) {
+            if (row.plantId != null) _addedPlantIds.add(row.plantId!);
+          }
+        });
+      }
+    } catch (_) {}
   }
 
   @override
   void dispose() {
     _model.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  Widget _buildDoneBar(BuildContext context) {
+    final count = _addedPlantIds.length;
+    final theme = FlutterFlowTheme.of(context);
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
+        child: GestureDetector(
+          onTap: () => context.pop(),
+          child: Container(
+            width: double.infinity,
+            height: 52.0,
+            decoration: BoxDecoration(
+              color: theme.primary,
+              borderRadius: BorderRadius.circular(16.0),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.primary.withOpacity(0.35),
+                  blurRadius: 12.0,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.check_circle_outline_rounded,
+                    color: Colors.white, size: 20.0),
+                const SizedBox(width: 8.0),
+                Text(
+                  count == 0
+                      ? 'Done'
+                      : 'Done  ·  $count plant${count == 1 ? '' : 's'} selected',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -113,7 +186,21 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+      bottomNavigationBar:
+          _wishListMode ? _buildDoneBar(context) : null,
+      floatingActionButton: _showBackToTop
+          ? FloatingActionButton.small(
+              onPressed: () => _scrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOut,
+              ),
+              backgroundColor: FlutterFlowTheme.of(context).primary,
+              child: const Icon(Icons.arrow_upward_rounded, color: Colors.white),
+            )
+          : null,
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -414,7 +501,7 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
                                   ],
                                 ),
                                 child: Icon(
-                                  isAdded ? Icons.check_rounded : Icons.add_rounded,
+                                  isAdded ? Icons.close_rounded : Icons.add_rounded,
                                   color: isAdded
                                       ? Colors.white
                                       : FlutterFlowTheme.of(context).primary,
