@@ -17,9 +17,9 @@ class CompanionPlantingService {
       'tip': 'Basil is a powerful friend to tomatoes — it repels pests and may improve yield.',
     },
     'pepper': {
-      'good': ['basil', 'carrot', 'tomato', 'parsley'],
+      'good': ['basil', 'carrot', 'tomato', 'parsley', 'oregano', 'geranium'],
       'bad': ['fennel', 'kohlrabi'],
-      'tip': 'Peppers and basil are great neighbors — both benefit in taste and pest resistance.',
+      'tip': 'Peppers and basil are great neighbors. Geraniums deter budworms. Keep away from fennel.',
     },
     'carrot': {
       'good': ['tomato', 'lettuce', 'onion', 'leek', 'rosemary', 'sage'],
@@ -285,6 +285,66 @@ class CompanionPlantingService {
       'good': ['sunflower', 'tarragon'],
       'bad': [],
       'tip': 'Artichokes are mostly standalone plants but benefit from sunflowers nearby for pollination.',
+    },
+    'rose': {
+      'good': ['garlic', 'chive', 'parsley', 'lavender', 'marigold', 'geranium'],
+      'bad': ['fennel'],
+      'tip': 'Garlic and chives planted near roses repel aphids and black spot naturally. Marigolds keep pests at bay.',
+    },
+    'borage': {
+      'good': ['tomato', 'squash', 'strawberry', 'cucumber', 'bean'],
+      'bad': [],
+      'tip': 'Borage deters tomato hornworms and cabbage worms. It also improves the flavor of nearby tomatoes and strawberries.',
+    },
+    'horseradish': {
+      'good': ['potato', 'fruit tree'],
+      'bad': [],
+      'tip': 'Horseradish planted at potato bed corners deters Colorado potato beetles. Its volatile oils protect the whole area.',
+    },
+    'anise': {
+      'good': ['cilantro', 'coriander', 'bean', 'brassica'],
+      'bad': ['carrot', 'dill'],
+      'tip': 'Anise attracts beneficial predatory wasps and repels aphids. It cross-pollinates with dill and carrot so keep them apart.',
+    },
+    'tarragon': {
+      'good': ['eggplant', 'pepper', 'tomato', 'most vegetables'],
+      'bad': [],
+      'tip': 'Tarragon is called the "friend of all vegetables" — it enhances flavor and repels many common pests.',
+    },
+    'geranium': {
+      'good': ['rose', 'grape', 'corn', 'pepper'],
+      'bad': [],
+      'tip': 'Geraniums repel Japanese beetles, tobacco budworms, and spider mites. Great near roses and grape vines.',
+    },
+    'hyssop': {
+      'good': ['cabbage', 'grape', 'broccoli'],
+      'bad': ['radish'],
+      'tip': 'Hyssop deters cabbage moths and flea beetles. Keep it away from radishes — they inhibit each other.',
+    },
+    'lemon grass': {
+      'good': ['tomato', 'pepper', 'basil'],
+      'bad': [],
+      'tip': 'Lemon grass repels mosquitoes and many garden pests with its citronella oils.',
+    },
+    'bok choy': {
+      'good': ['onion', 'beet', 'celery', 'chamomile'],
+      'bad': ['tomato', 'strawberry', 'pepper'],
+      'tip': 'Bok choy is a brassica and benefits from the same companions — onions and aromatic herbs deter its main pests.',
+    },
+    'collard': {
+      'good': ['onion', 'chamomile', 'beet', 'celery'],
+      'bad': ['tomato', 'strawberry', 'pepper'],
+      'tip': 'Collards are brassicas — aromatic herbs nearby help repel cabbage moths and whiteflies.',
+    },
+    'mustard': {
+      'good': ['grape', 'bean', 'brassica'],
+      'bad': ['beet'],
+      'tip': 'Mustard acts as a trap crop for aphids. Let it flower to attract beneficial insects throughout the garden.',
+    },
+    'melon': {
+      'good': ['nasturtium', 'radish', 'corn', 'marigold'],
+      'bad': ['potato', 'fennel'],
+      'tip': 'Nasturtiums repel aphids and cucumber beetles that target melons. Corn provides windbreak and support.',
     },
   };
 

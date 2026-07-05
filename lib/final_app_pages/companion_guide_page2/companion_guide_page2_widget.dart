@@ -170,8 +170,10 @@ class _CompanionGuidePage2WidgetState
                           if (_showSearch)
                             _buildSearchResults(theme)
                           else ...[
-                            if (_selectedPlant == null)
+                            if (_selectedPlant == null) ...[
+                              _buildInstructionCard(theme),
                               _buildBrowseGrid(theme),
+                            ],
                             if (_selectedPlant != null) ...[
                               _buildSelectedPlantHeader(theme),
                               _buildToggle(theme),
@@ -244,6 +246,116 @@ class _CompanionGuidePage2WidgetState
     );
   }
 
+  // ── INSTRUCTION CARD ───────────────────────────────────────────────────────
+  Widget _buildInstructionCard(FlutterFlowTheme theme) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 12.0),
+      child: Container(
+        padding: const EdgeInsets.all(18.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              theme.primary.withOpacity(0.10),
+              const Color(0xFF4E7A2E).withOpacity(0.06),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20.0),
+          border: Border.all(color: theme.primary.withOpacity(0.18)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: theme.primary.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.local_florist_rounded,
+                      color: theme.primary, size: 22.0),
+                ),
+                const SizedBox(width: 12.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Companion Planting Guide',
+                        style: GoogleFonts.poppins(
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.bold,
+                          color: theme.primaryText,
+                        ),
+                      ),
+                      Text(
+                        'Grow a healthier garden, naturally',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.5,
+                          color: theme.secondaryText,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14.0),
+            _buildStep(theme, '1', Icons.search_rounded,
+                'Search or browse all plants below'),
+            const SizedBox(height: 8.0),
+            _buildStep(theme, '2', Icons.touch_app_rounded,
+                'Tap any plant to see its best companions and which ones to avoid'),
+            const SizedBox(height: 8.0),
+            _buildStep(theme, '3', Icons.hub_outlined,
+                'Tap a companion chip to explore that plant\'s relationships too'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStep(
+      FlutterFlowTheme theme, String step, IconData icon, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 24.0,
+          height: 24.0,
+          decoration: BoxDecoration(
+            color: theme.primary,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(
+              step,
+              style: GoogleFonts.poppins(
+                fontSize: 11.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10.0),
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.poppins(
+              fontSize: 12.5,
+              color: theme.primaryText,
+              height: 1.35,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   // ── BROWSE GRID ────────────────────────────────────────────────────────────
   Widget _buildBrowseGrid(FlutterFlowTheme theme) {
     return Padding(
@@ -252,9 +364,9 @@ class _CompanionGuidePage2WidgetState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Tap a plant to see companions',
+            'All Plants',
             style: GoogleFonts.poppins(
-              fontSize: 12.0,
+              fontSize: 13.0,
               fontWeight: FontWeight.w600,
               color: theme.secondaryText,
             ),
