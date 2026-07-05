@@ -205,6 +205,8 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
           'plant_name': plant?.plantName ?? 'Unknown Plant',
           'category': plant?.category ?? '',
           'days_to_harvest': plant?.daysToHarvest,
+          'sun_requirement': plant?.sunRequirement,
+          'water_requirement': plant?.waterRequirement,
           'season': r.season,
         };
       }).toList();
@@ -297,6 +299,98 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
 
     super.dispose();
   }
+
+  // ── DYNAMIC GARDEN SUMMARY HELPERS ─────────────────────────────────────────
+  String get _summarySunReq {
+    if (_selectedPlants.isEmpty) return '—';
+    final suns = _selectedPlants
+        .map((p) => (p['sun_requirement'] as String?) ?? '')
+        .where((s) => s.isNotEmpty)
+        .toList();
+    if (suns.isEmpty) return 'Varies';
+    final counts = <String, int>{};
+    for (final s in suns) counts[s] = (counts[s] ?? 0) + 1;
+    if (counts.length == 1) return counts.keys.first;
+    return 'Varies';
+  }
+
+  String get _summaryWaterReq {
+    if (_selectedPlants.isEmpty) return '—';
+    final waters = _selectedPlants
+        .map((p) => (p['water_requirement'] as String?) ?? '')
+        .where((s) => s.isNotEmpty)
+        .toList();
+    if (waters.isEmpty) return 'Varies';
+    final counts = <String, int>{};
+    for (final w in waters) counts[w] = (counts[w] ?? 0) + 1;
+    if (counts.length == 1) return counts.keys.first;
+    return 'Varies';
+  }
+
+  String get _summaryHarvestRange {
+    if (_selectedPlants.isEmpty) return '—';
+    final days = _selectedPlants
+        .map((p) => p['days_to_harvest'] as int?)
+        .whereType<int>()
+        .toList();
+    if (days.isEmpty) return 'Varies';
+    days.sort();
+    if (days.length == 1) return '${days.first} days';
+    return '${days.first}–${days.last} days';
+  }
+
+  List<Map<String, dynamic>> get _dynamicInsights {
+    if (_selectedPlants.isEmpty) return [];
+    final insights = <Map<String, dynamic>>[];
+    final count = _selectedPlants.length;
+    insights.add({
+      'color': const Color(0xFF7BA05B),
+      'icon': Icons.check_circle_outline_rounded,
+      'text': '$count plant${count == 1 ? '' : 's'} in your planner. Tap "Auto-schedule" to create planting tasks.',
+    });
+    final suns = _selectedPlants
+        .map((p) => (p['sun_requirement'] as String?) ?? '')
+        .where((s) => s.isNotEmpty)
+        .toSet();
+    if (suns.length > 1) {
+      insights.add({
+        'color': const Color(0xFFE0A43A),
+        'icon': Icons.wb_sunny_rounded,
+        'text': 'Your plants have mixed sun needs (${suns.join(', ')}). Group by sun exposure for best results.',
+      });
+    }
+    final days = _selectedPlants
+        .map((p) => p['days_to_harvest'] as int?)
+        .whereType<int>()
+        .toList();
+    if (days.isNotEmpty) {
+      days.sort();
+      final earliest = DateTime.now().add(Duration(days: days.first));
+      final fmt = '${_monthName(earliest.month)} ${earliest.day}';
+      insights.add({
+        'color': const Color(0xFF9C6EA3),
+        'icon': Icons.grass_rounded,
+        'text': 'Earliest possible harvest around $fmt (${days.first} days). Plan ahead!',
+      });
+    }
+    final categories = _selectedPlants
+        .map((p) => (p['category'] as String?) ?? '')
+        .where((c) => c.isNotEmpty)
+        .toSet();
+    if (categories.contains('Herb') || categories.contains('herb')) {
+      insights.add({
+        'color': const Color(0xFF4A90A4),
+        'icon': Icons.eco_rounded,
+        'text': 'Herbs in your garden attract beneficial insects and can deter pests naturally.',
+      });
+    }
+    return insights;
+  }
+
+  String _monthName(int month) => const [
+    '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ][month];
 
   Widget _buildSummaryRow(BuildContext context, String emoji, String label, String value) {
     return Row(
@@ -721,13 +815,13 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           ],
                         ),
                         SizedBox(height: 12.0),
-                        _buildSummaryRow(context, '🌱', 'Plants Selected', '3'),
+                        _buildSummaryRow(context, '🌱', 'Plants Selected', _selectedPlants.isEmpty ? '0' : '${_selectedPlants.length}'),
                         SizedBox(height: 8.0),
-                        _buildSummaryRow(context, '☀️', 'Sun Requirements', 'Full Sun'),
+                        _buildSummaryRow(context, '☀️', 'Sun Requirements', _summarySunReq),
                         SizedBox(height: 8.0),
-                        _buildSummaryRow(context, '💧', 'Watering Schedule', 'Every 2–3 Days'),
+                        _buildSummaryRow(context, '💧', 'Watering Needs', _summaryWaterReq),
                         SizedBox(height: 8.0),
-                        _buildSummaryRow(context, '🧺', 'First Harvest', '60–80 Days'),
+                        _buildSummaryRow(context, '🧺', 'Days to Harvest', _summaryHarvestRange),
                       ],
                     ),
                   ),
@@ -934,30 +1028,20 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                             ),
                       ),
                       SizedBox(height: 16.0),
-                      _insightBox(
-                        context,
-                        color: Color(0xFF7BA05B),
-                        icon: Icons.check_circle_outline_outlined,
-                        text: 'Basil improves tomato growth nearby.',
-                      ),
-                      _insightBox(
-                        context,
-                        color: Color(0xFFD9534F),
-                        icon: Icons.warning_amber_rounded,
-                        text: 'Potatoes may spread disease to tomatoes.',
-                      ),
-                      _insightBox(
-                        context,
-                        color: Color(0xFF4A90A4),
-                        icon: Icons.water_drop,
-                        text: 'Water peppers deeply tomorrow morning.',
-                      ),
-                      _insightBox(
-                        context,
-                        color: Color(0xFFE0A43A),
-                        icon: Icons.wb_sunny,
-                        text: 'Your garden receives ideal afternoon sunlight.',
-                      ),
+                      if (_selectedPlants.isEmpty)
+                        _insightBox(
+                          context,
+                          color: Color(0xFF4A90A4),
+                          icon: Icons.info_rounded,
+                          text: 'Add plants to see personalized insights about your garden.',
+                        )
+                      else
+                        ..._dynamicInsights.map((insight) => _insightBox(
+                          context,
+                          color: insight['color'] as Color,
+                          icon: insight['icon'] as IconData,
+                          text: insight['text'] as String,
+                        )),
                       Align(
                         alignment: Alignment.centerRight,
                         child: FFButtonWidget(
@@ -1032,7 +1116,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                       width: double.infinity,
                       padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
                       decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).primary,
+                        color: const Color(0xFFD4685F),
                         borderRadius: BorderRadius.circular(16.0),
                       ),
                       child: Row(

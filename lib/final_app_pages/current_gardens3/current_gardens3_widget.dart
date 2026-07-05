@@ -441,22 +441,26 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
           const SizedBox(height: 4.0),
           Align(
             alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              onPressed: () => context.pushNamed(
+            child: GestureDetector(
+              onTap: () => context.pushNamed(
                 GardenTipsPageWidget.routeName,
                 queryParameters: {'experienceLevel': _experienceLevel},
               ),
-              icon: const Icon(Icons.arrow_forward_rounded, size: 14.0),
-              iconAlignment: IconAlignment.end,
-              label: const Text('View all tips & hacks'),
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF4E7A2E),
-                textStyle: GoogleFonts.poppins(
-                  fontSize: 13.0,
-                  fontWeight: FontWeight.w600,
-                ),
-                padding: EdgeInsets.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'View all tips & hacks',
+                    style: GoogleFonts.poppins(
+                      fontSize: 13.0,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF4E7A2E),
+                    ),
+                  ),
+                  const SizedBox(width: 4.0),
+                  const Icon(Icons.arrow_forward_rounded,
+                      size: 14.0, color: Color(0xFF4E7A2E)),
+                ],
               ),
             ),
           ),
@@ -785,7 +789,9 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
     final size = (garden.width != null && garden.length != null)
         ? '${garden.width} × ${garden.length} ${garden.measurementUnit ?? 'ft'}'
         : null;
-    return Container(
+    return GestureDetector(
+      onTap: () => _showGardenDetail(theme, garden),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 10.0),
       padding: const EdgeInsets.all(14.0),
       decoration: BoxDecoration(
@@ -867,6 +873,124 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                 ],
               ),
             ),
+        ],
+      ),
+      ),
+    );
+  }
+
+  void _showGardenDetail(FlutterFlowTheme theme, GardensRow garden) {
+    final size = (garden.width != null && garden.length != null)
+        ? '${garden.width} × ${garden.length} ${garden.measurementUnit ?? 'ft'}'
+        : null;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        margin: const EdgeInsets.only(top: 120.0),
+        decoration: BoxDecoration(
+          color: theme.secondaryBackground,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+          border: Border.all(color: theme.alternate),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40, height: 4,
+                    decoration: BoxDecoration(
+                      color: theme.secondaryText.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                Row(
+                  children: [
+                    Container(
+                      width: 48.0, height: 48.0,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4E7A2E).withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: const Icon(Icons.yard_rounded, color: Color(0xFF4E7A2E), size: 24.0),
+                    ),
+                    const SizedBox(width: 14.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            garden.gardenName ?? 'Garden',
+                            style: GoogleFonts.poppins(
+                              fontSize: 18.0, fontWeight: FontWeight.bold,
+                              color: theme.primaryText,
+                            ),
+                          ),
+                          if (garden.gardenType != null)
+                            Text(garden.gardenType!,
+                              style: GoogleFonts.poppins(fontSize: 13.0, color: theme.secondaryText)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                if (size != null) _detailRow(theme, Icons.straighten_rounded, 'Size', size),
+                if (garden.sunExposure != null)
+                  _detailRow(theme, Icons.wb_sunny_rounded, 'Sun Exposure', garden.sunExposure!),
+                if (garden.soilType != null)
+                  _detailRow(theme, Icons.terrain_rounded, 'Soil Type', garden.soilType!),
+                const SizedBox(height: 20.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                          context.pushNamed(
+                            'GardenBuilderPage',
+                            queryParameters: {'gardenID': garden.id ?? ''},
+                          );
+                        },
+                        icon: const Icon(Icons.edit_rounded, size: 16.0),
+                        label: const Text('Edit Garden'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: theme.primary,
+                          side: BorderSide(color: theme.primary),
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
+                          textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14.0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(FlutterFlowTheme theme, IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Row(
+        children: [
+          Icon(icon, size: 16.0, color: theme.secondaryText),
+          const SizedBox(width: 8.0),
+          Text(label, style: GoogleFonts.poppins(fontSize: 13.0, color: theme.secondaryText)),
+          const Spacer(),
+          Text(value, style: GoogleFonts.poppins(fontSize: 13.0, fontWeight: FontWeight.w600, color: theme.primaryText)),
         ],
       ),
     );
