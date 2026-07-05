@@ -91,10 +91,71 @@ class CreateGardenPageWidget extends StatefulWidget {
   State<CreateGardenPageWidget> createState() => _CreateGardenPageWidgetState();
 }
 
+// Preset templates (shown on this page; selecting one pre-fills the form)
+const _kGardenTemplates = [
+  {
+    'name': 'Herb Garden',
+    'desc': '3×3 ft',
+    'subtitle': 'Basil, parsley & cilantro',
+    'width': '3',
+    'length': '3',
+    'type': 'In-Ground',
+    'icon': Icons.spa_rounded,
+  },
+  {
+    'name': 'Raised Bed',
+    'desc': '4×8 ft',
+    'subtitle': 'Classic veggie raised bed',
+    'width': '4',
+    'length': '8',
+    'type': 'Raised Beds',
+    'icon': Icons.grid_on_rounded,
+  },
+  {
+    'name': 'Veggie Patch',
+    'desc': '6×6 ft',
+    'subtitle': 'Tomatoes, peppers, squash',
+    'width': '6',
+    'length': '6',
+    'type': 'In-Ground',
+    'icon': Icons.yard_rounded,
+  },
+  {
+    'name': 'Salad Garden',
+    'desc': '3×6 ft',
+    'subtitle': 'Lettuce, spinach & radishes',
+    'width': '3',
+    'length': '6',
+    'type': 'Raised Beds',
+    'icon': Icons.eco_rounded,
+  },
+  {
+    'name': 'Large Garden',
+    'desc': '10×10 ft',
+    'subtitle': 'Full season growing space',
+    'width': '10',
+    'length': '10',
+    'type': 'In-Ground',
+    'icon': Icons.agriculture_rounded,
+  },
+];
+
 class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
   late CreateGardenPageModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  int? _selectedTemplateIndex;
+
+  void _applyTemplate(int index) {
+    final tmpl = _kGardenTemplates[index];
+    setState(() => _selectedTemplateIndex = index);
+    _model.textController1?.text = tmpl['name'] as String;
+    _model.textController2?.text = tmpl['width'] as String;
+    _model.textController3?.text = tmpl['length'] as String;
+    // Set garden type chip
+    _model.choiceChipsValueController1?.setValue([tmpl['type'] as String]);
+    safeSetState(() {});
+  }
 
   @override
   void initState() {
@@ -228,6 +289,133 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                       ),
                     ].divide(SizedBox(height: 8.0)),
                   ),
+                ),
+              ),
+              // ── QUICK START TEMPLATES ─────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24.0, 20.0, 0.0, 0.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 24.0, bottom: 10.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.auto_awesome_mosaic_rounded,
+                              color: FlutterFlowTheme.of(context).primary,
+                              size: 18.0),
+                          const SizedBox(width: 8.0),
+                          Text(
+                            'Quick Start',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15.0,
+                              color: FlutterFlowTheme.of(context).primaryText,
+                            ),
+                          ),
+                          const SizedBox(width: 8.0),
+                          Text(
+                            '— tap a template to pre-fill the form',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12.0,
+                              color: FlutterFlowTheme.of(context).secondaryText,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 120.0,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(right: 24.0),
+                        itemCount: _kGardenTemplates.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(width: 10.0),
+                        itemBuilder: (context, i) {
+                          final tmpl = _kGardenTemplates[i];
+                          final isSelected = _selectedTemplateIndex == i;
+                          return GestureDetector(
+                            onTap: () => _applyTemplate(i),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              width: 130.0,
+                              padding: const EdgeInsets.all(12.0),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? FlutterFlowTheme.of(context)
+                                        .primary
+                                        .withOpacity(0.12)
+                                    : FlutterFlowTheme.of(context)
+                                        .secondaryBackground,
+                                borderRadius: BorderRadius.circular(16.0),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? FlutterFlowTheme.of(context).primary
+                                      : FlutterFlowTheme.of(context).alternate,
+                                  width: isSelected ? 1.5 : 1.0,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 36.0,
+                                    height: 36.0,
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? FlutterFlowTheme.of(context)
+                                              .primary
+                                              .withOpacity(0.18)
+                                          : FlutterFlowTheme.of(context)
+                                              .primaryBackground,
+                                      borderRadius:
+                                          BorderRadius.circular(10.0),
+                                    ),
+                                    child: Icon(
+                                      tmpl['icon'] as IconData,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primary,
+                                      size: 20.0,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    tmpl['name'] as String,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryText,
+                                    ),
+                                  ),
+                                  Text(
+                                    tmpl['desc'] as String,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11.0,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Text(
+                                    tmpl['subtitle'] as String,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 10.5,
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryText,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(
