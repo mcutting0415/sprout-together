@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'garden_goals_page_model.dart';
 export 'garden_goals_page_model.dart';
 
-const _goalTypes = ['Personal', 'Harvest', 'Learning', 'Garden', 'Other'];
+const _goalTypes = ['Seasonal', 'Harvest', 'Learning', 'Garden', 'Other'];
 const _seasons = ['Spring', 'Summer', 'Fall', 'Winter', 'Year-round'];
 
 class GardenGoalsPageWidget extends StatefulWidget {
@@ -78,7 +78,7 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
 
   Future<void> _showAddGoalSheet() async {
     final textController = TextEditingController();
-    String selectedType = 'Personal';
+    String selectedType = 'Seasonal';
     String selectedSeason = 'Year-round';
 
     await showModalBottomSheet(
@@ -279,7 +279,7 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
       case 'Harvest': return const Color(0xFF7BA05B);
       case 'Learning': return const Color(0xFF4A90A4);
       case 'Garden': return const Color(0xFF4E7A2E);
-      case 'Personal': return const Color(0xFF9C6EA3);
+      case 'Seasonal': return const Color(0xFF9C6EA3);
       default: return const Color(0xFFE0A43A);
     }
   }
@@ -289,7 +289,7 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
       case 'Harvest': return Icons.grass_rounded;
       case 'Learning': return Icons.school_rounded;
       case 'Garden': return Icons.yard_rounded;
-      case 'Personal': return Icons.person_rounded;
+      case 'Seasonal': return Icons.wb_sunny_rounded;
       default: return Icons.flag_rounded;
     }
   }
@@ -319,7 +319,10 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
             wrapWithModel(
               model: _model.finalHeaderModel,
               updateCallback: () => safeSetState(() {}),
-              child: const FinalHeaderWidget(pageTitle: 'My Goals'),
+              child: FinalHeaderWidget(
+                pageTitle: 'My Goals',
+                backAction: () => context.pop(),
+              ),
             ),
             Expanded(
               child: _loading

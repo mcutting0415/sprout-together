@@ -504,7 +504,10 @@ class _GardenTipsPageWidgetState extends State<GardenTipsPageWidget> {
             wrapWithModel(
               model: _model.finalHeaderModel,
               updateCallback: () => safeSetState(() {}),
-              child: const FinalHeaderWidget(pageTitle: 'Tips & Hacks'),
+              child: FinalHeaderWidget(
+                pageTitle: 'Tips & Hacks',
+                backAction: () => context.pop(),
+              ),
             ),
             Expanded(
               child: Column(

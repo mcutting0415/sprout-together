@@ -16,11 +16,14 @@ class FinalHeaderWidget extends StatefulWidget {
     super.key,
     String? pageTitle,
     this.saveAction,
+    this.backAction,
   }) : this.pageTitle = pageTitle ?? 'Page Title';
 
   final String pageTitle;
-  /// When set, replaces the back button with a green Save button.
+  /// When set, shows a green checkmark Save button (Garden Builder).
   final VoidCallback? saveAction;
+  /// When set, shows a back arrow button (e.g. sub-pages returning to Insights).
+  final VoidCallback? backAction;
 
   @override
   State<FinalHeaderWidget> createState() => _FinalHeaderWidgetState();
@@ -348,7 +351,7 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                     ),
                   ),
                 ),
-                // Save button OR back button in top-right
+                // Save button (garden builder)
                 if (widget.saveAction != null)
                   Align(
                     alignment: AlignmentDirectional(0.88, 0.73),
@@ -363,7 +366,23 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                       ),
                       onPressed: widget.saveAction,
                     ),
-                  )
+                  ),
+                // Back button (sub-pages like Goals, Tips, Journal)
+                if (widget.backAction != null)
+                  Align(
+                    alignment: AlignmentDirectional(0.88, 0.73),
+                    child: FlutterFlowIconButton(
+                      borderRadius: 8.0,
+                      buttonSize: 40.0,
+                      fillColor: FlutterFlowTheme.of(context).primaryBackground,
+                      icon: Icon(
+                        Icons.arrow_back_rounded,
+                        color: FlutterFlowTheme.of(context).primary,
+                        size: 20.0,
+                      ),
+                      onPressed: widget.backAction,
+                    ),
+                  ),
                 // No automatic back button — navigation lives in the menu.
               ],
             ),

@@ -484,6 +484,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                       updateCallback: () => safeSetState(() {}),
                       child: FinalHeaderWidget(
                         pageTitle: 'Garden Journal',
+                        backAction: Navigator.of(context).canPop() ? () => context.pop() : null,
                       ),
                     ),
                     Padding(

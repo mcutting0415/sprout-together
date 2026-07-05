@@ -532,7 +532,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                     fontSize: 16.0,
                                     letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
-                                    decoration: TextDecoration.underline,
+                                    decoration: TextDecoration.none,
                                   ),
                             ),
                             GestureDetector(

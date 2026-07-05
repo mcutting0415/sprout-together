@@ -1,5 +1,6 @@
 import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
+import '/components/add_task_sheet_widget.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
 import '/final_app_pages/garden_goals_page/garden_goals_page_widget.dart';
 import '/final_app_pages/garden_journal_page2/garden_journal_page2_widget.dart';
@@ -309,7 +310,6 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                             _buildTipsSection(theme),
                             _buildUpcomingTasksSection(theme),
                             _buildGardensSection(theme),
-                            _buildPlantsSection(theme),
                             _buildJournalSection(theme),
                           ],
                         ),
@@ -624,11 +624,52 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionHeader(
-            theme,
-            icon: Icons.calendar_month_rounded,
-            title: 'Upcoming Tasks',
-            subtitle: 'Next 7 days',
+          Row(
+            children: [
+              Expanded(
+                child: _sectionHeader(
+                  theme,
+                  icon: Icons.calendar_month_rounded,
+                  title: 'Upcoming Tasks',
+                  subtitle: 'Next 7 days',
+                ),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (ctx) => AddTaskSheetWidget(
+                      gardenId: _gardens.isNotEmpty ? _gardens.first.id : null,
+                    ),
+                  );
+                  _loadData();
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                  decoration: BoxDecoration(
+                    color: theme.primary.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add_rounded, color: theme.primary, size: 14.0),
+                      const SizedBox(width: 4.0),
+                      Text(
+                        'Add Task',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w600,
+                          color: theme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12.0),
           if (_upcomingTasks.isEmpty)
@@ -936,9 +977,7 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
             ? DateFormat('MMM d, yyyy').format(entry.createdAt!)
             : '';
     return GestureDetector(
-      onTap: () {
-        context.pushNamed(GardenJournalPage2Widget.routeName);
-      },
+      onTap: () => _showJournalEntryDetail(theme, entry),
       child: Container(
       margin: const EdgeInsets.only(bottom: 8.0),
       padding: const EdgeInsets.all(14.0),
@@ -999,6 +1038,129 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
               color: const Color(0xFF9C6EA3), size: 18.0),
         ],
       ),
+      ),
+    );
+  }
+
+  // ── JOURNAL ENTRY DETAIL ───────────────────────────────────────────────────
+  void _showJournalEntryDetail(FlutterFlowTheme theme, GardenJournalEntriesRow entry) {
+    final dateStr = entry.entryDate != null
+        ? DateFormat('MMMM d, yyyy').format(entry.entryDate!)
+        : entry.createdAt != null
+            ? DateFormat('MMMM d, yyyy').format(entry.createdAt!)
+            : '';
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        margin: const EdgeInsets.only(top: 80.0),
+        decoration: BoxDecoration(
+          color: theme.secondaryBackground,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+          border: Border.all(color: theme.alternate),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40, height: 4,
+                    decoration: BoxDecoration(
+                      color: theme.secondaryText.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                if (entry.photoUrl != null && entry.photoUrl!.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14.0),
+                    child: Image.network(
+                      entry.photoUrl!,
+                      width: double.infinity,
+                      height: 180.0,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                if (entry.photoUrl != null && entry.photoUrl!.isNotEmpty)
+                  const SizedBox(height: 16.0),
+                Text(
+                  entry.title ?? 'Journal Entry',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                    color: theme.primaryText,
+                  ),
+                ),
+                if (dateStr.isNotEmpty) ...[
+                  const SizedBox(height: 4.0),
+                  Text(
+                    dateStr,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12.0,
+                      color: theme.secondaryText,
+                    ),
+                  ),
+                ],
+                if (entry.entryCategory != null) ...[
+                  const SizedBox(height: 8.0),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF9C6EA3).withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Text(
+                      entry.entryCategory!,
+                      style: GoogleFonts.poppins(
+                        fontSize: 11.0,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF9C6EA3),
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 16.0),
+                if (entry.entryText != null && entry.entryText!.isNotEmpty)
+                  Text(
+                    entry.entryText!,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14.0,
+                      height: 1.6,
+                      color: theme.primaryText,
+                    ),
+                  ),
+                const SizedBox(height: 24.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                      context.pushNamed(GardenJournalPage2Widget.routeName);
+                    },
+                    icon: const Icon(Icons.menu_book_rounded, size: 16.0),
+                    label: const Text('Open in Journal'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: theme.primary,
+                      side: BorderSide(color: theme.primary),
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14.0)),
+                      textStyle: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600, fontSize: 14.0),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
