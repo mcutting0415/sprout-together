@@ -131,6 +131,161 @@ class CompanionPlantingService {
       'bad': ['tomato', 'pepper', 'cucumber', 'bean', 'kohlrabi', 'carrot'],
       'tip': 'Fennel is allelopathic — keep it isolated. It inhibits most vegetables.',
     },
+    'eggplant': {
+      'good': ['pepper', 'tomato', 'basil', 'marigold', 'spinach'],
+      'bad': ['fennel'],
+      'tip': 'Eggplant pairs well with peppers and basil. Marigolds help deter aphids and whiteflies.',
+    },
+    'cabbage': {
+      'good': ['mint', 'rosemary', 'thyme', 'onion', 'beet', 'chamomile', 'dill'],
+      'bad': ['tomato', 'strawberry', 'pepper'],
+      'tip': 'Aromatic herbs like thyme and rosemary repel cabbage moths. Chamomile improves growth.',
+    },
+    'potato': {
+      'good': ['bean', 'corn', 'horseradish', 'chamomile'],
+      'bad': ['tomato', 'squash', 'sunflower', 'cucumber', 'pumpkin', 'fennel'],
+      'tip': 'Horseradish planted at the corners of a potato bed deters Colorado potato beetles.',
+    },
+    'cauliflower': {
+      'good': ['onion', 'chamomile', 'beet', 'celery', 'dill'],
+      'bad': ['tomato', 'strawberry', 'pepper'],
+      'tip': 'Chamomile and dill attract beneficial insects that help control cauliflower pests.',
+    },
+    'beet': {
+      'good': ['onion', 'lettuce', 'kale', 'broccoli', 'chard', 'garlic'],
+      'bad': ['pole bean', 'field mustard'],
+      'tip': 'Beets and onions make excellent neighbors — they share space well without competing.',
+    },
+    'celery': {
+      'good': ['tomato', 'dill', 'bean', 'leek', 'spinach', 'broccoli'],
+      'bad': ['corn', 'potato', 'parsley'],
+      'tip': 'Celery deters white cabbage moths and is a great neighbor for tomatoes and beans.',
+    },
+    'leek': {
+      'good': ['carrot', 'celery', 'onion', 'beet'],
+      'bad': ['bean', 'pea', 'legume'],
+      'tip': 'Leeks and carrots are mutually beneficial — they repel each other\'s key pests.',
+    },
+    'chard': {
+      'good': ['bean', 'onion', 'kale', 'lettuce'],
+      'bad': ['beet'],
+      'tip': 'Swiss chard does well with most vegetables. Keep it away from beets as they compete.',
+    },
+    'arugula': {
+      'good': ['lettuce', 'spinach', 'cucumber', 'radish'],
+      'bad': [],
+      'tip': 'Arugula is a good cool-season companion. It bolts quickly so plant in rounds.',
+    },
+    'turnip': {
+      'good': ['pea', 'onion', 'bean'],
+      'bad': [],
+      'tip': 'Turnips grow quickly and make efficient use of space alongside slow-growing vegetables.',
+    },
+    'kohlrabi': {
+      'good': ['beet', 'onion', 'cucumber'],
+      'bad': ['tomato', 'pepper', 'strawberry', 'fennel'],
+      'tip': 'Kohlrabi gets along with root vegetables and onions but conflicts with nightshades.',
+    },
+    'sweet potato': {
+      'good': ['bean', 'beet', 'thyme'],
+      'bad': ['squash', 'okra'],
+      'tip': 'Sweet potatoes fix nitrogen and grow well with beans. Their spreading vines shade out weeds.',
+    },
+    'pumpkin': {
+      'good': ['corn', 'bean', 'nasturtium', 'radish'],
+      'bad': ['potato', 'fennel'],
+      'tip': 'Pumpkins are part of the traditional "Three Sisters" planting with corn and beans.',
+    },
+    'watermelon': {
+      'good': ['nasturtium', 'radish', 'marigold', 'corn'],
+      'bad': ['potato', 'fennel'],
+      'tip': 'Nasturtiums repel aphids and cucumber beetles that also target watermelon.',
+    },
+    'cantaloupe': {
+      'good': ['nasturtium', 'radish', 'corn', 'marigold'],
+      'bad': ['potato', 'fennel'],
+      'tip': 'Cantaloupes benefit from the same companions as cucumbers and other melons.',
+    },
+    'asparagus': {
+      'good': ['tomato', 'parsley', 'basil', 'marigold'],
+      'bad': ['onion', 'garlic', 'potato'],
+      'tip': 'Tomatoes and asparagus are excellent long-term companions — both benefit from the pairing.',
+    },
+    'okra': {
+      'good': ['pepper', 'eggplant', 'basil', 'sunflower', 'cucumber'],
+      'bad': ['sweet potato'],
+      'tip': 'Okra and sunflowers both love heat and grow well together, with sunflowers providing support.',
+    },
+    'dill': {
+      'good': ['cabbage', 'lettuce', 'onion', 'broccoli', 'cucumber'],
+      'bad': ['carrot', 'tomato', 'fennel'],
+      'tip': 'Dill attracts beneficial wasps and hoverflies. Avoid planting near carrot — they cross-pollinate.',
+    },
+    'cilantro': {
+      'good': ['tomato', 'spinach', 'bean', 'anise'],
+      'bad': ['fennel'],
+      'tip': 'Cilantro attracts beneficial insects when it flowers. Let some bolt to seed for free plants.',
+    },
+    'parsley': {
+      'good': ['tomato', 'carrot', 'asparagus', 'rose'],
+      'bad': ['onion', 'garlic', 'celery'],
+      'tip': 'Parsley attracts predatory wasps that control aphids. It is a great neighbor for tomatoes.',
+    },
+    'oregano': {
+      'good': ['tomato', 'pepper', 'squash', 'broccoli', 'cucumber'],
+      'bad': [],
+      'tip': 'Oregano is a broadly beneficial herb — it repels many pests and attracts pollinators.',
+    },
+    'sage': {
+      'good': ['carrot', 'cabbage', 'broccoli', 'strawberry', 'rosemary'],
+      'bad': ['cucumber', 'onion', 'fennel'],
+      'tip': 'Sage deters cabbage moths and carrot flies. It pairs well with rosemary in an herb bed.',
+    },
+    'chive': {
+      'good': ['carrot', 'tomato', 'apple', 'rose'],
+      'bad': ['bean', 'pea'],
+      'tip': 'Chives repel aphids and Japanese beetles. They are one of the best companions for carrots.',
+    },
+    'chamomile': {
+      'good': ['brassica', 'onion', 'cucumber', 'broccoli', 'cabbage'],
+      'bad': [],
+      'tip': 'Chamomile is the "physician of the garden" — it improves the health and flavor of nearby plants.',
+    },
+    'nasturtium': {
+      'good': ['cucumber', 'squash', 'bean', 'broccoli', 'cabbage', 'tomato'],
+      'bad': [],
+      'tip': 'Nasturtiums act as a trap crop for aphids and repel squash bugs and whiteflies.',
+    },
+    'zinnia': {
+      'good': ['tomato', 'pepper', 'cucumber'],
+      'bad': [],
+      'tip': 'Zinnias attract butterflies, hummingbirds, and predatory wasps that control garden pests.',
+    },
+    'echinacea': {
+      'good': ['wildflower', 'lavender', 'sage'],
+      'bad': [],
+      'tip': 'Echinacea (coneflower) is a pollinator magnet that supports the entire garden ecosystem.',
+    },
+    'lemon balm': {
+      'good': ['tomato', 'squash', 'pumpkin'],
+      'bad': [],
+      'tip': 'Lemon balm attracts bees and beneficial insects, improving pollination throughout the garden.',
+    },
+    'blueberry': {
+      'good': ['strawberry', 'thyme', 'lavender', 'basil'],
+      'bad': ['fennel', 'nightshade'],
+      'tip': 'Blueberries need acidic soil. Thyme as a groundcover helps retain moisture and deter pests.',
+    },
+    'raspberry': {
+      'good': ['garlic', 'lavender', 'marigold'],
+      'bad': ['blackberry', 'fennel', 'nightshade'],
+      'tip': 'Garlic planted near raspberries deters Japanese beetles and aphids naturally.',
+    },
+    'artichoke': {
+      'good': ['sunflower', 'tarragon'],
+      'bad': [],
+      'tip': 'Artichokes are mostly standalone plants but benefit from sunflowers nearby for pollination.',
+    },
   };
 
   /// Find companion data for a plant by name (fuzzy match).
