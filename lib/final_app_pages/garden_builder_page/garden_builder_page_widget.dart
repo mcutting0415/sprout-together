@@ -575,8 +575,8 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                                       child: ElevatedButton(
                                                         onPressed: () async {
                                                           final newName = nameController.text.trim();
-                                                          final newWidth = double.tryParse(widthController.text.trim());
-                                                          final newLength = double.tryParse(lengthController.text.trim());
+                                                          final newWidth = int.tryParse(widthController.text.trim()) ?? double.tryParse(widthController.text.trim())?.toInt();
+                                                          final newLength = int.tryParse(lengthController.text.trim()) ?? double.tryParse(lengthController.text.trim())?.toInt();
                                                           final data = <String, dynamic>{};
                                                           if (newName.isNotEmpty) data['garden_name'] = newName;
                                                           if (newWidth != null) data['width'] = newWidth;

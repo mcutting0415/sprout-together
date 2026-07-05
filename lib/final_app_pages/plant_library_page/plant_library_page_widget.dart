@@ -44,45 +44,50 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
       (widget.gardenID == null || widget.gardenID!.isEmpty) &&
       (widget.plotNumber == null || widget.plotNumber == 0);
 
-  Future<void> _addToWishList(BuildContext context, String plantId, String plantName) async {
+  Future<void> _toggleWishList(BuildContext context, String plantId, String plantName) async {
+    final isAdded = _addedPlantIds.contains(plantId);
     try {
-      // Check if already added
-      final existing = await UserSelectedPlantsTable().queryRows(
-        queryFn: (q) =>
-            q.eqOrNull('user_id', currentUserUid).eqOrNull('plant_id', plantId),
-      );
-      if (existing.isNotEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$plantName is already in your list!'),
-            backgroundColor: FlutterFlowTheme.of(context).secondaryText,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-            duration: const Duration(seconds: 2),
-          ),
+      if (isAdded) {
+        // Remove from wish list
+        await UserSelectedPlantsTable().delete(
+          matchingRows: (q) =>
+              q.eqOrNull('user_id', currentUserUid).eqOrNull('plant_id', plantId),
         );
-        return;
-      }
-      await UserSelectedPlantsTable().insert({
-        'user_id': currentUserUid,
-        'plant_id': plantId,
-      });
-      if (mounted) {
-        setState(() => _addedPlantIds.add(plantId));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('✅ $plantName added to your list!'),
-            backgroundColor: FlutterFlowTheme.of(context).primary,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        if (mounted) {
+          setState(() => _addedPlantIds.remove(plantId));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$plantName removed from your list'),
+              backgroundColor: FlutterFlowTheme.of(context).secondaryText,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        // Add to wish list
+        await UserSelectedPlantsTable().insert({
+          'user_id': currentUserUid,
+          'plant_id': plantId,
+        });
+        if (mounted) {
+          setState(() => _addedPlantIds.add(plantId));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$plantName added to your list!'),
+              backgroundColor: FlutterFlowTheme.of(context).primary,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not add plant. Try again.')),
+          const SnackBar(content: Text('Could not update plant list. Try again.')),
         );
       }
     }
@@ -382,7 +387,7 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
                             top: 8,
                             right: 8,
                             child: GestureDetector(
-                              onTap: () => _addToWishList(context, pid, pname),
+                              onTap: () => _toggleWishList(context, pid, pname),
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
                                 width: 34,

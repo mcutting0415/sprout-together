@@ -712,57 +712,65 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                         Row(
                           children: [
                             Expanded(
-                              child: FFButtonWidget(
-                                onPressed: () async {
-                                  context.pushNamed(
-                                    PlantLibraryPageWidget.routeName,
-                                    queryParameters: {
-                                      'plotNumber': serializeParam(0, ParamType.int),
-                                      'gardenID': serializeParam('', ParamType.String),
-                                      'plantID': serializeParam('', ParamType.String),
-                                    }.withoutNulls,
-                                  );
-                                },
-                                text: 'Add Plants',
-                                icon: Icon(Icons.add, size: 15.0),
-                                options: FFButtonOptions(
+                              child: GestureDetector(
+                                onTap: () => context.pushNamed(
+                                  PlantLibraryPageWidget.routeName,
+                                  queryParameters: {
+                                    'plotNumber': serializeParam(0, ParamType.int),
+                                    'gardenID': serializeParam('', ParamType.String),
+                                    'plantID': serializeParam('', ParamType.String),
+                                  }.withoutNulls,
+                                ),
+                                child: Container(
                                   height: 40.0,
-                                  padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
-                                  iconAlignment: IconAlignment.start,
-                                  iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                                  color: FlutterFlowTheme.of(context).primary,
-                                  textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-                                        font: GoogleFonts.poppins(),
-                                        color: Colors.white,
-                                        fontSize: 12.0,
-                                        letterSpacing: 0.0,
-                                      ),
-                                  elevation: 0.0,
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  decoration: BoxDecoration(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.add, size: 15.0, color: Colors.white),
+                                      SizedBox(width: 4.0),
+                                      Text('Add Plants',
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w600,
+                                        )),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                             if (_selectedPlants.isNotEmpty) ...[
                               SizedBox(width: 8.0),
                               Expanded(
-                                child: FFButtonWidget(
-                                  onPressed: _scheduling ? null : _autoSchedulePlantingTasks,
-                                  text: _scheduling ? 'Scheduling…' : 'Auto-schedule',
-                                  icon: Icon(Icons.calendar_month_rounded, size: 15.0),
-                                  options: FFButtonOptions(
+                                child: GestureDetector(
+                                  onTap: _scheduling ? null : _autoSchedulePlantingTasks,
+                                  child: Container(
                                     height: 40.0,
-                                    padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
-                                    iconAlignment: IconAlignment.start,
-                                    iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                                    color: const Color(0xFFD4685F),
-                                    textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-                                          font: GoogleFonts.poppins(),
-                                          color: Colors.white,
-                                          fontSize: 12.0,
-                                          letterSpacing: 0.0,
-                                        ),
-                                    elevation: 0.0,
-                                    borderRadius: BorderRadius.circular(16.0),
+                                    decoration: BoxDecoration(
+                                      color: _scheduling
+                                          ? const Color(0xFFD4685F).withOpacity(0.6)
+                                          : const Color(0xFFD4685F),
+                                      borderRadius: BorderRadius.circular(16.0),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.calendar_month_rounded, size: 15.0, color: Colors.white),
+                                        SizedBox(width: 4.0),
+                                        Text(_scheduling ? 'Scheduling…' : 'Auto-schedule',
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.w600,
+                                          )),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

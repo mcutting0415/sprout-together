@@ -1490,7 +1490,7 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                         height: 40.0,
                         padding: EdgeInsetsDirectional.fromSTEB(
                             16.0, 0.0, 16.0, 0.0),
-                        iconAlignment: IconAlignment.end,
+
                         iconPadding:
                             EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
                         color: FlutterFlowTheme.of(context).primary,

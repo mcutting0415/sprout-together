@@ -229,6 +229,8 @@ class _CompanionGuidePage2WidgetState extends State<CompanionGuidePage2Widget> {
           ),
         ),
         style: GoogleFonts.poppins(color: theme.primaryText),
+        textInputAction: TextInputAction.search,
+        onSubmitted: (_) => FocusScope.of(context).unfocus(),
       ),
     );
   }

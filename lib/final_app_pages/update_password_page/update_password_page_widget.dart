@@ -588,7 +588,7 @@ class _UpdatePasswordPageWidgetState extends State<UpdatePasswordPageWidget> {
                                   height: 56.0,
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       16.0, 0.0, 16.0, 0.0),
-                                  iconAlignment: IconAlignment.end,
+
                                   iconPadding: EdgeInsetsDirectional.fromSTEB(
                                       0.0, 0.0, 0.0, 0.0),
                                   color: FlutterFlowTheme.of(context).primary,

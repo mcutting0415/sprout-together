@@ -402,7 +402,7 @@ class _AccountManagementRoundedWidgetState
                     iconPadding:
                         EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
                     iconColor: FlutterFlowTheme.of(context).secondaryBackground,
-                    color: FlutterFlowTheme.of(context).error,
+                    color: const Color(0xFFD4685F),
                     textStyle: FlutterFlowTheme.of(context).titleSmall.override(
                           font: GoogleFonts.poppins(
                             fontWeight: FlutterFlowTheme.of(context)

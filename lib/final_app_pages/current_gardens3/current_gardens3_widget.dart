@@ -946,8 +946,6 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                 if (size != null) _detailRow(theme, Icons.straighten_rounded, 'Size', size),
                 if (garden.sunExposure != null)
                   _detailRow(theme, Icons.wb_sunny_rounded, 'Sun Exposure', garden.sunExposure!),
-                if (garden.soilType != null)
-                  _detailRow(theme, Icons.terrain_rounded, 'Soil Type', garden.soilType!),
                 const SizedBox(height: 20.0),
                 Row(
                   children: [
@@ -1201,18 +1199,18 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                   ),
                 ),
                 const SizedBox(height: 20.0),
-                if (entry.photoUrl != null && entry.photoUrl!.isNotEmpty)
+                if (entry.imageUrl != null && entry.imageUrl!.isNotEmpty)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(14.0),
                     child: Image.network(
-                      entry.photoUrl!,
+                      entry.imageUrl!,
                       width: double.infinity,
                       height: 180.0,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                     ),
                   ),
-                if (entry.photoUrl != null && entry.photoUrl!.isNotEmpty)
+                if (entry.imageUrl != null && entry.imageUrl!.isNotEmpty)
                   const SizedBox(height: 16.0),
                 Text(
                   entry.title ?? 'Journal Entry',

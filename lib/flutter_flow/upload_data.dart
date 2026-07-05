@@ -11,7 +11,7 @@ import 'package:video_player/video_player.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow_util.dart';
 
-const allowedFormats = {'image/png', 'image/jpeg', 'video/mp4', 'image/gif'};
+const allowedFormats = {'image/png', 'image/jpeg', 'video/mp4', 'image/gif', 'image/heic', 'image/heif', 'image/webp'};
 
 class SelectedFile {
   const SelectedFile({

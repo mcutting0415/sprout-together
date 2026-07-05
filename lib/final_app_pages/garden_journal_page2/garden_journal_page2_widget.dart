@@ -48,7 +48,7 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
             ),
             child: SafeArea(
               top: false,
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -573,93 +573,87 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                     ),
                     Padding(
                       padding: EdgeInsetsDirectional.fromSTEB(
-                          24.0, 16.0, 24.0, 16.0),
-                      child: Container(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              'All',
-                              'By Garden',
-                              'By Plant',
-                              'By Month',
-                            ].map((filter) {
-                              final isSelected = _selectedFilter == filter;
-                              return GestureDetector(
-                                onTap: () => safeSetState(
-                                    () => _selectedFilter = filter),
-                                child: Container(
-                                  height: 34.0,
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? FlutterFlowTheme.of(context).primary
-                                        : FlutterFlowTheme.of(context)
-                                            .secondaryBackground,
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    border: Border.all(
-                                      color: FlutterFlowTheme.of(context)
-                                          .alternate,
-                                      width: 1.0,
-                                    ),
-                                  ),
-                                  alignment: AlignmentDirectional(0.0, 0.0),
-                                  child: Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        12.0, 0.0, 12.0, 0.0),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        if (isSelected)
-                                          Icon(Icons.check_rounded,
-                                              color: Colors.white, size: 16.0),
-                                        Text(
-                                          filter == 'All'
-                                              ? 'All Entries'
-                                              : filter,
-                                          style: FlutterFlowTheme.of(context)
-                                              .labelMedium
-                                              .override(
-                                                font: GoogleFonts.poppins(
-                                                  fontWeight:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .labelMedium
-                                                          .fontWeight,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .labelMedium
-                                                          .fontStyle,
-                                                ),
-                                                color: isSelected
-                                                    ? Colors.white
-                                                    : FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                fontSize: 14.0,
-                                                letterSpacing: 0.0,
-                                                fontWeight:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontWeight,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .fontStyle,
-                                                lineHeight: 1.4,
-                                              ),
-                                        ),
-                                      ].divide(SizedBox(width: 6.0)),
-                                    ),
-                                  ),
+                          24.0, 16.0, 24.0, 8.0),
+                      child: Wrap(
+                        spacing: 8.0,
+                        runSpacing: 8.0,
+                        children: [
+                          'All',
+                          'By Garden',
+                          'By Plant',
+                          'By Month',
+                        ].map((filter) {
+                          final isSelected = _selectedFilter == filter;
+                          return GestureDetector(
+                            onTap: () => safeSetState(
+                                () => _selectedFilter = filter),
+                            child: Container(
+                              height: 34.0,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? FlutterFlowTheme.of(context).primary
+                                    : FlutterFlowTheme.of(context)
+                                        .secondaryBackground,
+                                borderRadius: BorderRadius.circular(8.0),
+                                border: Border.all(
+                                  color: FlutterFlowTheme.of(context)
+                                      .alternate,
+                                  width: 1.0,
                                 ),
-                              );
-                            }).toList().divide(SizedBox(width: 8.0)),
-                          ),
-                        ),
+                              ),
+                              alignment: AlignmentDirectional(0.0, 0.0),
+                              child: Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    12.0, 0.0, 12.0, 0.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (isSelected)
+                                      Icon(Icons.check_rounded,
+                                          color: Colors.white, size: 16.0),
+                                    Text(
+                                      filter == 'All'
+                                          ? 'All Entries'
+                                          : filter,
+                                      style: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .override(
+                                            font: GoogleFonts.poppins(
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .fontWeight,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .fontStyle,
+                                            ),
+                                            color: isSelected
+                                                ? Colors.white
+                                                : FlutterFlowTheme.of(
+                                                        context)
+                                                    .primaryText,
+                                            fontSize: 13.0,
+                                            letterSpacing: 0.0,
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .labelMedium
+                                                    .fontWeight,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .labelMedium
+                                                    .fontStyle,
+                                            lineHeight: 1.4,
+                                          ),
+                                    ),
+                                  ].divide(SizedBox(width: 6.0)),
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
                     ),
                     Container(

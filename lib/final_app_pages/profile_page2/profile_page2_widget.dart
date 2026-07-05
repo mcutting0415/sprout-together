@@ -342,7 +342,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
           ),
         // Initial goals
         if (initialGoals.isNotEmpty) ...[
-          _sectionLabel('🌱 Initial Goals'),
+          _sectionLabel('Getting Started', icon: Icons.grass_rounded),
           ...initialGoals.map((g) => _goalTile(g)),
           const SizedBox(height: 8.0),
         ],
@@ -350,30 +350,36 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
         ...seasonalMap.entries.map((entry) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _sectionLabel('🗓 ${entry.key}'),
+            _sectionLabel(entry.key, icon: Icons.wb_sunny_rounded),
             ...entry.value.map((g) => _goalTile(g)),
             const SizedBox(height: 8.0),
           ],
         )),
         // Custom/personal goals
         if (customGoals.isNotEmpty) ...[
-          _sectionLabel('✏️ Personal Goals'),
+          _sectionLabel('My Goals', icon: Icons.edit_rounded),
           ...customGoals.map((g) => _goalTile(g)),
         ],
       ],
     );
   }
 
-  Widget _sectionLabel(String label) {
+  Widget _sectionLabel(String label, {IconData icon = Icons.flag_rounded}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6.0),
-      child: Text(label,
-          style: FlutterFlowTheme.of(context).bodySmall.override(
-            font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-            color: FlutterFlowTheme.of(context).secondaryText,
-            fontSize: 11.0,
-            letterSpacing: 0.5,
-          )),
+      child: Row(
+        children: [
+          Icon(icon, size: 14.0, color: FlutterFlowTheme.of(context).primary),
+          const SizedBox(width: 6.0),
+          Text(label,
+              style: FlutterFlowTheme.of(context).bodySmall.override(
+                font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                color: FlutterFlowTheme.of(context).secondaryText,
+                fontSize: 11.0,
+                letterSpacing: 0.5,
+              )),
+        ],
+      ),
     );
   }
 

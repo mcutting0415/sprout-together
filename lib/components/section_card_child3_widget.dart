@@ -1,3 +1,5 @@
+import '/auth/supabase_auth/auth_util.dart';
+import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_choice_chips.dart';
 import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -51,6 +53,26 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
                 FormFieldController<String>(appState.setupGardeningZone);
           });
         }
+      });
+    }
+
+    // If appState is empty (e.g. after app restart), load zip from database
+    if (appState.setupZipCode.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        try {
+          final rows = await ProfilesTable().queryRows(
+            queryFn: (q) => q.eqOrNull('id', currentUserUid),
+          );
+          if (rows.isNotEmpty && mounted) {
+            final dbZip = rows.first.zipCode ?? '';
+            if (dbZip.isNotEmpty) {
+              safeSetState(() {
+                _model.textController?.text = dbZip;
+                FFAppState().setupZipCode = dbZip;
+              });
+            }
+          }
+        } catch (_) {}
       });
     }
   }
