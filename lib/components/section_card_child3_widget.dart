@@ -455,6 +455,8 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
                   safeSetState(() => _model.dropDownValue2 = val);
                   if (val != null) {
                     FlutterFlowTheme.saveColorTheme(val);
+                    // Notify FFAppState watchers so Goals/Profile rebuild immediately
+                    FFAppState().update(() {});
                     final isDark =
                         Theme.of(context).brightness == Brightness.dark;
                     setDarkModeSetting(

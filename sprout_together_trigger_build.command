@@ -1,21 +1,33 @@
 #!/bin/bash
 echo "========================================"
-echo "  BUILD 31 — Pushing now"
+echo "  BUILD 32 — Pushing now"
 echo "========================================"
 echo ""
-echo "WHAT'S IN BUILD 31:"
-echo "  1. Edit Account button on Settings page"
-echo "     → tap to edit name, email, password"
-echo "  2. Zone auto-generates from zip (no dropdown)"
-echo "  3. Appearance dropdown is now visible"
-echo "  4. Sign up page fits on one screen (no scrolling)"
-echo "  5. Keyboard shows 'Next' between signup fields"
+echo "WHAT'S IN BUILD 32:"
+echo "  1. Planner auto-schedule fixed (was silently failing)"
+echo "     → now correctly saves tasks to your garden"
+echo "  2. Garden Builder: grid uses your garden's actual width"
+echo "  3. Garden Builder: Combine Squares button"
+echo "     → select multiple squares, assign 1 plant to all"
+echo "  4. Garden Builder: Container size selector (S/M/L/XL)"
+echo "  5. Plant Library: duplicates removed"
+echo "  6. Plant Library: card no longer overflows"
+echo "  7. Theme color now updates Goals + Profile immediately"
+echo "  8. Settings > My Gardens: Per-Garden Settings button"
+echo "     → see each garden, tap to open its builder"
+echo "  9. Settings > My Gardens: Garden Templates now work"
+echo "     → 5 presets (Herb Garden, Raised Bed, Veggie Patch, etc.)"
+echo "     → creates the garden + all plots automatically"
+echo " 10. Settings > Data & Storage: all 3 buttons now functional"
+echo "     → Export emails you a garden summary"
+echo "     → Cloud Backup explains auto-sync"
+echo "     → Restore explains how to re-sync"
 echo ""
 echo "Pushing to GitHub..."
 cd ~/Downloads/sprout_together
 rm -f .git/HEAD.lock .git/index.lock .git/refs/heads/main.lock
 git add -A
-git commit -m "Build 31: edit account, auto zone, appearance fix, signup layout, keyboard next" --allow-empty
+git commit -m "Build 32: planner fix, garden builder grid+combine+sizes, plant library, theme fix, settings templates+per-garden+data" --allow-empty
 git push origin main
 echo ""
 echo "✅ Pushed! iOS TestFlight build will start automatically."

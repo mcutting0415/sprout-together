@@ -317,7 +317,15 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
                   );
                 }
                 final search = (_model.textController?.text ?? '').trim().toLowerCase();
+                // Deduplicate by plant name (treat same-named entries as variants)
+                final seen = <String>{};
                 final plants = snapshot.data!
+                    .where((p) {
+                      final key = (p.plantName ?? '').toLowerCase();
+                      if (seen.contains(key)) return false;
+                      seen.add(key);
+                      return true;
+                    })
                     .where((p) =>
                         search.isEmpty ||
                         (p.plantName ?? '').toLowerCase().contains(search))
@@ -360,7 +368,7 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
                     physics: NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.65,
+                      childAspectRatio: 0.52,
                       crossAxisSpacing: 12.0,
                       mainAxisSpacing: 12.0,
                     ),

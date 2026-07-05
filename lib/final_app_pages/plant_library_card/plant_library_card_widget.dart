@@ -82,8 +82,6 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 188.0,
-      height: 325.0,
       decoration: BoxDecoration(
         color: Color(0x1A7BA05B),
         borderRadius: BorderRadius.circular(25.0),
@@ -94,8 +92,8 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
         ),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ClipRRect(

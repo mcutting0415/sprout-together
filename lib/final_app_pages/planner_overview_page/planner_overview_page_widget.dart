@@ -259,6 +259,25 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
     setState(() => _scheduling = true);
     int created = 0;
     try {
+      // Fetch the user's first garden — garden_id is required (NOT NULL)
+      final gardens = await GardensTable().queryRows(
+        queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+      );
+      final gardenId = gardens.firstOrNull?.id;
+      if (gardenId == null) {
+        if (mounted) {
+          setState(() => _scheduling = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Create a garden first before scheduling tasks.'),
+              backgroundColor: FlutterFlowTheme.of(context).error,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+            ),
+          );
+        }
+        return;
+      }
       for (final plant in _selectedPlants) {
         final plantDate = _getPlantingDate(
           plant['category'] as String?,
@@ -267,6 +286,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
         );
         await GardenTasksTable().insert({
           'user_id': currentUserUid,
+          'garden_id': gardenId,
           'task_name': 'Plant ${plant['plant_name']}',
           'task_type': 'Plant',
           'due_date': plantDate.toIso8601String(),

@@ -49,6 +49,11 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
 
   String? _containerPlantId;
   String? _containerPlantName;
+  String _containerSize = 'Medium';
+
+  // Combine Squares mode
+  bool _combineMode = false;
+  final Set<String> _combineSelectedIds = {};
 
   Future<void> _showContainerPlantPicker() async {
     await showModalBottomSheet(
@@ -157,6 +162,97 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
         );
       },
     );
+  }
+
+  Future<void> _applyCombineSelected() async {
+    if (_combineSelectedIds.isEmpty) return;
+    PlantsRow? selectedPlant;
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.6,
+          decoration: BoxDecoration(
+            color: FlutterFlowTheme.of(context).primaryBackground,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24.0),
+              topRight: Radius.circular(24.0),
+            ),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 8.0),
+              Container(
+                width: 40.0,
+                height: 4.0,
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).alternate,
+                  borderRadius: BorderRadius.circular(2.0),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.grid_view_rounded, color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                    const SizedBox(width: 8.0),
+                    Text(
+                      'Assign plant to ${_combineSelectedIds.length} squares',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 15.0),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(height: 1.0, color: FlutterFlowTheme.of(context).alternate),
+              Expanded(
+                child: FutureBuilder<List<PlantsRow>>(
+                  future: PlantsTable().queryRows(queryFn: (q) => q.order('plant_name', ascending: true)),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(FlutterFlowTheme.of(context).primary)));
+                    }
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final plant = snapshot.data![index];
+                        return ListTile(
+                          leading: Container(
+                            width: 36.0, height: 36.0,
+                            decoration: BoxDecoration(color: const Color(0x1A6F8F72), borderRadius: BorderRadius.circular(8.0)),
+                            child: Icon(Icons.local_florist_rounded, color: FlutterFlowTheme.of(context).primary, size: 18.0),
+                          ),
+                          title: Text(plant.plantName ?? 'Unknown', style: GoogleFonts.poppins(fontSize: 14.0)),
+                          onTap: () {
+                            selectedPlant = plant;
+                            Navigator.of(sheetContext).pop();
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    if (selectedPlant == null) return;
+    for (final plotId in _combineSelectedIds) {
+      await GardenPlotsTable().update(
+        data: {'plant_id': selectedPlant!.id},
+        matchingRows: (rows) => rows.eqOrNull('id', plotId),
+      );
+    }
+    safeSetState(() {
+      _combineMode = false;
+      _combineSelectedIds.clear();
+    });
+    await _loadPlots();
   }
 
   Future<void> _loadPlots() async {
@@ -719,22 +815,26 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                               );
                             }
 
+                            final colCount = (gardenBuilderPageGardensRow?.width?.toInt() ?? 4).clamp(1, 8);
                             return GridView.builder(
                               padding: EdgeInsets.zero,
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4,
-                                crossAxisSpacing: 8.0,
-                                mainAxisSpacing: 8.0,
+                                crossAxisCount: colCount,
+                                crossAxisSpacing: 6.0,
+                                mainAxisSpacing: 6.0,
                                 childAspectRatio: 1.0,
                               ),
                               scrollDirection: Axis.vertical,
                               itemCount: plotItem.length,
                               itemBuilder: (context, plotItemIndex) {
                                 final plotItemItem = plotItem[plotItemIndex];
-                                return Container(
+                                final plotId = plotItemItem.id!;
+                                final isSelected = _combineSelectedIds.contains(plotId);
+
+                                final squareWidget = Container(
                                   key: ValueKey(plotItemIndex.toString()),
                                   child: wrapWithModel(
                                     model: _model.plotSquareModels.getModel(
@@ -743,21 +843,56 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                     ),
                                     updateCallback: () => safeSetState(() {}),
                                     child: PlotSquareWidget(
-                                      key: Key(
-                                        'Keyeqt_${plotItemItem.id}',
-                                      ),
+                                      key: Key('Keyeqt_${plotItemItem.id}'),
                                       isEmpty: plotItemItem.plantId == null ||
                                           plotItemItem.plantId!.isEmpty,
-                                      icon: FaIcon(
-                                        FontAwesomeIcons.seedling,
-                                      ),
+                                      icon: FaIcon(FontAwesomeIcons.seedling),
                                       gardenID: widget!.gardenID!,
-                                      plotID: plotItemItem.id!,
+                                      plotID: plotId,
                                       plantId: plotItemItem.plantId,
                                       rowIndex: plotItemItem.rowIndex!,
                                       colIndex: plotItemItem.colIndex!,
                                       onPlantAssigned: () => _loadPlots(),
                                     ),
+                                  ),
+                                );
+
+                                if (!_combineMode) return squareWidget;
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    safeSetState(() {
+                                      if (isSelected) {
+                                        _combineSelectedIds.remove(plotId);
+                                      } else {
+                                        _combineSelectedIds.add(plotId);
+                                      }
+                                    });
+                                  },
+                                  child: Stack(
+                                    children: [
+                                      AbsorbPointer(child: squareWidget),
+                                      Positioned.fill(
+                                        child: AnimatedContainer(
+                                          duration: const Duration(milliseconds: 150),
+                                          decoration: BoxDecoration(
+                                            color: isSelected
+                                                ? const Color(0xFF6F8F72).withOpacity(0.55)
+                                                : Colors.black.withOpacity(0.04),
+                                            borderRadius: BorderRadius.circular(14.0),
+                                            border: Border.all(
+                                              color: isSelected
+                                                  ? const Color(0xFF6F8F72)
+                                                  : const Color(0xFF6F8F72).withOpacity(0.25),
+                                              width: isSelected ? 2.5 : 1.5,
+                                            ),
+                                          ),
+                                          child: isSelected
+                                              ? const Center(child: Icon(Icons.check_circle_rounded, color: Colors.white, size: 22.0))
+                                              : null,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 );
                               },
@@ -770,61 +905,102 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                             0.0, 24.0, 0.0, 24.0),
                         child: Container(),
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          FFButtonWidget(
-                            onPressed: () async {
-                              // Clear all plants from this garden in one pass
-                              final plots = _model.gardenPlotQuery ?? [];
-                              for (final plot in plots) {
-                                await GardenPlotsTable().update(
-                                  data: {'plant_id': null},
-                                  matchingRows: (rows) =>
-                                      rows.eqOrNull('id', plot.id),
-                                );
-                              }
-                              await _loadPlots();
-                            },
-                            text: 'Clear Layout',
-                            icon: FaIcon(
-                              FontAwesomeIcons.eraser,
-                              size: 15.0,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: FFButtonWidget(
+                                onPressed: () async {
+                                  final plots = _model.gardenPlotQuery ?? [];
+                                  for (final plot in plots) {
+                                    await GardenPlotsTable().update(
+                                      data: {'plant_id': null},
+                                      matchingRows: (rows) =>
+                                          rows.eqOrNull('id', plot.id),
+                                    );
+                                  }
+                                  await _loadPlots();
+                                },
+                                text: 'Clear Layout',
+                                icon: FaIcon(FontAwesomeIcons.eraser, size: 15.0),
+                                options: FFButtonOptions(
+                                  height: 48.0,
+                                  padding: const EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 12.0, 0.0),
+                                  color: FlutterFlowTheme.of(context).primary,
+                                  textStyle: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14.0),
+                                  elevation: 0.0,
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
                             ),
-                            options: FFButtonOptions(
-                              height: 48.0,
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  16.0, 0.0, 16.0, 0.0),
-                              iconPadding: EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 0.0, 0.0, 0.0),
-                              color: FlutterFlowTheme.of(context).primary,
-                              textStyle: FlutterFlowTheme.of(context)
-                                  .titleSmall
-                                  .override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .titleSmall
-                                          .fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .titleSmall
-                                          .fontStyle,
-                                    ),
-                                    color: Colors.white,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontStyle,
-                                  ),
-                              elevation: 0.0,
-                              borderRadius: BorderRadius.circular(20.0),
+                            const SizedBox(width: 12.0),
+                            Expanded(
+                              child: FFButtonWidget(
+                                onPressed: () {
+                                  safeSetState(() {
+                                    _combineMode = !_combineMode;
+                                    _combineSelectedIds.clear();
+                                  });
+                                },
+                                text: _combineMode ? 'Cancel' : 'Combine Squares',
+                                icon: Icon(
+                                  _combineMode ? Icons.close : Icons.grid_view_rounded,
+                                  size: 15.0,
+                                ),
+                                options: FFButtonOptions(
+                                  height: 48.0,
+                                  padding: const EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 12.0, 0.0),
+                                  color: _combineMode
+                                      ? FlutterFlowTheme.of(context).error
+                                      : FlutterFlowTheme.of(context).secondary,
+                                  textStyle: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14.0),
+                                  elevation: 0.0,
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      if (_combineMode)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 0.0),
+                          child: _combineSelectedIds.isEmpty
+                              ? Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 14.0),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0x1A6F8F72),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    border: Border.all(color: const Color(0x336F8F72)),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.touch_app_rounded, color: Color(0xFF6F8F72), size: 18.0),
+                                      const SizedBox(width: 8.0),
+                                      Expanded(
+                                        child: Text('Tap squares to select them, then assign a plant to all at once.',
+                                            style: GoogleFonts.poppins(fontSize: 12.0, color: const Color(0xFF6F8F72))),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : FFButtonWidget(
+                                  onPressed: _applyCombineSelected,
+                                  text: 'Assign Plant to ${_combineSelectedIds.length} Square${_combineSelectedIds.length == 1 ? '' : 's'}',
+                                  icon: const Icon(Icons.local_florist_rounded, size: 15.0),
+                                  options: FFButtonOptions(
+                                    height: 48.0,
+                                    width: double.infinity,
+                                    padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                                    color: const Color(0xFF6F8F72),
+                                    textStyle: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14.0),
+                                    elevation: 0.0,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                ),
+                        ),
                       Padding(
                         padding: EdgeInsets.all(24.0),
                         child: Column(
@@ -986,6 +1162,53 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                   ),
                                 ),
                               ),
+                            ),
+                            // Container size selector
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Container Size',
+                                  style: GoogleFonts.poppins(fontSize: 13.0, fontWeight: FontWeight.w600,
+                                      color: FlutterFlowTheme.of(context).secondaryText),
+                                ),
+                                const SizedBox(height: 8.0),
+                                Wrap(
+                                  spacing: 8.0,
+                                  children: ['Small', 'Medium', 'Large', 'XL'].map((size) {
+                                    final selected = _containerSize == size;
+                                    return GestureDetector(
+                                      onTap: () => safeSetState(() => _containerSize = size),
+                                      child: AnimatedContainer(
+                                        duration: const Duration(milliseconds: 150),
+                                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                        decoration: BoxDecoration(
+                                          color: selected
+                                              ? const Color(0xFF6F8F72)
+                                              : FlutterFlowTheme.of(context).secondaryBackground,
+                                          borderRadius: BorderRadius.circular(20.0),
+                                          border: Border.all(
+                                            color: selected
+                                                ? const Color(0xFF6F8F72)
+                                                : FlutterFlowTheme.of(context).alternate,
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          size,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 13.0,
+                                            fontWeight: FontWeight.w600,
+                                            color: selected
+                                                ? Colors.white
+                                                : FlutterFlowTheme.of(context).primaryText,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
                             ),
                           ].divide(SizedBox(height: 16.0)),
                         ),

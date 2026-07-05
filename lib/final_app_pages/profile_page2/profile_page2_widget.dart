@@ -34,6 +34,10 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
   bool _isUploadingPhoto = false;
   String? _localImageUrl;
 
+  // Garden photos state
+  List<String> _gardenPhotoUrls = [];
+  bool _isUploadingGardenPhoto = false;
+
   // Goals state
   List<UserGoalsRow> _goals = [];
   bool _goalsLoading = true;
@@ -459,6 +463,37 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
     );
   }
 
+  Future<void> _handleGardenPhotoUpload() async {
+    final selectedMedia = await selectMediaWithSourceBottomSheet(
+      context: context,
+      storageFolderPath: 'garden-photos/$currentUserUid/',
+      allowPhoto: true,
+    );
+    if (selectedMedia == null || selectedMedia.isEmpty) return;
+    if (!selectedMedia.every((m) => validateFileFormat(m.storagePath, context))) return;
+
+    safeSetState(() => _isUploadingGardenPhoto = true);
+    try {
+      final downloadUrls = await uploadSupabaseStorageFiles(
+        bucketName: 'garden-photos',
+        selectedFiles: selectedMedia,
+      );
+      if (downloadUrls.isNotEmpty) {
+        safeSetState(() {
+          _gardenPhotoUrls.addAll(downloadUrls);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to upload photo: $e')),
+        );
+      }
+    } finally {
+      safeSetState(() => _isUploadingGardenPhoto = false);
+    }
+  }
+
   Future<void> _handlePhotoUpload() async {
     final selectedMedia = await selectMediaWithSourceBottomSheet(
       context: context,
@@ -509,6 +544,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>(); // pick up theme color changes immediately
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -1041,57 +1077,116 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                         ),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(24.0),
+                        padding: const EdgeInsets.all(24.0),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              'My Garden Photos',
-                              style: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .titleMedium
-                                          .fontStyle,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'My Garden Photos',
+                                  style: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .override(
+                                        font: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FlutterFlowTheme.of(context)
+                                              .titleMedium
+                                              .fontStyle,
+                                        ),
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryText,
+                                        letterSpacing: 0.0,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline,
+                                        lineHeight: 1.4,
+                                      ),
+                                ),
+                                GestureDetector(
+                                  onTap: _isUploadingGardenPhoto
+                                      ? null
+                                      : _handleGardenPhotoUpload,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12.0, vertical: 6.0),
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context).primary,
+                                      borderRadius: BorderRadius.circular(20.0),
                                     ),
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryText,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                    lineHeight: 1.4,
+                                    child: _isUploadingGardenPhoto
+                                        ? const SizedBox(
+                                            width: 14,
+                                            height: 14,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(Icons.camera_alt_rounded,
+                                                  color: Colors.white, size: 14.0),
+                                              const SizedBox(width: 4.0),
+                                              Text('Add Photo',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12.0,
+                                                      fontWeight: FontWeight.w600)),
+                                            ],
+                                          ),
                                   ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 12.0),
-                            Icon(
-                              Icons.photo_library_outlined,
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                              size: 40.0,
-                            ),
-                            SizedBox(height: 8.0),
-                            Text(
-                              'Your garden photos will appear here.',
-                              textAlign: TextAlign.center,
-                              style: FlutterFlowTheme.of(context)
-                                  .bodySmall
-                                  .override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .bodySmall
-                                          .fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodySmall
-                                          .fontStyle,
+                            const SizedBox(height: 12.0),
+                            if (_gardenPhotoUrls.isEmpty)
+                              Column(
+                                children: [
+                                  Icon(
+                                    Icons.photo_library_outlined,
+                                    color: FlutterFlowTheme.of(context).secondaryText,
+                                    size: 40.0,
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    'Tap "Add Photo" to add your garden photos.',
+                                    textAlign: TextAlign.center,
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodySmall
+                                        .override(
+                                          font: GoogleFonts.poppins(),
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryText,
+                                          letterSpacing: 0.0,
+                                        ),
+                                  ),
+                                ],
+                              )
+                            else
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 6.0,
+                                  mainAxisSpacing: 6.0,
+                                ),
+                                itemCount: _gardenPhotoUrls.length,
+                                itemBuilder: (context, index) {
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    child: Image.network(
+                                      _gardenPhotoUrls[index],
+                                      fit: BoxFit.cover,
                                     ),
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryText,
-                                    letterSpacing: 0.0,
-                                  ),
-                            ),
+                                  );
+                                },
+                              ),
                           ],
                         ),
                       ),
@@ -1110,6 +1205,42 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                     ),
                   ),
                 ],
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 32.0),
+                child: GestureDetector(
+                  onTap: () async {
+                    await authManager.signOut();
+                    context.goNamedAuth('LoginPage', context.mounted);
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 14.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD4685F).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16.0),
+                      border: Border.all(
+                        color: const Color(0xFFD4685F).withOpacity(0.4),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.logout_rounded,
+                            color: Color(0xFFD4685F), size: 18.0),
+                        const SizedBox(width: 8.0),
+                        Text(
+                          'Log Out',
+                          style: GoogleFonts.poppins(
+                            color: const Color(0xFFD4685F),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

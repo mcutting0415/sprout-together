@@ -17,12 +17,15 @@ class SectionCardChild4Model extends FlutterFlowModel<SectionCardChild4Widget> {
   late SettingRowModel settingRowModel2;
   // Model for SettingRow.
   late SettingRowModel settingRowModel3;
+  // Model for SettingRow.
+  late SettingRowModel settingRowModel4;
 
   @override
   void initState(BuildContext context) {
     settingRowModel1 = createModel(context, () => SettingRowModel());
     settingRowModel2 = createModel(context, () => SettingRowModel());
     settingRowModel3 = createModel(context, () => SettingRowModel());
+    settingRowModel4 = createModel(context, () => SettingRowModel());
   }
 
   @override
@@ -30,5 +33,6 @@ class SectionCardChild4Model extends FlutterFlowModel<SectionCardChild4Widget> {
     settingRowModel1.dispose();
     settingRowModel2.dispose();
     settingRowModel3.dispose();
+    settingRowModel4.dispose();
   }
 }
