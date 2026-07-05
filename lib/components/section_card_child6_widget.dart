@@ -82,24 +82,6 @@ class _SectionCardChild6WidgetState extends State<SectionCardChild6Widget> {
           ),
         ),
         wrapWithModel(
-          model: _model.settingRowModel3,
-          updateCallback: () => safeSetState(() {}),
-          child: SettingRowWidget(
-            icon: Icon(
-              Icons.mail_outline_rounded,
-              color: FlutterFlowTheme.of(context).primary,
-              size: 20.0,
-            ),
-            title: 'Contact Support',
-            subtitle: 'Email us anytime',
-            isLast: false,
-            onTap: () async {
-              final uri = Uri.parse('mailto:support@sprouttogether.app?subject=Support%20Request');
-              if (await canLaunchUrl(uri)) await launchUrl(uri);
-            },
-          ),
-        ),
-        wrapWithModel(
           model: _model.settingRowModel4,
           updateCallback: () => safeSetState(() {}),
           child: SettingRowWidget(
