@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'add_task_sheet_model.dart';
 export 'add_task_sheet_model.dart';
+import '/services/notification_service.dart';
 
 /// Bottom sheet for manually adding a task to the garden calendar
 class AddTaskSheetWidget extends StatefulWidget {
@@ -516,6 +517,18 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                       'user_id': currentUserUid,
                       'garden_id': _model.selectedGardenId,
                     });
+                    // Schedule a push notification for this task
+                    if (_model.selectedDate != null) {
+                      final taskName = _model.textController1.text;
+                      final gardenName = _model.gardenDropdownValue ?? 'your garden';
+                      final notifId = DateTime.now().millisecondsSinceEpoch % 100000;
+                      await NotificationService.instance.scheduleTaskNotification(
+                        notificationId: notifId,
+                        taskName: taskName,
+                        dueDate: _model.selectedDate!,
+                        gardenName: gardenName,
+                      );
+                    }
                     Navigator.pop(context);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(

@@ -16,6 +16,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'planner_overview_page_model.dart';
 export 'planner_overview_page_model.dart';
+import '/services/notification_service.dart';
 
 class PlannerOverviewPageWidget extends StatefulWidget {
   const PlannerOverviewPageWidget({super.key});
@@ -70,6 +71,56 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
     if (diff == 0) return 'Today';
     if (diff == 1) return 'Tomorrow';
     return const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][date.weekday - 1];
+  }
+
+  /// Returns weather-based planting suggestions for today.
+  List<Map<String, String>> _getWeatherSuggestions(int temp, int weatherCode) {
+    final suggestions = <Map<String, String>>[];
+    final isRainy = weatherCode >= 51 && weatherCode <= 82;
+    final isStormy = weatherCode >= 95;
+    final isFreezing = temp < 32;
+    final isCold = temp < 50;
+    final isCool = temp >= 50 && temp < 65;
+    final isWarm = temp >= 65 && temp < 85;
+    final isHot = temp >= 85;
+
+    if (isStormy) {
+      suggestions.add({'icon': '⛈️', 'text': 'Storm incoming — skip outdoor work today.'});
+    } else if (isRainy) {
+      suggestions.add({'icon': '🌧️', 'text': 'Rain today — no need to water your garden.'});
+      suggestions.add({'icon': '🌱', 'text': 'Good day to transplant seedlings — rain helps them settle.'});
+    }
+
+    if (isFreezing) {
+      suggestions.add({'icon': '🥶', 'text': 'Freezing temps — cover frost-sensitive plants tonight.'});
+    } else if (isCold) {
+      suggestions.add({'icon': '❄️', 'text': 'Too cold for warm-season crops. Focus on kale, spinach, or peas.'});
+    } else if (isCool) {
+      suggestions.add({'icon': '🥗', 'text': 'Great conditions for cool-season crops: lettuce, broccoli, carrots.'});
+    } else if (isWarm) {
+      suggestions.add({'icon': '🍅', 'text': 'Perfect planting weather for tomatoes, peppers, and cucumbers.'});
+      if (!isRainy) suggestions.add({'icon': '💧', 'text': 'Warm and dry — water deeply at the base of plants.'});
+    } else if (isHot) {
+      suggestions.add({'icon': '☀️', 'text': 'Heat wave — water in the morning and mulch to retain moisture.'});
+      suggestions.add({'icon': '🌿', 'text': 'Avoid transplanting in peak heat. Wait for evening or a cooler day.'});
+    }
+
+    // Match against user's selected plants
+    if (_selectedPlants.isNotEmpty && isWarm && !isRainy) {
+      final warmPlants = _selectedPlants.where((p) {
+        final name = (p['plant_name'] as String? ?? '').toLowerCase();
+        const warmKeywords = ['tomato', 'pepper', 'cucumber', 'squash', 'basil', 'eggplant', 'bean', 'corn'];
+        return warmKeywords.any((k) => name.contains(k));
+      }).toList();
+      if (warmPlants.isNotEmpty) {
+        suggestions.add({'icon': '🌟', 'text': 'Good week to plant ${warmPlants.first['plant_name']}!'});
+      }
+    }
+
+    if (suggestions.isEmpty) {
+      suggestions.add({'icon': '🌱', 'text': 'Mild conditions — a good day to check on your garden.'});
+    }
+    return suggestions;
   }
 
   Future<void> _fetchWeather() async {
@@ -278,7 +329,9 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
         }
         return;
       }
-      for (final plant in _selectedPlants) {
+      final gardenName = gardens.firstOrNull?.gardenName ?? 'your garden';
+      for (int i = 0; i < _selectedPlants.length; i++) {
+        final plant = _selectedPlants[i];
         final plantDate = _getPlantingDate(
           plant['category'] as String?,
           plant['plant_name'] as String?,
@@ -293,6 +346,13 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
           'completed': false,
           'notes': 'Auto-scheduled based on growing season.',
         });
+        // Schedule push notification 1 day before
+        await NotificationService.instance.scheduleTaskNotification(
+          notificationId: DateTime.now().millisecondsSinceEpoch % 100000 + i,
+          taskName: 'Plant ${plant['plant_name']}',
+          dueDate: plantDate,
+          gardenName: gardenName,
+        );
         created++;
       }
     } catch (_) {}
@@ -1001,6 +1061,56 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                         );
                                       }),
                                     ),
+                                    // Weather-based planting suggestions
+                                    Builder(builder: (context) {
+                                      final suggestions = _getWeatherSuggestions(temp, code);
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(height: 14.0),
+                                          Divider(color: FlutterFlowTheme.of(context).alternate, thickness: 1.0),
+                                          SizedBox(height: 10.0),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.eco_rounded, color: FlutterFlowTheme.of(context).primary, size: 16.0),
+                                              SizedBox(width: 6.0),
+                                              Text(
+                                                'Planting Conditions',
+                                                style: FlutterFlowTheme.of(context).labelMedium.override(
+                                                      font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                                      color: FlutterFlowTheme.of(context).primary,
+                                                      letterSpacing: 0.0,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 8.0),
+                                          ...suggestions.map((s) => Padding(
+                                            padding: const EdgeInsets.only(bottom: 6.0),
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(s['icon']!, style: TextStyle(fontSize: 14.0)),
+                                                SizedBox(width: 8.0),
+                                                Expanded(
+                                                  child: Text(
+                                                    s['text']!,
+                                                    style: FlutterFlowTheme.of(context).bodySmall.override(
+                                                          font: GoogleFonts.poppins(
+                                                              fontWeight: FlutterFlowTheme.of(context).bodySmall.fontWeight),
+                                                          color: FlutterFlowTheme.of(context).secondaryText,
+                                                          letterSpacing: 0.0,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )),
+                                        ],
+                                      );
+                                    }),
                                   ],
                                 );
                               }),

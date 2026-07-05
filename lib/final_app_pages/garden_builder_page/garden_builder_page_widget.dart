@@ -14,6 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'garden_builder_page_model.dart';
 export 'garden_builder_page_model.dart';
+import '/services/companion_planting_service.dart';
 
 class GardenBuilderPageWidget extends StatefulWidget {
   const GardenBuilderPageWidget({
@@ -54,6 +55,190 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
   // Combine Squares mode
   bool _combineMode = false;
   final Set<String> _combineSelectedIds = {};
+
+  // Show companion planting info for a plot's plant
+  Future<void> _showCompanionInfo(BuildContext context, String? plantId, String? plantName) async {
+    if (plantId == null || plantId.isEmpty || plantName == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Assign a plant to this square first.'),
+          backgroundColor: FlutterFlowTheme.of(context).secondaryText,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final service = CompanionPlantingService.instance;
+    final data = service.findCompanions(plantName);
+
+    // Also get all plants currently in this garden to cross-check
+    final plots = _model.gardenPlotQuery ?? [];
+    final assignedPlantIds = plots
+        .where((p) => p.plantId != null && p.plantId!.isNotEmpty && p.plantId != plantId)
+        .map((p) => p.plantId!)
+        .toSet()
+        .toList();
+
+    List<Map<String, dynamic>> gardenPlants = [];
+    if (assignedPlantIds.isNotEmpty) {
+      try {
+        final rows = await PlantsTable().queryRows(
+          queryFn: (q) => q.inFilterOrNull('id', assignedPlantIds),
+        );
+        gardenPlants = rows.map((r) => {
+          'name': r.plantName ?? 'Unknown',
+          'relationship': service.relationship(plantName, r.plantName ?? ''),
+        }).toList();
+      } catch (_) {}
+    }
+
+    if (!context.mounted) return;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        final good = (data?['good'] as List?)?.cast<String>() ?? [];
+        final bad = (data?['bad'] as List?)?.cast<String>() ?? [];
+        final tip = data?['tip'] as String?;
+
+        return Container(
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.75),
+          decoration: BoxDecoration(
+            color: FlutterFlowTheme.of(context).primaryBackground,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24.0),
+              topRight: Radius.circular(24.0),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8.0),
+              Center(
+                child: Container(
+                  width: 40.0, height: 4.0,
+                  decoration: BoxDecoration(
+                    color: FlutterFlowTheme.of(context).alternate,
+                    borderRadius: BorderRadius.circular(2.0),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20.0, 14.0, 20.0, 0.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.eco_rounded, color: FlutterFlowTheme.of(context).primary, size: 22.0),
+                    const SizedBox(width: 10.0),
+                    Expanded(
+                      child: Text(
+                        '$plantName Companions',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 17.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (tip != null) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).primary.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('💡', style: TextStyle(fontSize: 14.0)),
+                        const SizedBox(width: 8.0),
+                        Expanded(
+                          child: Text(tip,
+                              style: GoogleFonts.poppins(fontSize: 13.0, height: 1.5,
+                                  color: FlutterFlowTheme.of(context).secondaryText)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+              // Cross-check with plants already in this garden
+              if (gardenPlants.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 14.0, 20.0, 4.0),
+                  child: Text('In Your Garden',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13.0,
+                          color: FlutterFlowTheme.of(context).secondaryText)),
+                ),
+                ...gardenPlants.map((gp) {
+                  final rel = gp['relationship'] as String;
+                  final icon = rel == 'good' ? '🟢' : rel == 'bad' ? '🔴' : '⚪';
+                  final label = rel == 'good' ? 'Great neighbor' : rel == 'bad' ? 'Bad neighbor' : 'Neutral';
+                  return ListTile(
+                    dense: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+                    leading: Text(icon, style: const TextStyle(fontSize: 18.0)),
+                    title: Text(gp['name'] as String,
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14.0)),
+                    trailing: Text(label,
+                        style: GoogleFonts.poppins(fontSize: 12.0,
+                            color: rel == 'good'
+                                ? Colors.green.shade700
+                                : rel == 'bad'
+                                    ? Colors.red.shade700
+                                    : FlutterFlowTheme.of(context).secondaryText)),
+                  );
+                }),
+                Divider(color: FlutterFlowTheme.of(context).alternate, indent: 20.0, endIndent: 20.0),
+              ],
+              if (good.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 4.0),
+                  child: Text('🟢 Good neighbors',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13.0,
+                          color: Colors.green.shade700)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 8.0),
+                  child: Text(good.map((g) => g[0].toUpperCase() + g.substring(1)).join('  •  '),
+                      style: GoogleFonts.poppins(fontSize: 13.0,
+                          color: FlutterFlowTheme.of(context).secondaryText)),
+                ),
+              ],
+              if (bad.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 4.0, 20.0, 4.0),
+                  child: Text('🔴 Avoid planting near',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13.0,
+                          color: Colors.red.shade700)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 8.0),
+                  child: Text(bad.map((b) => b[0].toUpperCase() + b.substring(1)).join('  •  '),
+                      style: GoogleFonts.poppins(fontSize: 13.0,
+                          color: FlutterFlowTheme.of(context).secondaryText)),
+                ),
+              ],
+              if (data == null)
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text('No companion planting data for $plantName yet.',
+                      style: GoogleFonts.poppins(fontSize: 13.0,
+                          color: FlutterFlowTheme.of(context).secondaryText)),
+                ),
+              const SizedBox(height: 24.0),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> _showContainerPlantPicker() async {
     await showModalBottomSheet(
@@ -857,7 +1042,28 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                   ),
                                 );
 
-                                if (!_combineMode) return squareWidget;
+                                if (!_combineMode) {
+                                  // Long press shows companion planting info
+                                  return GestureDetector(
+                                    onLongPress: () {
+                                      final plantId = plotItemItem.plantId;
+                                      // Fetch plant name async, then show sheet
+                                      if (plantId != null && plantId.isNotEmpty) {
+                                        PlantsTable().queryRows(
+                                          queryFn: (q) => q.eqOrNull('id', plantId),
+                                        ).then((rows) {
+                                          final name = rows.firstOrNull?.plantName;
+                                          if (context.mounted) {
+                                            _showCompanionInfo(context, plantId, name);
+                                          }
+                                        });
+                                      } else {
+                                        _showCompanionInfo(context, null, null);
+                                      }
+                                    },
+                                    child: squareWidget,
+                                  );
+                                }
 
                                 return GestureDetector(
                                   onTap: () {
