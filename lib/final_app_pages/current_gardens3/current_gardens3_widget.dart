@@ -1230,24 +1230,6 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                     ),
                   ),
                 ],
-                if (entry.entryCategory != null) ...[
-                  const SizedBox(height: 8.0),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF9C6EA3).withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Text(
-                      entry.entryCategory!,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11.0,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF9C6EA3),
-                      ),
-                    ),
-                  ),
-                ],
                 const SizedBox(height: 16.0),
                 if (entry.entryText != null && entry.entryText!.isNotEmpty)
                   Text(
