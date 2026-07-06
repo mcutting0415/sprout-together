@@ -86,7 +86,7 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                       .toList();
 
                   downloadUrls = await uploadSupabaseStorageFiles(
-                    bucketName: 'profile-photo',
+                    bucketName: 'profile-photos',
                     selectedFiles: selectedMedia,
                   );
                 } catch (e) {

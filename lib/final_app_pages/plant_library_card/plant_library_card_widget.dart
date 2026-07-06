@@ -55,23 +55,41 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
   }
 
   Widget _plantPlaceholder(BuildContext context) {
+    // Pick an emoji based on the first letter so different plants get variety
+    const emojis = ['🌿', '🌱', '🍃', '🌾', '🪴', '🌻', '🍅', '🥦'];
+    final emojiIdx = widget.plantName.isNotEmpty
+        ? widget.plantName.codeUnitAt(0) % emojis.length
+        : 0;
     return Container(
       width: double.infinity,
       height: 135.0,
-      color: FlutterFlowTheme.of(context).primary.withOpacity(0.08),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            FlutterFlowTheme.of(context).primary.withOpacity(0.12),
+            FlutterFlowTheme.of(context).primary.withOpacity(0.04),
+          ],
+        ),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('🌱', style: TextStyle(fontSize: 48.0)),
-          const SizedBox(height: 4.0),
-          Text(
-            widget.plantName,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 11.0,
-              color: FlutterFlowTheme.of(context).secondaryText,
+          Text(emojis[emojiIdx], style: const TextStyle(fontSize: 44.0)),
+          const SizedBox(height: 6.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              widget.plantName,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(
+                fontSize: 11.0,
+                fontWeight: FontWeight.w500,
+                color: FlutterFlowTheme.of(context).primary,
+              ),
             ),
           ),
         ],

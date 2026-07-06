@@ -999,6 +999,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                     'plotNumber': serializeParam(0, ParamType.int),
                                     'gardenID': serializeParam('', ParamType.String),
                                     'plantID': serializeParam('', ParamType.String),
+                                    'addMode': serializeParam(true, ParamType.bool),
                                   }.withoutNulls,
                                 ),
                                 child: Container(

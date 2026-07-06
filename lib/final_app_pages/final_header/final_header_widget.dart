@@ -165,6 +165,54 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                                   },
                                 ),
                                 ListTile(
+                                  leading: Icon(Icons.grid_view_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primary),
+                                  title: Text('Current Gardens',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(
+                                        CurrentGardens3Widget.routeName);
+                                  },
+                                ),
+                                ListTile(
+                                  leading: Icon(Icons.calendar_month_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primary),
+                                  title: Text('Growing Calendar',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(
+                                        GrowingCalendarWidget.routeName);
+                                  },
+                                ),
+                                ListTile(
+                                  leading: Icon(Icons.archive_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primary),
+                                  title: Text('Previous Gardens',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(
+                                        PreviousGardensPage2Widget.routeName);
+                                  },
+                                ),
+                                ListTile(
                                   leading: Icon(Icons.local_florist_rounded,
                                       color: FlutterFlowTheme.of(context)
                                           .primary),

@@ -115,6 +115,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'plantID',
               ParamType.String,
             ),
+            addMode: params.getParam('addMode', ParamType.bool) ?? false,
           ),
         ),
         FFRoute(

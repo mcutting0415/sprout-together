@@ -20,11 +20,14 @@ class PlantLibraryPageWidget extends StatefulWidget {
     required this.plotNumber,
     required this.gardenID,
     this.plantID,
+    this.addMode = false,
   });
 
   final int? plotNumber;
   final String? gardenID;
   final String? plantID;
+  /// When true, shows the + add buttons and Done bar (only from Add Plants flow).
+  final bool addMode;
 
   static String routeName = 'PlantLibraryPage';
   static String routePath = '/plantLibraryPage';
@@ -41,10 +44,8 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
   final ScrollController _scrollController = ScrollController();
   bool _showBackToTop = false;
 
-  // "Wish list mode" — arriving from Planner's Add Plants button (gardenID empty)
-  bool get _wishListMode =>
-      (widget.gardenID == null || widget.gardenID!.isEmpty) &&
-      (widget.plotNumber == null || widget.plotNumber == 0);
+  // "Wish list mode" — only when explicitly arriving from the Add Plants button
+  bool get _wishListMode => widget.addMode;
 
   Future<void> _toggleWishList(BuildContext context, String plantId, String plantName) async {
     final isAdded = _addedPlantIds.contains(plantId);

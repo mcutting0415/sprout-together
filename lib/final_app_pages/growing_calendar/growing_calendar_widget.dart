@@ -78,6 +78,19 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
     });
   }
 
+  // Returns incomplete tasks due in the next 7 days (excluding today)
+  List<GardenTasksRow> get _upcomingTasks {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final cutoff = today.add(const Duration(days: 8));
+    return _allTasks.where((t) {
+      if (t.dueDate == null || (t.completed ?? false)) return false;
+      final d = t.dueDate!.toLocal();
+      final taskDay = DateTime(d.year, d.month, d.day);
+      return taskDay.isAfter(today) && taskDay.isBefore(cutoff);
+    }).toList();
+  }
+
   String get _headerLabel {
     final now = DateTime.now();
     final d = _selectedDate;
@@ -395,7 +408,7 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                 )
               else
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 80.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
                   child: Column(
                     children: _tasksForSelectedDay.map((task) {
                       final isComplete = task.completed ?? false;
@@ -569,6 +582,148 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                     }).toList(),
                   ),
                 ),
+              // Upcoming Tasks section (next 7 days)
+              Builder(
+                builder: (ctx) {
+                  final upcoming = _upcomingTasks;
+                  if (upcoming.isEmpty) return const SizedBox.shrink();
+                  final now = DateTime.now();
+                  final today = DateTime(now.year, now.month, now.day);
+                  final tomorrow = today.add(const Duration(days: 1));
+                  final Map<DateTime, List<GardenTasksRow>> grouped = {};
+                  for (final t in upcoming) {
+                    final d = t.dueDate!.toLocal();
+                    final key = DateTime(d.year, d.month, d.day);
+                    grouped.putIfAbsent(key, () => []).add(t);
+                  }
+                  final sortedDates = grouped.keys.toList()..sort();
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Upcoming Tasks',
+                              style: FlutterFlowTheme.of(context).titleMedium.override(
+                                    font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                                    color: FlutterFlowTheme.of(context).primaryText,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            Text(
+                              'Next 7 days',
+                              style: FlutterFlowTheme.of(context).bodySmall.override(
+                                    font: GoogleFonts.poppins(),
+                                    color: FlutterFlowTheme.of(context).secondaryText,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 80.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: sortedDates.map((date) {
+                            final dayTasks = grouped[date]!;
+                            final isToday = date == today;
+                            final isTomorrow = date == tomorrow;
+                            final label = isToday
+                                ? 'Today'
+                                : isTomorrow
+                                    ? 'Tomorrow'
+                                    : DateFormat('EEE, MMM d').format(date);
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 6.0, top: 8.0),
+                                  child: Text(
+                                    label,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.w600,
+                                      color: FlutterFlowTheme.of(context).secondaryText,
+                                    ),
+                                  ),
+                                ),
+                                ...dayTasks.map((task) {
+                                  final taskColor = _colorForTaskType(task.taskType);
+                                  return GestureDetector(
+                                    onTap: () => _toggleComplete(task),
+                                    child: Container(
+                                      width: double.infinity,
+                                      margin: const EdgeInsets.only(bottom: 8.0),
+                                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                                      decoration: BoxDecoration(
+                                        color: FlutterFlowTheme.of(context).secondaryBackground,
+                                        borderRadius: BorderRadius.circular(12.0),
+                                        border: Border.all(
+                                          color: taskColor.withOpacity(0.25),
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 32.0,
+                                            height: 32.0,
+                                            decoration: BoxDecoration(
+                                              color: taskColor.withOpacity(0.12),
+                                              borderRadius: BorderRadius.circular(8.0),
+                                            ),
+                                            child: Icon(
+                                              _iconForTaskType(task.taskType),
+                                              color: taskColor,
+                                              size: 16.0,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10.0),
+                                          Expanded(
+                                            child: Text(
+                                              task.taskName ?? 'Task',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 13.0,
+                                                fontWeight: FontWeight.w500,
+                                                color: FlutterFlowTheme.of(context).primaryText,
+                                              ),
+                                            ),
+                                          ),
+                                          if (task.taskType != null)
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                                              decoration: BoxDecoration(
+                                                color: taskColor.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(4.0),
+                                              ),
+                                              child: Text(
+                                                task.taskType!,
+                                                style: TextStyle(
+                                                  color: taskColor,
+                                                  fontSize: 10.0,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         ),

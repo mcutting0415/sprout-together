@@ -37,6 +37,171 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
     'Outdoor Lighting',
   ];
 
+  // ── Partner stores ──────────────────────────────────────────────────────────
+  // Replace the affiliate_url values with your actual affiliate tracking URLs
+  // once you've joined each program.
+  static const List<Map<String, dynamic>> _partnerStores = [
+    {
+      'name': 'True Leaf Market',
+      'tagline': 'Organic & heirloom seeds, microgreens & sprouting supplies',
+      'logo_emoji': '🌿',
+      'color': 0xFF4E7A2E,
+      // TODO: replace with your True Leaf Market affiliate URL
+      'url': 'https://www.trueleafmarket.com/',
+    },
+    {
+      'name': "Gardener's Supply Co",
+      'tagline': 'Premium tools, raised beds, planters & soil amendments',
+      'logo_emoji': '🪴',
+      'color': 0xFF2E7D52,
+      // TODO: replace with your Gardener's Supply affiliate URL
+      'url': 'https://www.gardeners.com/',
+    },
+    {
+      'name': 'Burpee',
+      'tagline': 'America\'s top seed brand — vegetables, herbs & flowers',
+      'logo_emoji': '🌱',
+      'color': 0xFF5C8A1A,
+      // TODO: replace with your Burpee affiliate URL
+      'url': 'https://www.burpee.com/',
+    },
+  ];
+
+  // ── Curated products (hardcoded) ─────────────────────────────────────────
+  // These show in the grid alongside any DB products.
+  // Replace affiliate_url values with your tracked links.
+  static const List<Map<String, dynamic>> _curatedProducts = [
+    // True Leaf Market
+    {
+      'name': 'Organic Tomato Seed Collection',
+      'category': 'Seeds',
+      'store_name': 'True Leaf Market',
+      'price_estimate': r'$12–$18',
+      'is_featured': true,
+      'affiliate_url': 'https://www.trueleafmarket.com/collections/tomato-seeds',
+      'image_url': '',
+    },
+    {
+      'name': 'Microgreens Starter Kit',
+      'category': 'Seeds',
+      'store_name': 'True Leaf Market',
+      'price_estimate': r'$19.99',
+      'is_featured': false,
+      'affiliate_url': 'https://www.trueleafmarket.com/collections/microgreens-seeds',
+      'image_url': '',
+    },
+    {
+      'name': 'Heirloom Vegetable Seed Vault',
+      'category': 'Seeds',
+      'store_name': 'True Leaf Market',
+      'price_estimate': r'$24.99',
+      'is_featured': false,
+      'affiliate_url': 'https://www.trueleafmarket.com/collections/heirloom-seeds',
+      'image_url': '',
+    },
+    {
+      'name': 'Organic Herb Seed Collection',
+      'category': 'Seeds',
+      'store_name': 'True Leaf Market',
+      'price_estimate': r'$14.99',
+      'is_featured': false,
+      'affiliate_url': 'https://www.trueleafmarket.com/collections/herb-seeds',
+      'image_url': '',
+    },
+    // Gardener's Supply Co
+    {
+      'name': 'Elevated Cedar Raised Bed (4×8 ft)',
+      'category': 'Pots & Containers',
+      'store_name': "Gardener's Supply Co",
+      'price_estimate': r'$129–$179',
+      'is_featured': true,
+      'affiliate_url': 'https://www.gardeners.com/category/raised-garden-beds',
+      'image_url': '',
+    },
+    {
+      'name': 'Premium Potting Mix (2 cu ft)',
+      'category': 'Soil & Amendments',
+      'store_name': "Gardener's Supply Co",
+      'price_estimate': r'$19.99',
+      'is_featured': false,
+      'affiliate_url': 'https://www.gardeners.com/category/soil-conditioners',
+      'image_url': '',
+    },
+    {
+      'name': 'CobraHead Long-Handle Weeder',
+      'category': 'Tools',
+      'store_name': "Gardener's Supply Co",
+      'price_estimate': r'$39.95',
+      'is_featured': false,
+      'affiliate_url': 'https://www.gardeners.com/category/garden-tools',
+      'image_url': '',
+    },
+    {
+      'name': 'Self-Watering Planter (12 in)',
+      'category': 'Pots & Containers',
+      'store_name': "Gardener's Supply Co",
+      'price_estimate': r'$34.95',
+      'is_featured': false,
+      'affiliate_url': 'https://www.gardeners.com/category/planters',
+      'image_url': '',
+    },
+    {
+      'name': 'Worm Castings (20 lbs)',
+      'category': 'Soil & Amendments',
+      'store_name': "Gardener's Supply Co",
+      'price_estimate': r'$24.95',
+      'is_featured': false,
+      'affiliate_url': 'https://www.gardeners.com/category/fertilizers',
+      'image_url': '',
+    },
+    // Burpee — seeds only
+    {
+      'name': 'Burpee Big Boy Tomato Seeds',
+      'category': 'Seeds',
+      'store_name': 'Burpee',
+      'price_estimate': r'$4.99',
+      'is_featured': true,
+      'affiliate_url': 'https://www.burpee.com/vegetables/tomatoes/',
+      'image_url': '',
+    },
+    {
+      'name': 'Burpee Patio Garden Pepper Seed Mix',
+      'category': 'Seeds',
+      'store_name': 'Burpee',
+      'price_estimate': r'$5.99',
+      'is_featured': false,
+      'affiliate_url': 'https://www.burpee.com/vegetables/peppers/',
+      'image_url': '',
+    },
+    {
+      'name': 'Burpee Organic Salad Green Blend',
+      'category': 'Seeds',
+      'store_name': 'Burpee',
+      'price_estimate': r'$6.49',
+      'is_featured': false,
+      'affiliate_url': 'https://www.burpee.com/vegetables/lettuce/',
+      'image_url': '',
+    },
+    {
+      'name': 'Burpee Cucumber Seed Variety Pack',
+      'category': 'Seeds',
+      'store_name': 'Burpee',
+      'price_estimate': r'$5.49',
+      'is_featured': false,
+      'affiliate_url': 'https://www.burpee.com/vegetables/cucumbers/',
+      'image_url': '',
+    },
+    {
+      'name': 'Burpee Herb Garden Seed Collection',
+      'category': 'Seeds',
+      'store_name': 'Burpee',
+      'price_estimate': r'$9.99',
+      'is_featured': false,
+      'affiliate_url': 'https://www.burpee.com/herbs/',
+      'image_url': '',
+    },
+  ];
+
   String _selectedCategory = 'All';
   List<Map<String, dynamic>> _allProducts = [];
   bool _loading = true;
@@ -56,12 +221,19 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
           .eq('is_active', true)
           .order('is_featured', ascending: false)
           .order('display_order');
+      final dbProducts = List<Map<String, dynamic>>.from(response as List);
+      // Merge DB products with curated partner products; DB products go first
+      final merged = [...dbProducts, ..._curatedProducts];
       setState(() {
-        _allProducts = List<Map<String, dynamic>>.from(response as List);
+        _allProducts = merged;
         _loading = false;
       });
     } catch (e) {
-      setState(() => _loading = false);
+      // Fall back to curated products only if DB is unavailable
+      setState(() {
+        _allProducts = List<Map<String, dynamic>>.from(_curatedProducts);
+        _loading = false;
+      });
     }
   }
 
@@ -106,6 +278,104 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
               model: _model.finalHeaderModel,
               updateCallback: () => safeSetState(() {}),
               child: const FinalHeaderWidget(pageTitle: 'Garden Shop'),
+            ),
+            // ── Partner Stores banner ────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16.0, 12.0, 0.0, 4.0),
+              child: Text(
+                'Our Partners',
+                style: FlutterFlowTheme.of(context).titleSmall.override(
+                      font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                      color: FlutterFlowTheme.of(context).primaryText,
+                      letterSpacing: 0.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+            SizedBox(
+              height: 100.0,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 8.0),
+                itemCount: _partnerStores.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10.0),
+                itemBuilder: (context, i) {
+                  final store = _partnerStores[i];
+                  final color = Color(store['color'] as int);
+                  return GestureDetector(
+                    onTap: () => _openLink(store['url'] as String),
+                    child: Container(
+                      width: 210.0,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14.0, vertical: 10.0),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(14.0),
+                        border: Border.all(color: color.withOpacity(0.25)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40.0,
+                            height: 40.0,
+                            decoration: BoxDecoration(
+                              color: color.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Center(
+                              child: Text(
+                                store['logo_emoji'] as String,
+                                style: const TextStyle(fontSize: 22.0),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10.0),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  store['name'] as String,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w700,
+                                    color:
+                                        FlutterFlowTheme.of(context).primaryText,
+                                  ),
+                                ),
+                                const SizedBox(height: 2.0),
+                                Text(
+                                  store['tagline'] as String,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 10.0,
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText,
+                                    height: 1.3,
+                                  ),
+                                ),
+                                const SizedBox(height: 4.0),
+                                Text(
+                                  'Shop now →',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 10.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: color,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
             // Category filter chips
             Container(
@@ -301,6 +571,13 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
   );
 }
 
+Color _storeColor(String storeName) {
+  if (storeName.contains('True Leaf')) return const Color(0xFF4E7A2E);
+  if (storeName.contains('Gardener')) return const Color(0xFF2E7D52);
+  if (storeName.contains('Burpee')) return const Color(0xFF5C8A1A);
+  return const Color(0xFF7BA05B);
+}
+
 class _ProductCard extends StatelessWidget {
   final Map<String, dynamic> product;
   final VoidCallback onTap;
@@ -388,15 +665,25 @@ class _ProductCard extends StatelessWidget {
                           ),
                     ),
                     const SizedBox(height: 2.0),
-                    Text(
-                      product['store_name'] ?? '',
-                      style: FlutterFlowTheme.of(context).bodySmall.override(
-                            font: GoogleFonts.poppins(),
-                            color: FlutterFlowTheme.of(context).secondaryText,
-                            fontSize: 10.0,
-                            letterSpacing: 0.0,
+                    if ((product['store_name'] ?? '').isNotEmpty)
+                      Container(
+                        margin: const EdgeInsets.only(top: 2.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6.0, vertical: 2.0),
+                        decoration: BoxDecoration(
+                          color: _storeColor(product['store_name'] ?? '')
+                              .withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        child: Text(
+                          product['store_name'],
+                          style: TextStyle(
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w600,
+                            color: _storeColor(product['store_name'] ?? ''),
                           ),
-                    ),
+                        ),
+                      ),
                     const Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

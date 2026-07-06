@@ -270,10 +270,10 @@ class _AccountManagementRoundedWidgetState
                   borderRadius: BorderRadius.circular(16.0),
                 ),
               ),
-            ].divide(SizedBox(height: 16.0)),
+            ].divide(SizedBox(height: 12.0)),
           ),
         ),
-      ].divide(SizedBox(height: 24.0)),
+      ].divide(SizedBox(height: 16.0)),
     );
   }
 }

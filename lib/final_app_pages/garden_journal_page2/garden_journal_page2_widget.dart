@@ -248,7 +248,7 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
                                           bytes: selectedImage!.bytes,
                                         );
                                         imageUrl = await uploadSupabaseStorageFile(
-                                          bucketName: 'profile-photo',
+                                          bucketName: 'garden-photos',
                                           selectedFile: uploadFile,
                                         );
                                       }
@@ -726,15 +726,12 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                         ),
                         child: Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(
-                              24.0, 0.0, 24.0, 16.0),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                wrapWithModel(
+                              16.0, 0.0, 16.0, 16.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Expanded(
+                                child: wrapWithModel(
                                   model: _model.statPillModel1,
                                   updateCallback: () => safeSetState(() {}),
                                   child: StatPillWidget(
@@ -750,7 +747,10 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                     label: 'Entries',
                                   ),
                                 ),
-                                wrapWithModel(
+                              ),
+                              SizedBox(width: 8.0),
+                              Expanded(
+                                child: wrapWithModel(
                                   model: _model.statPillModel2,
                                   updateCallback: () => safeSetState(() {}),
                                   child: StatPillWidget(
@@ -771,7 +771,10 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                     label: 'Photos',
                                   ),
                                 ),
-                                wrapWithModel(
+                              ),
+                              SizedBox(width: 8.0),
+                              Expanded(
+                                child: wrapWithModel(
                                   model: _model.statPillModel3,
                                   updateCallback: () => safeSetState(() {}),
                                   child: StatPillWidget(
@@ -792,8 +795,8 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                     label: 'Gardens',
                                   ),
                                 ),
-                              ].divide(SizedBox(width: 8.0)),
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),

@@ -295,38 +295,32 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                                       if (widget.gardenID != null && widget.gardenID!.isNotEmpty) {
                                         final today = DateTime.now();
                                         final plantName = plant.plantName ?? 'Plant';
-                                        final taskDefs = [
-                                          {
-                                            'task_name': 'Plant $plantName',
-                                            'task_type': 'Plant',
-                                            'due_date': supaSerialize<DateTime>(today),
-                                            'notes': 'Auto-generated planting date. Update if planted on a different day.',
-                                          },
-                                          {
-                                            'task_name': 'Water $plantName',
-                                            'task_type': 'Water',
-                                            'due_date': supaSerialize<DateTime>(today),
-                                            'notes': 'Auto-generated watering task. Adjust frequency as needed.',
-                                          },
-                                          {
-                                            'task_name': 'Harvest $plantName',
-                                            'task_type': 'Harvest',
-                                            'due_date': supaSerialize<DateTime>(today.add(const Duration(days: 60))),
-                                            'notes': 'Auto-generated estimated harvest date. Update based on your plant\'s progress.',
-                                          },
-                                        ];
-                                        for (final def in taskDefs) {
+
+                                        Future<void> addTask(String name, String type, DateTime date, String notes) async {
                                           try {
                                             await GardenTasksTable().insert({
-                                              'task_name': def['task_name'],
-                                              'task_type': def['task_type'],
-                                              'due_date': def['due_date'],
-                                              'notes': def['notes'],
+                                              'task_name': name,
+                                              'task_type': type,
+                                              'due_date': supaSerialize<DateTime>(date),
+                                              'notes': notes,
                                               'user_id': currentUserUid,
                                               'garden_id': widget.gardenID,
                                               'completed': false,
                                             });
                                           } catch (_) {}
+                                        }
+
+                                        // Plant task
+                                        await addTask('Plant $plantName', 'Plant', today, 'Auto-generated planting date. Update if planted on a different day.');
+                                        // Harvest task (estimated 60 days)
+                                        await addTask('Harvest $plantName', 'Harvest', today.add(const Duration(days: 60)), 'Auto-generated estimated harvest date. Update based on your plant\'s progress.');
+                                        // Water schedule: every 3 days for 3 weeks
+                                        for (int i = 0; i <= 18; i += 3) {
+                                          await addTask('Water $plantName', 'Water', today.add(Duration(days: i)), 'Auto-generated watering schedule. Adjust frequency as needed.');
+                                        }
+                                        // Weed schedule: weekly for 8 weeks
+                                        for (int i = 7; i <= 56; i += 7) {
+                                          await addTask('Weed Garden', 'Other', today.add(Duration(days: i)), 'Auto-generated weekly weeding reminder.');
                                         }
                                       }
                                       if (mounted) {

@@ -155,7 +155,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                 // Type selector
                 Row(
                   children: [
-                    _typeChip(ctx, setSheetState, label: 'Personal', value: 'custom',
+                    _typeChip(ctx, setSheetState, label: 'Overall', value: 'custom',
                         selected: goalType == 'custom',
                         onTap: () { setSheetState(() { goalType = 'custom'; season = null; }); }),
                     const SizedBox(width: 8.0),
@@ -272,7 +272,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('My Goals',
+            Text('Garden Goals',
                 style: FlutterFlowTheme.of(context).titleMedium.override(
                   font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                   color: FlutterFlowTheme.of(context).primaryText,
@@ -346,7 +346,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
           ),
         // Initial goals
         if (initialGoals.isNotEmpty) ...[
-          _sectionLabel('Getting Started', icon: Icons.grass_rounded),
+          _sectionLabel('Overall Goals', icon: Icons.flag_rounded),
           ...initialGoals.map((g) => _goalTile(g)),
           const SizedBox(height: 8.0),
         ],
@@ -361,7 +361,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
         )),
         // Custom/personal goals
         if (customGoals.isNotEmpty) ...[
-          _sectionLabel('My Goals', icon: Icons.edit_rounded),
+          _sectionLabel('Personal Goals', icon: Icons.edit_rounded),
           ...customGoals.map((g) => _goalTile(g)),
         ],
       ],
@@ -478,6 +478,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
         bucketName: 'garden-photos',
         selectedFiles: selectedMedia,
       );
+      // Note: 'garden-photos' Supabase Storage bucket must exist and be public
       if (downloadUrls.isNotEmpty) {
         safeSetState(() {
           _gardenPhotoUrls.addAll(downloadUrls);
@@ -506,7 +507,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
     safeSetState(() => _isUploadingPhoto = true);
     try {
       final downloadUrls = await uploadSupabaseStorageFiles(
-        bucketName: 'profile-photo',
+        bucketName: 'profile-photos',
         selectedFiles: selectedMedia,
       );
       if (downloadUrls.isNotEmpty) {
@@ -520,14 +521,18 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
         });
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Profile photo updated!')),
+            const SnackBar(content: Text('Profile photo updated!')),
           );
         }
       }
     } catch (e) {
       if (mounted) {
+        final msg = e.toString().toLowerCase();
+        final hint = msg.contains('not found') || msg.contains('bucket')
+            ? 'Storage bucket not set up — please create a public "profile-photos" bucket in your Supabase dashboard.'
+            : 'Upload failed: $e';
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload photo: $e')),
+          SnackBar(content: Text(hint), duration: const Duration(seconds: 5)),
         );
       }
     } finally {
@@ -1207,7 +1212,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 32.0),
+                padding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 32.0),
                 child: GestureDetector(
                   onTap: () async {
                     await authManager.signOut();
