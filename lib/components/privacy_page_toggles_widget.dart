@@ -69,7 +69,7 @@ class _PrivacyPageTogglesWidgetState extends State<PrivacyPageTogglesWidget> {
                         fontWeight: FontWeight.bold,
                         fontStyle:
                             FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                        decoration: TextDecoration.underline,
+                        decoration: TextDecoration.none,
                       ),
                 ),
               ),

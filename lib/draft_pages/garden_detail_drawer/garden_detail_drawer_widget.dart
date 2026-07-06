@@ -161,7 +161,7 @@ class _GardenDetailDrawerWidgetState extends State<GardenDetailDrawerWidget> {
                                     fontStyle: FlutterFlowTheme.of(context)
                                         .bodyMedium
                                         .fontStyle,
-                                    decoration: TextDecoration.underline,
+                                    decoration: TextDecoration.none,
                                   ),
                         ),
                       ),

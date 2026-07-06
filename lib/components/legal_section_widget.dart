@@ -84,7 +84,7 @@ class _LegalSectionWidgetState extends State<LegalSectionWidget> {
                                 fontStyle: FlutterFlowTheme.of(context)
                                     .bodyMedium
                                     .fontStyle,
-                                decoration: TextDecoration.underline,
+                                decoration: TextDecoration.none,
                               ),
                         ),
                       ),

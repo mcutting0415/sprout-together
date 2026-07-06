@@ -277,7 +277,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                   font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                   color: FlutterFlowTheme.of(context).primaryText,
                   letterSpacing: 0.0,
-                  decoration: TextDecoration.underline,
+                  decoration: TextDecoration.none,
                 )),
             GestureDetector(
               onTap: _showAddGoalSheet,
@@ -1101,7 +1101,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                                             .primaryText,
                                         letterSpacing: 0.0,
                                         fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
+                                        decoration: TextDecoration.none,
                                         lineHeight: 1.4,
                                       ),
                                 ),

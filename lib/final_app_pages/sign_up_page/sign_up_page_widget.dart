@@ -255,7 +255,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                   validator: _model.textController1Validator
                                       .asValidator(context),
                                   onFieldSubmitted: (_) =>
-                                      FocusScope.of(context).nextFocus(),
+                                      FocusScope.of(context).requestFocus(_model.textFieldFocusNode2),
                                   inputFormatters: [
                                     if (!isAndroid && !isiOS)
                                       TextInputFormatter.withFunction(
@@ -292,7 +292,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       .emailTextControllerValidator
                                       .asValidator(context),
                                   onFieldSubmitted: (_) =>
-                                      FocusScope.of(context).nextFocus(),
+                                      FocusScope.of(context).requestFocus(_model.textFieldFocusNode3),
                                 ),
                               ),
                               // Password
@@ -337,7 +337,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       .passwordTextControllerValidator
                                       .asValidator(context),
                                   onFieldSubmitted: (_) =>
-                                      FocusScope.of(context).nextFocus(),
+                                      FocusScope.of(context).requestFocus(_model.textFieldFocusNode4),
                                 ),
                               ),
                               // Confirm Password

@@ -269,7 +269,7 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
                       fontWeight: FontWeight.w600,
                       fontStyle:
                           FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                      decoration: TextDecoration.underline,
+                      decoration: TextDecoration.none,
                     ),
               ),
               Container(
@@ -326,7 +326,7 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
                         fontWeight: FontWeight.w600,
                         fontStyle:
                             FlutterFlowTheme.of(context).bodyMedium.fontStyle,
-                        decoration: TextDecoration.underline,
+                        decoration: TextDecoration.none,
                       ),
                 ),
               ),

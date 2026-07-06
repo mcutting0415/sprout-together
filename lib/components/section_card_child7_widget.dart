@@ -89,7 +89,7 @@ class _SectionCardChild7WidgetState extends State<SectionCardChild7Widget> {
                         size: 20.0,
                       ),
                       title: 'App Version',
-                      subtitle: 'v1.0.0 (41)',
+                      subtitle: 'v1.0.0 (42)',
                       isLast: false,
                     ),
                   ),

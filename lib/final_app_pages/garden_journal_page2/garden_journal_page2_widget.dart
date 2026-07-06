@@ -129,6 +129,7 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
                     // Title field
                     TextFormField(
                       controller: titleController,
+                      textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                         labelText: 'Entry Title',
                         hintText: 'e.g. First tomatoes sprouting!',
@@ -185,6 +186,7 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
                     TextFormField(
                       controller: notesController,
                       maxLines: 4,
+                      textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
                         labelText: 'Notes',
                         hintText: 'What did you notice today?',
@@ -295,70 +297,15 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
   );
 }
 
-/// Create an alternative version of my Garden Journal page for
-/// SproutTogether.
-///
-/// Goal:
-/// Create a gardening journal where users can document their garden's
-/// progress throughout the growing season.
-///
-/// Use the existing SproutTogether theme, colors, typography, spacing, and
-/// design style.
-///
-/// Requirements:
-///
-/// Page Header:
-///
-/// * Garden Journal
-///
-/// Quick Actions:
-///
-/// * New Journal Entry button
-/// * Add Photo button
-///
-/// Journal Timeline Section:
-///
-/// * Display journal entries in reverse chronological order
-/// * Show date for each entry
-/// * Show photo thumbnail if available
-/// * Show entry title
-/// * Show notes preview
-///
-/// Entry Card Layout:
-///
-/// * Photo
-/// * Date
-/// * Garden Name
-/// * Notes Preview
-/// * View Entry button
-///
-/// Filter Options:
-///
-/// * All Entries
-/// * By Garden
-/// * By Plant
-/// * By Month
-///
-/// Statistics Section:
-///
-/// * Total Entries
-/// * Photos Added
-/// * Gardens Tracked
-///
-/// Design Goals:
-///
-/// * Feel like a gardening scrapbook.
-/// * Clean and modern.
-/// * Easy to browse.
-/// * Friendly and encouraging.
-/// * Mobile-friendly.
-/// * Use cards and timeline-style layouts.
-/// * Plenty of spacing.
-///
-/// Do not add functionality, database actions, or navigation.
-/// Focus only on page structure and visual design.
 class GardenJournalPage2Widget extends StatefulWidget {
-  const GardenJournalPage2Widget({super.key});
+  const GardenJournalPage2Widget({
+    super.key,
+    this.fromInsights = false,
+  });
+
+  /// When true, a back button is shown so the user can return to
+  /// the garden insights page they came from.
+  final bool fromInsights;
 
   static String routeName = 'GardenJournalPage2';
   static String routePath = '/gardenJournalPage2';
@@ -431,10 +378,291 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
     return DateFormat('MMMM dd, yyyy').format(date);
   }
 
+  /// Opens a view/edit sheet for an existing journal entry.
+  Future<void> _showViewEditSheet(GardenJournalEntriesRow entry) async {
+    bool isEditing = false;
+    bool isSaving = false;
+    final titleController = TextEditingController(text: entry.title ?? '');
+    final notesController = TextEditingController(text: entry.entryText ?? '');
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(builder: (ctx, setModalState) {
+        return Padding(
+          padding: MediaQuery.viewInsetsOf(ctx),
+          child: Container(
+            decoration: BoxDecoration(
+              color: FlutterFlowTheme.of(ctx).secondaryBackground,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+            ),
+            child: SafeArea(
+              top: false,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Drag handle
+                    Center(
+                      child: Container(
+                        width: 40.0,
+                        height: 4.0,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(ctx).alternate,
+                          borderRadius: BorderRadius.circular(2.0),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    // Header row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            isEditing ? 'Edit Entry' : 'Journal Entry',
+                            style: FlutterFlowTheme.of(ctx).titleLarge.override(
+                                  font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                  letterSpacing: 0.0,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ),
+                        if (!isEditing)
+                          TextButton.icon(
+                            onPressed: () => setModalState(() => isEditing = true),
+                            icon: Icon(Icons.edit_rounded,
+                                size: 16.0, color: FlutterFlowTheme.of(ctx).primary),
+                            label: Text('Edit',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600,
+                                  color: FlutterFlowTheme.of(ctx).primary,
+                                  fontSize: 13.0,
+                                )),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 4.0),
+                    // Date + garden badge
+                    Row(
+                      children: [
+                        Text(
+                          _formatDate(entry.entryDate ?? entry.createdAt),
+                          style: FlutterFlowTheme.of(ctx).labelSmall.override(
+                                font: GoogleFonts.poppins(),
+                                color: FlutterFlowTheme.of(ctx).secondaryText,
+                                letterSpacing: 0.0,
+                              ),
+                        ),
+                        if (entry.gardenId != null) ...[
+                          const SizedBox(width: 8.0),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
+                            decoration: BoxDecoration(
+                              color: FlutterFlowTheme.of(ctx).primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            child: Text(
+                              _gardenNames[entry.gardenId!] ?? 'Garden',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11.0,
+                                color: FlutterFlowTheme.of(ctx).primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 20.0),
+                    // Photo (if any)
+                    if (entry.imageUrl != null && entry.imageUrl!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: Image.network(
+                            entry.imageUrl!,
+                            width: double.infinity,
+                            height: 180.0,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    // Title
+                    if (isEditing)
+                      TextFormField(
+                        controller: titleController,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          labelText: 'Title',
+                          filled: true,
+                          fillColor: FlutterFlowTheme.of(ctx).primaryBackground,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).primary, width: 2.0),
+                          ),
+                        ),
+                        style: FlutterFlowTheme.of(ctx).bodyMedium.override(
+                              font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                              letterSpacing: 0.0,
+                            ),
+                      )
+                    else
+                      Text(
+                        entry.title ?? 'Untitled Entry',
+                        style: FlutterFlowTheme.of(ctx).titleMedium.override(
+                              font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                              letterSpacing: 0.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    const SizedBox(height: 12.0),
+                    // Notes
+                    if (isEditing)
+                      TextFormField(
+                        controller: notesController,
+                        maxLines: 6,
+                        textInputAction: TextInputAction.done,
+                        decoration: InputDecoration(
+                          labelText: 'Notes',
+                          alignLabelWithHint: true,
+                          filled: true,
+                          fillColor: FlutterFlowTheme.of(ctx).primaryBackground,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: FlutterFlowTheme.of(ctx).primary, width: 2.0),
+                          ),
+                        ),
+                        style: FlutterFlowTheme.of(ctx).bodyMedium.override(
+                              font: GoogleFonts.poppins(
+                                  fontWeight: FlutterFlowTheme.of(ctx).bodyMedium.fontWeight),
+                              letterSpacing: 0.0,
+                            ),
+                      )
+                    else if ((entry.entryText ?? '').isNotEmpty)
+                      Text(
+                        entry.entryText!,
+                        style: FlutterFlowTheme.of(ctx).bodyMedium.override(
+                              font: GoogleFonts.poppins(
+                                  fontWeight: FlutterFlowTheme.of(ctx).bodyMedium.fontWeight),
+                              color: FlutterFlowTheme.of(ctx).primaryText,
+                              letterSpacing: 0.0,
+                              lineHeight: 1.6,
+                            ),
+                      ),
+                    const SizedBox(height: 24.0),
+                    // Action buttons
+                    if (isEditing)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => setModalState(() => isEditing = false),
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: FlutterFlowTheme.of(ctx).alternate),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                padding: const EdgeInsets.symmetric(vertical: 14.0),
+                              ),
+                              child: Text('Cancel',
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600,
+                                    color: FlutterFlowTheme.of(ctx).secondaryText,
+                                  )),
+                            ),
+                          ),
+                          const SizedBox(width: 12.0),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: isSaving
+                                  ? null
+                                  : () async {
+                                      final newTitle = titleController.text.trim();
+                                      if (newTitle.isEmpty) return;
+                                      setModalState(() => isSaving = true);
+                                      try {
+                                        await GardenJournalEntriesTable().update(
+                                          data: {
+                                            'title': newTitle,
+                                            'entry_text': notesController.text.trim(),
+                                          },
+                                          matchingRows: (q) => q.eqOrNull('id', entry.id),
+                                        );
+                                        Navigator.pop(ctx);
+                                        _loadData();
+                                      } catch (_) {
+                                        setModalState(() => isSaving = false);
+                                      }
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: FlutterFlowTheme.of(ctx).primary,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                padding: const EdgeInsets.symmetric(vertical: 14.0),
+                              ),
+                              child: isSaving
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                    )
+                                  : Text('Save Changes',
+                                      style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white)),
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: FlutterFlowTheme.of(ctx).primary),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                            padding: const EdgeInsets.symmetric(vertical: 14.0),
+                          ),
+                          child: Text('Done',
+                              style: FlutterFlowTheme.of(ctx).titleSmall.override(
+                                    font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                    color: FlutterFlowTheme.of(ctx).primary,
+                                    letterSpacing: 0.0,
+                                  )),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
   }
 
@@ -484,7 +712,8 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                       updateCallback: () => safeSetState(() {}),
                       child: FinalHeaderWidget(
                         pageTitle: 'Garden Journal',
-                        backAction: Navigator.of(context).canPop() ? () => context.pop() : null,
+                        // Only show back button when coming from garden insights
+                        backAction: widget.fromInsights ? () => context.pop() : null,
                       ),
                     ),
                     Padding(
@@ -498,85 +727,82 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                         child: Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(
                               24.0, 0.0, 24.0, 16.0),
-                          child: Container(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  wrapWithModel(
-                                    model: _model.statPillModel1,
-                                    updateCallback: () => safeSetState(() {}),
-                                    child: StatPillWidget(
-                                      icon: Icon(
-                                        Icons.auto_stories_rounded,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        size: 16.0,
-                                      ),
-                                      value: _isLoading
-                                          ? '–'
-                                          : _entries.length.toString(),
-                                      label: 'Entries',
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                wrapWithModel(
+                                  model: _model.statPillModel1,
+                                  updateCallback: () => safeSetState(() {}),
+                                  child: StatPillWidget(
+                                    icon: Icon(
+                                      Icons.auto_stories_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primary,
+                                      size: 16.0,
                                     ),
+                                    value: _isLoading
+                                        ? '–'
+                                        : _entries.length.toString(),
+                                    label: 'Entries',
                                   ),
-                                  wrapWithModel(
-                                    model: _model.statPillModel2,
-                                    updateCallback: () => safeSetState(() {}),
-                                    child: StatPillWidget(
-                                      icon: Icon(
-                                        Icons.image_rounded,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        size: 16.0,
-                                      ),
-                                      value: _isLoading
-                                          ? '–'
-                                          : _entries
-                                              .where((e) =>
-                                                  e.imageUrl != null &&
-                                                  e.imageUrl!.isNotEmpty)
-                                              .length
-                                              .toString(),
-                                      label: 'Photos',
+                                ),
+                                wrapWithModel(
+                                  model: _model.statPillModel2,
+                                  updateCallback: () => safeSetState(() {}),
+                                  child: StatPillWidget(
+                                    icon: Icon(
+                                      Icons.image_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primary,
+                                      size: 16.0,
                                     ),
+                                    value: _isLoading
+                                        ? '–'
+                                        : _entries
+                                            .where((e) =>
+                                                e.imageUrl != null &&
+                                                e.imageUrl!.isNotEmpty)
+                                            .length
+                                            .toString(),
+                                    label: 'Photos',
                                   ),
-                                  wrapWithModel(
-                                    model: _model.statPillModel3,
-                                    updateCallback: () => safeSetState(() {}),
-                                    child: StatPillWidget(
-                                      icon: Icon(
-                                        Icons.local_florist_rounded,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        size: 16.0,
-                                      ),
-                                      value: _isLoading
-                                          ? '–'
-                                          : _entries
-                                              .map((e) => e.gardenId)
-                                              .whereType<String>()
-                                              .toSet()
-                                              .length
-                                              .toString(),
-                                      label: 'Gardens',
+                                ),
+                                wrapWithModel(
+                                  model: _model.statPillModel3,
+                                  updateCallback: () => safeSetState(() {}),
+                                  child: StatPillWidget(
+                                    icon: Icon(
+                                      Icons.local_florist_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primary,
+                                      size: 16.0,
                                     ),
+                                    value: _isLoading
+                                        ? '–'
+                                        : _entries
+                                            .map((e) => e.gardenId)
+                                            .whereType<String>()
+                                            .toSet()
+                                            .length
+                                            .toString(),
+                                    label: 'Gardens',
                                   ),
-                                ].divide(SizedBox(width: 8.0)),
-                              ),
+                                ),
+                              ].divide(SizedBox(width: 8.0)),
                             ),
                           ),
                         ),
                       ),
                     ),
+                    // Filter chips — Row with Expanded so they fit evenly, no scrolling
                     Padding(
                       padding: EdgeInsetsDirectional.fromSTEB(
-                          24.0, 16.0, 24.0, 8.0),
-                      child: Wrap(
-                        spacing: 8.0,
-                        runSpacing: 8.0,
+                          16.0, 16.0, 16.0, 8.0),
+                      child: Row(
                         children: [
                           'All',
                           'By Garden',
@@ -584,71 +810,45 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                           'By Month',
                         ].map((filter) {
                           final isSelected = _selectedFilter == filter;
-                          return GestureDetector(
-                            onTap: () => safeSetState(
-                                () => _selectedFilter = filter),
-                            child: Container(
-                              height: 34.0,
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? FlutterFlowTheme.of(context).primary
-                                    : FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
-                                borderRadius: BorderRadius.circular(8.0),
-                                border: Border.all(
-                                  color: FlutterFlowTheme.of(context)
-                                      .alternate,
-                                  width: 1.0,
+                          return Expanded(
+                            child: GestureDetector(
+                              onTap: () => safeSetState(
+                                  () => _selectedFilter = filter),
+                              child: Container(
+                                height: 34.0,
+                                margin: EdgeInsets.symmetric(horizontal: 3.0),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? FlutterFlowTheme.of(context).primary
+                                      : FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(
+                                    color: FlutterFlowTheme.of(context)
+                                        .alternate,
+                                    width: 1.0,
+                                  ),
                                 ),
-                              ),
-                              alignment: AlignmentDirectional(0.0, 0.0),
-                              child: Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    12.0, 0.0, 12.0, 0.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (isSelected)
-                                      Icon(Icons.check_rounded,
-                                          color: Colors.white, size: 16.0),
-                                    Text(
-                                      filter == 'All'
-                                          ? 'All Entries'
-                                          : filter,
-                                      style: FlutterFlowTheme.of(context)
-                                          .labelMedium
-                                          .override(
-                                            font: GoogleFonts.poppins(
-                                              fontWeight:
-                                                  FlutterFlowTheme.of(
-                                                          context)
-                                                      .labelMedium
-                                                      .fontWeight,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(
-                                                          context)
-                                                      .labelMedium
-                                                      .fontStyle,
-                                            ),
-                                            color: isSelected
-                                                ? Colors.white
-                                                : FlutterFlowTheme.of(
-                                                        context)
-                                                    .primaryText,
-                                            fontSize: 13.0,
-                                            letterSpacing: 0.0,
-                                            fontWeight:
-                                                FlutterFlowTheme.of(context)
-                                                    .labelMedium
-                                                    .fontWeight,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .labelMedium
-                                                    .fontStyle,
-                                            lineHeight: 1.4,
-                                          ),
-                                    ),
-                                  ].divide(SizedBox(width: 6.0)),
+                                alignment: AlignmentDirectional(0.0, 0.0),
+                                child: Text(
+                                  filter == 'All' ? 'All' : filter.split(' ').last,
+                                  textAlign: TextAlign.center,
+                                  style: FlutterFlowTheme.of(context)
+                                      .labelMedium
+                                      .override(
+                                        font: GoogleFonts.poppins(
+                                          fontWeight: FlutterFlowTheme.of(
+                                                  context)
+                                              .labelMedium
+                                              .fontWeight,
+                                        ),
+                                        color: isSelected
+                                            ? Colors.white
+                                            : FlutterFlowTheme.of(context)
+                                                .primaryText,
+                                        fontSize: 12.0,
+                                        letterSpacing: 0.0,
+                                      ),
                                 ),
                               ),
                             ),
@@ -740,18 +940,21 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                         ),
                       )
                     else
-                      ..._filteredEntries.map((entry) => JournalEntryWidget(
-                            key: ValueKey(entry.id),
-                            imgDesc: (entry.imageUrl != null &&
-                                    entry.imageUrl!.isNotEmpty)
-                                ? entry.imageUrl!
-                                : '',
-                            date: _formatDate(entry.entryDate ?? entry.createdAt),
-                            garden: entry.gardenId != null
-                                ? (_gardenNames[entry.gardenId!] ?? 'Garden')
-                                : 'General',
-                            title: entry.title ?? 'Journal Entry',
-                            preview: entry.entryText ?? '',
+                      ..._filteredEntries.map((entry) => GestureDetector(
+                            onTap: () => _showViewEditSheet(entry),
+                            child: JournalEntryWidget(
+                              key: ValueKey(entry.id),
+                              imgDesc: (entry.imageUrl != null &&
+                                      entry.imageUrl!.isNotEmpty)
+                                  ? entry.imageUrl!
+                                  : '',
+                              date: _formatDate(entry.entryDate ?? entry.createdAt),
+                              garden: entry.gardenId != null
+                                  ? (_gardenNames[entry.gardenId!] ?? 'Garden')
+                                  : 'General',
+                              title: entry.title ?? 'Journal Entry',
+                              preview: entry.entryText ?? '',
+                            ),
                           )),
                   ],
                 ),

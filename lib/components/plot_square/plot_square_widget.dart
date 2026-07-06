@@ -1,3 +1,4 @@
+import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -290,6 +291,44 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                                         matchingRows: (rows) =>
                                             rows.eqOrNull('id', widget.plotID),
                                       );
+                                      // Auto-generate calendar tasks for this plant
+                                      if (widget.gardenID != null && widget.gardenID!.isNotEmpty) {
+                                        final today = DateTime.now();
+                                        final plantName = plant.plantName ?? 'Plant';
+                                        final taskDefs = [
+                                          {
+                                            'task_name': 'Plant $plantName',
+                                            'task_type': 'Plant',
+                                            'due_date': supaSerialize<DateTime>(today),
+                                            'notes': 'Auto-generated planting date. Update if planted on a different day.',
+                                          },
+                                          {
+                                            'task_name': 'Water $plantName',
+                                            'task_type': 'Water',
+                                            'due_date': supaSerialize<DateTime>(today),
+                                            'notes': 'Auto-generated watering task. Adjust frequency as needed.',
+                                          },
+                                          {
+                                            'task_name': 'Harvest $plantName',
+                                            'task_type': 'Harvest',
+                                            'due_date': supaSerialize<DateTime>(today.add(const Duration(days: 60))),
+                                            'notes': 'Auto-generated estimated harvest date. Update based on your plant\'s progress.',
+                                          },
+                                        ];
+                                        for (final def in taskDefs) {
+                                          try {
+                                            await GardenTasksTable().insert({
+                                              'task_name': def['task_name'],
+                                              'task_type': def['task_type'],
+                                              'due_date': def['due_date'],
+                                              'notes': def['notes'],
+                                              'user_id': currentUserUid,
+                                              'garden_id': widget.gardenID,
+                                              'completed': false,
+                                            });
+                                          } catch (_) {}
+                                        }
+                                      }
                                       if (mounted) {
                                         setState(
                                             () => _displayName = plant.plantName);

@@ -593,7 +593,10 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                     child: ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pop(ctx);
-                        context.pushNamed(GardenJournalPage2Widget.routeName);
+                        context.pushNamed(
+                          GardenJournalPage2Widget.routeName,
+                          queryParameters: {'fromInsights': serializeParam(true, ParamType.bool)}.withoutNulls,
+                        );
                       },
                       icon: const Icon(Icons.menu_book_rounded, size: 18.0),
                       label: const Text('Log a Note in Garden Journal'),
@@ -1246,7 +1249,10 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Navigator.of(ctx).pop();
-                      context.pushNamed(GardenJournalPage2Widget.routeName);
+                      context.pushNamed(
+                        GardenJournalPage2Widget.routeName,
+                        queryParameters: {'fromInsights': serializeParam(true, ParamType.bool)}.withoutNulls,
+                      );
                     },
                     icon: const Icon(Icons.menu_book_rounded, size: 16.0),
                     label: const Text('Open in Journal'),

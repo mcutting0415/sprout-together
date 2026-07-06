@@ -179,7 +179,9 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: GardenJournalPage2Widget.routeName,
           path: GardenJournalPage2Widget.routePath,
-          builder: (context, params) => GardenJournalPage2Widget(),
+          builder: (context, params) => GardenJournalPage2Widget(
+            fromInsights: params.getParam('fromInsights', ParamType.bool) ?? false,
+          ),
         ),
         FFRoute(
           name: PlantDetailsPageWidget.routeName,
