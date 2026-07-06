@@ -153,7 +153,7 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
     _model.textController2?.text = tmpl['width'] as String;
     _model.textController3?.text = tmpl['length'] as String;
     // Set garden type chip
-    _model.choiceChipsValueController1?.setValue([tmpl['type'] as String]);
+    _model.choiceChipsValueController1?.value = [tmpl['type'] as String];
     safeSetState(() {});
   }
 
