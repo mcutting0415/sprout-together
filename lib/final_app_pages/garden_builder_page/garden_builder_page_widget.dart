@@ -48,9 +48,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
     });
   }
 
-  String? _containerPlantId;
-  String? _containerPlantName;
-  String _containerSize = 'Medium';
+  final List<Map<String, dynamic>> _containers = [];
 
   // Combine Squares mode
   bool _combineMode = false;
@@ -240,189 +238,499 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
     );
   }
 
-  Future<void> _showContainerPlantPicker() async {
+  Future<void> _showAddContainerSheet() async {
+    final nameController = TextEditingController();
+    List<PlantsRow> allPlants = [];
+    try {
+      allPlants = await PlantsTable().queryRows(
+        queryFn: (q) => q.order('plant_name', ascending: true),
+      );
+    } catch (_) {}
+    if (!context.mounted) return;
+
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.6,
-          decoration: BoxDecoration(
-            color: FlutterFlowTheme.of(context).primaryBackground,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(24.0),
-              topRight: Radius.circular(24.0),
-            ),
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: 8.0),
-              Container(
-                width: 40.0,
-                height: 4.0,
+        String selectedSize = 'Medium';
+        String? selectedPlantId;
+        String? selectedPlantName;
+        String searchQuery = '';
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final filtered = searchQuery.isEmpty
+                ? allPlants
+                : allPlants
+                    .where((p) => (p.plantName ?? '')
+                        .toLowerCase()
+                        .contains(searchQuery.toLowerCase()))
+                    .toList();
+            return Padding(
+              padding: MediaQuery.viewInsetsOf(sheetContext),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.80,
                 decoration: BoxDecoration(
-                  color: FlutterFlowTheme.of(context).alternate,
-                  borderRadius: BorderRadius.circular(2.0),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    Icon(Icons.local_florist_rounded,
-                        color: FlutterFlowTheme.of(context).primary, size: 20.0),
-                    const SizedBox(width: 8.0),
-                    Text(
-                      'Pick a Plant for Container',
-                      style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold, fontSize: 15.0),
-                    ),
-                    const Spacer(),
-                    if (_containerPlantId != null)
-                      TextButton(
-                        onPressed: () {
-                          safeSetState(() {
-                            _containerPlantId = null;
-                            _containerPlantName = null;
-                          });
-                          Navigator.pop(sheetContext);
-                        },
-                        child: Text('Clear',
-                            style: GoogleFonts.poppins(
-                                color: FlutterFlowTheme.of(context).error)),
-                      ),
-                  ],
-                ),
-              ),
-              Divider(height: 1.0, color: FlutterFlowTheme.of(context).alternate),
-              Expanded(
-                child: FutureBuilder<List<PlantsRow>>(
-                  future: PlantsTable().queryRows(
-                    queryFn: (q) => q.order('plant_name', ascending: true),
+                  color: FlutterFlowTheme.of(context).primaryBackground,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24.0),
+                    topRight: Radius.circular(24.0),
                   ),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              FlutterFlowTheme.of(context).primary),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8.0),
+                    Center(
+                      child: Container(
+                        width: 40.0,
+                        height: 4.0,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context).alternate,
+                          borderRadius: BorderRadius.circular(2.0),
                         ),
-                      );
-                    }
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        final plant = snapshot.data![index];
-                        return ListTile(
-                          leading: Container(
-                            width: 36.0,
-                            height: 36.0,
-                            decoration: BoxDecoration(
-                              color: Color(0x1A6F8F72),
-                              borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20.0, 14.0, 20.0, 0.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.coffee_maker_rounded,
+                              color: FlutterFlowTheme.of(context).primary,
+                              size: 20.0),
+                          const SizedBox(width: 8.0),
+                          Text('Add Container',
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold, fontSize: 16.0)),
+                        ],
+                      ),
+                    ),
+                    Divider(
+                        height: 20.0,
+                        color: FlutterFlowTheme.of(context).alternate,
+                        indent: 20.0,
+                        endIndent: 20.0),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding:
+                            const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Container Name',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText)),
+                            const SizedBox(height: 8.0),
+                            TextField(
+                              controller: nameController,
+                              decoration: InputDecoration(
+                                hintText: 'e.g. Terracotta Pot #1',
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).primary,
+                                        width: 1.5)),
+                              ),
+                              style: GoogleFonts.poppins(
+                                  color:
+                                      FlutterFlowTheme.of(context).primaryText),
                             ),
-                            child: Icon(Icons.local_florist_rounded,
-                                color: FlutterFlowTheme.of(context).primary,
-                                size: 18.0),
-                          ),
-                          title: Text(plant.plantName ?? 'Unknown',
-                              style: GoogleFonts.poppins(fontSize: 14.0)),
-                          onTap: () {
+                            const SizedBox(height: 16.0),
+                            Text('Container Size',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText)),
+                            const SizedBox(height: 8.0),
+                            Wrap(
+                              spacing: 8.0,
+                              children:
+                                  ['Small', 'Medium', 'Large', 'XL'].map((size) {
+                                final isSelected = selectedSize == size;
+                                return GestureDetector(
+                                  onTap: () =>
+                                      setSheetState(() => selectedSize = size),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 150),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 8.0),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? const Color(0xFF6F8F72)
+                                          : FlutterFlowTheme.of(context)
+                                              .secondaryBackground,
+                                      borderRadius:
+                                          BorderRadius.circular(20.0),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? const Color(0xFF6F8F72)
+                                            : FlutterFlowTheme.of(context)
+                                                .alternate,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      size,
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 13.0,
+                                          fontWeight: FontWeight.w600,
+                                          color: isSelected
+                                              ? Colors.white
+                                              : FlutterFlowTheme.of(context)
+                                                  .primaryText),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 20.0),
+                            Text('Assign Plant (Optional)',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText)),
+                            const SizedBox(height: 8.0),
+                            if (selectedPlantId != null) ...[
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0, vertical: 8.0),
+                                margin: const EdgeInsets.only(bottom: 8.0),
+                                decoration: BoxDecoration(
+                                  color: const Color(0x1A6F8F72),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  border: Border.all(
+                                      color: const Color(0xFF6F8F72)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.local_florist_rounded,
+                                        color: Color(0xFF6F8F72), size: 14.0),
+                                    const SizedBox(width: 6.0),
+                                    Text(selectedPlantName ?? '',
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 13.0,
+                                            color: const Color(0xFF6F8F72),
+                                            fontWeight: FontWeight.w600)),
+                                    const SizedBox(width: 6.0),
+                                    GestureDetector(
+                                      onTap: () => setSheetState(() {
+                                        selectedPlantId = null;
+                                        selectedPlantName = null;
+                                      }),
+                                      child: const Icon(Icons.close,
+                                          size: 14.0,
+                                          color: Color(0xFF6F8F72)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            TextField(
+                              onChanged: (v) =>
+                                  setSheetState(() => searchQuery = v),
+                              decoration: InputDecoration(
+                                hintText: 'Search plants...',
+                                prefixIcon:
+                                    const Icon(Icons.search, size: 18.0),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).primary,
+                                        width: 1.5)),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0, vertical: 10.0),
+                              ),
+                            ),
+                            const SizedBox(height: 4.0),
+                            ...filtered.map((plant) => ListTile(
+                                  dense: true,
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(horizontal: 4.0),
+                                  leading: Container(
+                                    width: 32.0,
+                                    height: 32.0,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0x1A6F8F72),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0)),
+                                    child: const Icon(
+                                        Icons.local_florist_rounded,
+                                        color: Color(0xFF6F8F72),
+                                        size: 16.0),
+                                  ),
+                                  title: Text(plant.plantName ?? 'Unknown',
+                                      style: GoogleFonts.poppins(fontSize: 13.0)),
+                                  trailing: selectedPlantId == plant.id
+                                      ? const Icon(Icons.check_circle_rounded,
+                                          color: Color(0xFF6F8F72), size: 18.0)
+                                      : null,
+                                  onTap: () => setSheetState(() {
+                                        selectedPlantId = plant.id;
+                                        selectedPlantName = plant.plantName;
+                                      }),
+                                )),
+                            const SizedBox(height: 24.0),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.fromLTRB(20.0, 8.0, 20.0, 24.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            final name = nameController.text.trim().isEmpty
+                                ? 'Container ${_containers.length + 1}'
+                                : nameController.text.trim();
                             safeSetState(() {
-                              _containerPlantId = plant.id;
-                              _containerPlantName = plant.plantName;
+                              _containers.add({
+                                'name': name,
+                                'size': selectedSize,
+                                'plantId': selectedPlantId,
+                                'plantName': selectedPlantName,
+                              });
                             });
                             Navigator.pop(sheetContext);
                           },
-                        );
-                      },
-                    );
-                  },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                FlutterFlowTheme.of(context).primary,
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 14.0),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14.0)),
+                          ),
+                          child: Text('Add Container',
+                              style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15.0)),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            );
+          },
         );
       },
+    );
+    nameController.dispose();
+  }
+
+  Widget _buildContainerCard(Map<String, dynamic> container) {
+    return Container(
+      padding: const EdgeInsets.all(14.0),
+      decoration: BoxDecoration(
+        color: container['plantId'] != null
+            ? const Color(0x1A6F8F72)
+            : FlutterFlowTheme.of(context).secondaryBackground,
+        borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(
+          color: container['plantId'] != null
+              ? const Color(0xFF6F8F72)
+              : FlutterFlowTheme.of(context).alternate,
+          width: 1.0,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44.0,
+            height: 44.0,
+            decoration: BoxDecoration(
+                color: const Color(0x1A6F8F72),
+                borderRadius: BorderRadius.circular(12.0)),
+            child: const Icon(Icons.coffee_maker_rounded,
+                color: Color(0xFF6F8F72), size: 22.0),
+          ),
+          const SizedBox(width: 12.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(container['name'] as String,
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600, fontSize: 14.0)),
+                Text(
+                    '${container['size']} · ${container['plantName'] ?? 'No plant assigned'}',
+                    style: GoogleFonts.poppins(
+                        fontSize: 12.0,
+                        color: FlutterFlowTheme.of(context).secondaryText)),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close_rounded, size: 18.0),
+            color: FlutterFlowTheme.of(context).secondaryText,
+            onPressed: () =>
+                safeSetState(() => _containers.remove(container)),
+          ),
+        ],
+      ),
     );
   }
 
   Future<void> _applyCombineSelected() async {
     if (_combineSelectedIds.isEmpty) return;
+
+    // Pre-fetch plants so search doesn't flicker
+    List<PlantsRow> allPlants = [];
+    try {
+      allPlants = await PlantsTable().queryRows(
+          queryFn: (q) => q.order('plant_name', ascending: true));
+    } catch (_) {}
+    if (!context.mounted) return;
+
     PlantsRow? selectedPlant;
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.6,
-          decoration: BoxDecoration(
-            color: FlutterFlowTheme.of(context).primaryBackground,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(24.0),
-              topRight: Radius.circular(24.0),
-            ),
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: 8.0),
-              Container(
-                width: 40.0,
-                height: 4.0,
-                decoration: BoxDecoration(
-                  color: FlutterFlowTheme.of(context).alternate,
-                  borderRadius: BorderRadius.circular(2.0),
+        String searchQuery = '';
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final filtered = searchQuery.isEmpty
+                ? allPlants
+                : allPlants
+                    .where((p) => (p.plantName ?? '')
+                        .toLowerCase()
+                        .contains(searchQuery.toLowerCase()))
+                    .toList();
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.65,
+              decoration: BoxDecoration(
+                color: FlutterFlowTheme.of(context).primaryBackground,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24.0),
+                  topRight: Radius.circular(24.0),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    Icon(Icons.grid_view_rounded, color: FlutterFlowTheme.of(context).primary, size: 20.0),
-                    const SizedBox(width: 8.0),
-                    Text(
-                      'Assign plant to ${_combineSelectedIds.length} squares',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 15.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8.0),
+                  Container(
+                    width: 40.0,
+                    height: 4.0,
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).alternate,
+                      borderRadius: BorderRadius.circular(2.0),
                     ),
-                  ],
-                ),
-              ),
-              Divider(height: 1.0, color: FlutterFlowTheme.of(context).alternate),
-              Expanded(
-                child: FutureBuilder<List<PlantsRow>>(
-                  future: PlantsTable().queryRows(queryFn: (q) => q.order('plant_name', ascending: true)),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(FlutterFlowTheme.of(context).primary)));
-                    }
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        final plant = snapshot.data![index];
-                        return ListTile(
-                          leading: Container(
-                            width: 36.0, height: 36.0,
-                            decoration: BoxDecoration(color: const Color(0x1A6F8F72), borderRadius: BorderRadius.circular(8.0)),
-                            child: Icon(Icons.local_florist_rounded, color: FlutterFlowTheme.of(context).primary, size: 18.0),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 12.0),
+                    child: Row(
+                      children: [
+                        Icon(Icons.grid_view_rounded,
+                            color: FlutterFlowTheme.of(context).primary,
+                            size: 20.0),
+                        const SizedBox(width: 8.0),
+                        Expanded(
+                          child: Text(
+                            'Assign plant to ${_combineSelectedIds.length} square${_combineSelectedIds.length == 1 ? '' : 's'}',
+                            style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold, fontSize: 15.0),
                           ),
-                          title: Text(plant.plantName ?? 'Unknown', style: GoogleFonts.poppins(fontSize: 14.0)),
-                          onTap: () {
-                            selectedPlant = plant;
-                            Navigator.of(sheetContext).pop();
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
+                    child: TextField(
+                      onChanged: (v) =>
+                          setSheetState(() => searchQuery = v),
+                      decoration: InputDecoration(
+                        hintText: 'Search plants...',
+                        prefixIcon: const Icon(Icons.search, size: 18.0),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0)),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(
+                                color:
+                                    FlutterFlowTheme.of(context).alternate)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(
+                                color: FlutterFlowTheme.of(context).primary,
+                                width: 1.5)),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 10.0),
+                      ),
+                    ),
+                  ),
+                  Divider(
+                      height: 1.0,
+                      color: FlutterFlowTheme.of(context).alternate),
+                  Expanded(
+                    child: filtered.isEmpty
+                        ? Center(
+                            child: Text('No plants found',
+                                style: GoogleFonts.poppins(
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText)))
+                        : ListView.builder(
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 8.0),
+                            itemCount: filtered.length,
+                            itemBuilder: (context, index) {
+                              final plant = filtered[index];
+                              return ListTile(
+                                leading: Container(
+                                  width: 36.0,
+                                  height: 36.0,
+                                  decoration: BoxDecoration(
+                                      color: const Color(0x1A6F8F72),
+                                      borderRadius:
+                                          BorderRadius.circular(8.0)),
+                                  child: Icon(Icons.local_florist_rounded,
+                                      color:
+                                          FlutterFlowTheme.of(context).primary,
+                                      size: 18.0),
+                                ),
+                                title: Text(plant.plantName ?? 'Unknown',
+                                    style:
+                                        GoogleFonts.poppins(fontSize: 14.0)),
+                                onTap: () {
+                                  selectedPlant = plant;
+                                  Navigator.of(sheetContext).pop();
+                                },
+                              );
+                            },
+                          ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -932,33 +1240,17 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                 ),
                                 Icon(
                                   Icons.arrow_right_alt,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
+                                  color: FlutterFlowTheme.of(context).primary,
                                   size: 24.0,
                                 ),
                                 Text(
-                                  'Tap a square to \n             assign plant',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        font: GoogleFonts.poppins(
-                                          fontWeight:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontWeight,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontStyle,
-                                        ),
-                                        letterSpacing: 0.0,
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontStyle,
-                                      ),
+                                  'Tap a square to assign a plant',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13.0,
+                                    fontStyle: FontStyle.italic,
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ],
                             ),
@@ -1160,7 +1452,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                   padding: const EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 12.0, 0.0),
                                   color: _combineMode
                                       ? FlutterFlowTheme.of(context).error
-                                      : FlutterFlowTheme.of(context).secondary,
+                                      : const Color(0xFF3D7A8A),
                                   textStyle: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14.0),
                                   elevation: 0.0,
                                   borderRadius: BorderRadius.circular(20.0),
@@ -1234,188 +1526,28 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                     lineHeight: 1.4,
                                   ),
                             ),
-                            GestureDetector(
-                              onTap: _showContainerPlantPicker,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: _containerPlantId != null
-                                      ? Color(0x1A6F8F72)
-                                      : FlutterFlowTheme.of(context)
-                                          .secondaryBackground,
-                                  borderRadius: BorderRadius.circular(24.0),
-                                  shape: BoxShape.rectangle,
-                                  border: Border.all(
-                                    color: _containerPlantId != null
-                                        ? Color(0xFF6F8F72)
-                                        : FlutterFlowTheme.of(context).alternate,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 56.0,
-                                        height: 56.0,
-                                        decoration: BoxDecoration(
-                                          color: Color(0x1ADADEE4),
-                                          borderRadius:
-                                              BorderRadius.circular(9999.0),
-                                          shape: BoxShape.rectangle,
-                                          border: Border.all(
-                                            color: Color(0x4DDADEE4),
-                                            width: 1.0,
-                                          ),
-                                        ),
-                                        alignment:
-                                            AlignmentDirectional(0.0, 0.0),
-                                        child: Icon(
-                                          Icons.coffee_maker_rounded,
-                                          color: FlutterFlowTheme.of(context)
-                                              .secondary,
-                                          size: 24.0,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              'Terracotta Pot #1',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodyMedium
-                                                  .override(
-                                                    font: GoogleFonts.poppins(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .fontStyle,
-                                                    ),
-                                                    letterSpacing: 0.0,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyMedium
-                                                            .fontStyle,
-                                                    lineHeight: 1.4,
-                                                  ),
-                                            ),
-                                            Text(
-                                              _containerPlantId != null
-                                                  ? (_containerPlantName ?? 'Plant assigned')
-                                                  : 'Tap to assign plant',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .labelSmall
-                                                  .override(
-                                                    font: GoogleFonts.poppins(
-                                                      fontWeight:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .labelSmall
-                                                              .fontWeight,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .labelSmall
-                                                              .fontStyle,
-                                                    ),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primary,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .labelSmall
-                                                            .fontWeight,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .labelSmall
-                                                            .fontStyle,
-                                                    lineHeight: 1.4,
-                                                  ),
-                                            ),
-                                          ].divide(SizedBox(height: 4.0)),
-                                        ),
-                                      ),
-                                      Icon(
-                                        _containerPlantId != null
-                                            ? Icons.check_circle_rounded
-                                            : Icons.add_circle_outline_rounded,
-                                        color: _containerPlantId != null
-                                            ? Color(0xFF6F8F72)
-                                            : FlutterFlowTheme.of(context).primary,
-                                        size: 24.0,
-                                      ),
-                                    ].divide(SizedBox(width: 16.0)),
-                                  ),
-                                ),
+                            OutlinedButton.icon(
+                              onPressed: _showAddContainerSheet,
+                              icon: const Icon(Icons.add_rounded, size: 18.0),
+                              label: Text('Add Container',
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14.0)),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor:
+                                    FlutterFlowTheme.of(context).primary,
+                                side: BorderSide(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    width: 1.5),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14.0)),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 12.0),
                               ),
                             ),
-                            // Container size selector
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Container Size',
-                                  style: GoogleFonts.poppins(fontSize: 13.0, fontWeight: FontWeight.w600,
-                                      color: FlutterFlowTheme.of(context).secondaryText),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Wrap(
-                                  spacing: 8.0,
-                                  children: ['Small', 'Medium', 'Large', 'XL'].map((size) {
-                                    final selected = _containerSize == size;
-                                    return GestureDetector(
-                                      onTap: () => safeSetState(() => _containerSize = size),
-                                      child: AnimatedContainer(
-                                        duration: const Duration(milliseconds: 150),
-                                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                        decoration: BoxDecoration(
-                                          color: selected
-                                              ? const Color(0xFF6F8F72)
-                                              : FlutterFlowTheme.of(context).secondaryBackground,
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          border: Border.all(
-                                            color: selected
-                                                ? const Color(0xFF6F8F72)
-                                                : FlutterFlowTheme.of(context).alternate,
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          size,
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 13.0,
-                                            fontWeight: FontWeight.w600,
-                                            color: selected
-                                                ? Colors.white
-                                                : FlutterFlowTheme.of(context).primaryText,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ],
-                            ),
+                            if (_containers.isNotEmpty)
+                              ..._containers
+                                  .map((c) => _buildContainerCard(c)),
                           ].divide(SizedBox(height: 16.0)),
                         ),
                       ),

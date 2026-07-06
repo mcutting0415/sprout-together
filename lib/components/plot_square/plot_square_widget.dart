@@ -89,104 +89,140 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
   }
 
   Future<void> _showPlantPicker() async {
+    // Pre-fetch plants so search doesn't flicker
+    List<PlantsRow> allPlants = [];
+    try {
+      allPlants = await PlantsTable().queryRows(
+        queryFn: (q) => q.order('plant_name', ascending: true),
+      );
+    } catch (_) {}
+    if (!context.mounted) return;
+
     final bool? assigned = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.6,
-          decoration: BoxDecoration(
-            color: FlutterFlowTheme.of(context).primaryBackground,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(24.0),
-              topRight: Radius.circular(24.0),
-            ),
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: 8.0),
-              Container(
-                width: 40.0,
-                height: 4.0,
-                decoration: BoxDecoration(
-                  color: FlutterFlowTheme.of(context).alternate,
-                  borderRadius: BorderRadius.circular(2.0),
+        String searchQuery = '';
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final filtered = searchQuery.isEmpty
+                ? allPlants
+                : allPlants
+                    .where((p) => (p.plantName ?? '')
+                        .toLowerCase()
+                        .contains(searchQuery.toLowerCase()))
+                    .toList();
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.65,
+              decoration: BoxDecoration(
+                color: FlutterFlowTheme.of(context).primaryBackground,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24.0),
+                  topRight: Radius.circular(24.0),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    Icon(Icons.local_florist_rounded,
-                        color: FlutterFlowTheme.of(context).primary,
-                        size: 20.0),
-                    const SizedBox(width: 8.0),
-                    Text(
-                      'Pick a Plant',
-                      style: FlutterFlowTheme.of(context).titleMedium.override(
-                            font: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .fontStyle,
-                            ),
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8.0),
+                  Container(
+                    width: 40.0,
+                    height: 4.0,
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).alternate,
+                      borderRadius: BorderRadius.circular(2.0),
                     ),
-                    const Spacer(),
-                    if (!widget.isEmpty)
-                      TextButton(
-                        onPressed: () async {
-                          await GardenPlotsTable().update(
-                            data: {'plant_id': ''},
-                            matchingRows: (rows) =>
-                                rows.eqOrNull('id', widget.plotID),
-                          );
-                          Navigator.of(sheetContext).pop(true);
-                        },
-                        child: Text(
-                          'Clear',
-                          style: FlutterFlowTheme.of(context).bodySmall.override(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 12.0),
+                    child: Row(
+                      children: [
+                        Icon(Icons.local_florist_rounded,
+                            color: FlutterFlowTheme.of(context).primary,
+                            size: 20.0),
+                        const SizedBox(width: 8.0),
+                        Text(
+                          'Pick a Plant',
+                          style: FlutterFlowTheme.of(context)
+                              .titleMedium
+                              .override(
                                 font: GoogleFonts.poppins(
-                                  fontWeight:
-                                      FlutterFlowTheme.of(context).bodySmall.fontWeight,
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .fontStyle,
                                 ),
-                                color: FlutterFlowTheme.of(context).error,
                                 letterSpacing: 0.0,
+                                fontWeight: FontWeight.bold,
                               ),
                         ),
-                      ),
-                  ],
-                ),
-              ),
-              Divider(
-                  height: 1.0,
-                  color: FlutterFlowTheme.of(context).alternate),
-              Expanded(
-                child: FutureBuilder<List<PlantsRow>>(
-                  future: PlantsTable().queryRows(
-                    queryFn: (q) => q.order('plant_name', ascending: true),
-                  ),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            FlutterFlowTheme.of(context).primary,
+                        const Spacer(),
+                        if (!widget.isEmpty)
+                          TextButton(
+                            onPressed: () async {
+                              await GardenPlotsTable().update(
+                                data: {'plant_id': ''},
+                                matchingRows: (rows) =>
+                                    rows.eqOrNull('id', widget.plotID),
+                              );
+                              Navigator.of(sheetContext).pop(true);
+                            },
+                            child: Text(
+                              'Clear',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodySmall
+                                  .override(
+                                    font: GoogleFonts.poppins(
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .bodySmall
+                                          .fontWeight,
+                                    ),
+                                    color:
+                                        FlutterFlowTheme.of(context).error,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                    final plants = snapshot.data!;
-                    if (plants.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'No plants in library yet.',
-                          style:
-                              FlutterFlowTheme.of(context).bodyMedium.override(
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
+                    child: TextField(
+                      onChanged: (v) =>
+                          setSheetState(() => searchQuery = v),
+                      decoration: InputDecoration(
+                        hintText: 'Search plants...',
+                        prefixIcon: const Icon(Icons.search, size: 18.0),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0)),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(
+                                color:
+                                    FlutterFlowTheme.of(context).alternate)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(
+                                color: FlutterFlowTheme.of(context).primary,
+                                width: 1.5)),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 10.0),
+                      ),
+                    ),
+                  ),
+                  Divider(
+                      height: 1.0,
+                      color: FlutterFlowTheme.of(context).alternate),
+                  Expanded(
+                    child: allPlants.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No plants in library yet.',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
                                     font: GoogleFonts.poppins(
                                       fontWeight: FlutterFlowTheme.of(context)
                                           .bodyMedium
@@ -196,66 +232,78 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                                         .secondaryText,
                                     letterSpacing: 0.0,
                                   ),
-                        ),
-                      );
-                    }
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      itemCount: plants.length,
-                      itemBuilder: (context, index) {
-                        final plant = plants[index];
-                        return ListTile(
-                          leading: Container(
-                            width: 36.0,
-                            height: 36.0,
-                            decoration: BoxDecoration(
-                              color: Color(0x1A6F8F72),
-                              borderRadius: BorderRadius.circular(8.0),
                             ),
-                            child: Icon(
-                              Icons.local_florist_rounded,
-                              color: FlutterFlowTheme.of(context).primary,
-                              size: 18.0,
-                            ),
-                          ),
-                          title: Text(
-                            plant.plantName ?? 'Unknown Plant',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  font: GoogleFonts.poppins(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                  ),
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontWeight,
-                                ),
-                          ),
-                          onTap: () async {
-                            await GardenPlotsTable().update(
-                              data: {'plant_id': plant.id},
-                              matchingRows: (rows) =>
-                                  rows.eqOrNull('id', widget.plotID),
-                            );
-                            if (mounted) {
-                              setState(() => _displayName = plant.plantName);
-                            }
-                            Navigator.of(sheetContext).pop(true);
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
+                          )
+                        : filtered.isEmpty
+                            ? Center(
+                                child: Text('No plants found',
+                                    style: GoogleFonts.poppins(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText)))
+                            : ListView.builder(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                itemCount: filtered.length,
+                                itemBuilder: (context, index) {
+                                  final plant = filtered[index];
+                                  return ListTile(
+                                    leading: Container(
+                                      width: 36.0,
+                                      height: 36.0,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0x1A6F8F72),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      child: Icon(
+                                        Icons.local_florist_rounded,
+                                        color:
+                                            FlutterFlowTheme.of(context).primary,
+                                        size: 18.0,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      plant.plantName ?? 'Unknown Plant',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            font: GoogleFonts.poppins(
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .fontWeight,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .fontStyle,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyMedium
+                                                    .fontWeight,
+                                          ),
+                                    ),
+                                    onTap: () async {
+                                      await GardenPlotsTable().update(
+                                        data: {'plant_id': plant.id},
+                                        matchingRows: (rows) =>
+                                            rows.eqOrNull('id', widget.plotID),
+                                      );
+                                      if (mounted) {
+                                        setState(
+                                            () => _displayName = plant.plantName);
+                                      }
+                                      Navigator.of(sheetContext).pop(true);
+                                    },
+                                  );
+                                },
+                              ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
