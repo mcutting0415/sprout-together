@@ -192,6 +192,121 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                           child: () => SectionCardChildWidget(),
                         ),
                       ),
+                      // ── Subscription ───────────────────────────────────
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
+                            child: Text(
+                              'Subscription',
+                              style: FlutterFlowTheme.of(context).labelLarge.override(
+                                    font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                                    color: FlutterFlowTheme.of(context).secondaryText,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          ),
+                          Material(
+                            color: Colors.transparent,
+                            elevation: 10.0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context).secondaryBackground,
+                                borderRadius: BorderRadius.circular(24.0),
+                                border: Border.all(color: FlutterFlowTheme.of(context).alternate),
+                              ),
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 40.0, height: 40.0,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0x1A6F8F72),
+                                          borderRadius: BorderRadius.circular(12.0),
+                                        ),
+                                        child: Icon(Icons.workspace_premium_rounded,
+                                            color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                                      ),
+                                      const SizedBox(width: 16.0),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('Current Plan',
+                                                style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 15.0)),
+                                            Text('Free Plan',
+                                                style: GoogleFonts.poppins(
+                                                    fontSize: 12.0,
+                                                    color: FlutterFlowTheme.of(context).secondaryText)),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+                                        decoration: BoxDecoration(
+                                          color: FlutterFlowTheme.of(context).primary.withOpacity(0.12),
+                                          borderRadius: BorderRadius.circular(20.0),
+                                        ),
+                                        child: Text('FREE',
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 11.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: FlutterFlowTheme.of(context).primary)),
+                                      ),
+                                    ],
+                                  ),
+                                  Divider(height: 24.0, color: FlutterFlowTheme.of(context).alternate),
+                                  InkWell(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    onTap: () {
+                                      // TODO: link to subscription management page or in-app paywall
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 40.0, height: 40.0,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0x1A6F8F72),
+                                              borderRadius: BorderRadius.circular(12.0),
+                                            ),
+                                            child: Icon(Icons.manage_accounts_rounded,
+                                                color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                                          ),
+                                          const SizedBox(width: 16.0),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text('Manage Subscription',
+                                                    style: GoogleFonts.poppins(
+                                                        fontWeight: FontWeight.w600, fontSize: 15.0)),
+                                                Text('Change or cancel your plan',
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 12.0,
+                                                        color: FlutterFlowTheme.of(context).secondaryText)),
+                                              ],
+                                            ),
+                                          ),
+                                          Icon(Icons.chevron_right_rounded,
+                                              color: FlutterFlowTheme.of(context).secondaryText, size: 20.0),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      // ───────────────────────────────────────────────────
                       wrapWithModel(
                         model: _model.sectionCardModel2,
                         updateCallback: () => safeSetState(() {}),
@@ -250,6 +365,79 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                     ].divide(SizedBox(height: 24.0)),
                   ),
                 ),
+                // ── Delete Account ─────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 16.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (dialogCtx) => AlertDialog(
+                            title: Text('Delete Account?',
+                                style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                            content: Text(
+                              'This will permanently delete your account, all gardens, and journal data. This cannot be undone.',
+                              style: GoogleFonts.poppins(fontSize: 14.0),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(dialogCtx, false),
+                                child: Text('Cancel',
+                                    style: GoogleFonts.poppins(
+                                        color: FlutterFlowTheme.of(context).secondaryText)),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: FlutterFlowTheme.of(context).error,
+                                  elevation: 0,
+                                ),
+                                onPressed: () => Navigator.pop(dialogCtx, true),
+                                child: Text('Delete',
+                                    style: GoogleFonts.poppins(
+                                        color: Colors.white, fontWeight: FontWeight.w600)),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirm == true) {
+                          // TODO: implement account deletion
+                          // e.g., await authManager.deleteUser(context: context);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text(
+                                    'Account deletion requested. You will receive a confirmation email.'),
+                                backgroundColor: FlutterFlowTheme.of(context).error,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      icon: Icon(Icons.delete_forever_rounded,
+                          color: FlutterFlowTheme.of(context).error),
+                      label: Text(
+                        'Delete Account',
+                        style: GoogleFonts.poppins(
+                          color: FlutterFlowTheme.of(context).error,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: FlutterFlowTheme.of(context).error),
+                        padding: const EdgeInsets.symmetric(vertical: 14.0),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0)),
+                      ),
+                    ),
+                  ),
+                ),
+                // ───────────────────────────────────────────────────────────
                 Text(
                   'Learn • Plant • Grow • Share',
                   textAlign: TextAlign.center,

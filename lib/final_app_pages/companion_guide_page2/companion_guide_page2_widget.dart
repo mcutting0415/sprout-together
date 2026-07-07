@@ -68,48 +68,86 @@ class _CompanionGuidePage2WidgetState
       final plants = await PlantsTable().queryRows(
         queryFn: (q) => q.order('plant_name', ascending: true),
       );
-      // Deduplicate by plant name
+
+      // Always preserve the target plant (plantID), even if duplicate name.
+      // Other names are deduplicated keeping the first occurrence.
       final seen = <String>{};
       final unique = <PlantsRow>[];
+      PlantsRow? targetPlant;
+
+      // First pass: grab the target plant so it's always in the list.
+      if (widget.plantID != null && widget.plantID!.isNotEmpty) {
+        targetPlant =
+            plants.where((p) => p.id == widget.plantID).firstOrNull;
+        if (targetPlant != null) {
+          seen.add((targetPlant.plantName ?? '').toLowerCase());
+          unique.add(targetPlant);
+        }
+      }
+
+      // Second pass: add remaining unique-named plants.
       for (final p in plants) {
+        if (p.id == widget.plantID) continue; // already handled above
         final name = (p.plantName ?? '').toLowerCase();
         if (name.isNotEmpty && seen.add(name)) unique.add(p);
       }
+
       if (!mounted) return;
       setState(() {
         _allPlants = unique;
         _plantsLoading = false;
       });
 
-      if (widget.plantID != null && widget.plantID!.isNotEmpty) {
-        final match =
-            unique.where((p) => p.id == widget.plantID).firstOrNull;
-        if (match != null) _selectPlant(match);
-      }
+      if (targetPlant != null) _selectPlant(targetPlant);
     } catch (_) {
       if (mounted) setState(() => _plantsLoading = false);
     }
   }
 
-  void _selectPlant(PlantsRow plant) {
+  Future<void> _selectPlant(PlantsRow plant) async {
+    // Dismiss keyboard immediately when a plant is tapped.
+    FocusScope.of(context).unfocus();
+
+    // 1. Try the local companion service first (instant, offline-friendly).
     final data = CompanionPlantingService.instance
         .findCompanions(plant.plantName ?? '');
+
+    var good = List<String>.from(data?['good'] as List? ?? []);
+    var bad = List<String>.from(data?['bad'] as List? ?? []);
+    var tip = data?['tip'] as String?;
+
+    // 2. If the local service has no data for this plant, fall back to
+    //    the Supabase plant_companions table (same source as the details page).
+    if (good.isEmpty && bad.isEmpty && plant.id != null) {
+      try {
+        final response = await SupaFlow.client
+            .from('plant_companions')
+            .select(
+                'relationship_type, related_plant:plants!related_plant_id(plant_name)')
+            .eq('plant_id', plant.id!);
+        for (final row
+            in List<Map<String, dynamic>>.from(response as List)) {
+          final name =
+              (row['related_plant'] as Map?)?['plant_name'] as String? ?? '';
+          if (name.isEmpty) continue;
+          if (row['relationship_type'] == 'avoid') {
+            bad.add(name);
+          } else {
+            good.add(name);
+          }
+        }
+      } catch (_) {}
+    }
+
+    if (!mounted) return;
     setState(() {
       _selectedPlant = plant;
       _showSearch = false;
       _searchQuery = '';
       _searchController.clear();
-      if (data != null) {
-        _goodCompanions =
-            List<String>.from(data['good'] as List? ?? []);
-        _badCompanions =
-            List<String>.from(data['bad'] as List? ?? []);
-        _companionTip = data['tip'] as String?;
-      } else {
-        _goodCompanions = [];
-        _badCompanions = [];
-        _companionTip = null;
-      }
+      _goodCompanions = good;
+      _badCompanions = bad;
+      _companionTip = tip;
     });
   }
 
@@ -359,7 +397,7 @@ class _CompanionGuidePage2WidgetState
   // ── BROWSE GRID ────────────────────────────────────────────────────────────
   Widget _buildBrowseGrid(FlutterFlowTheme theme) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 8.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 2.0, 16.0, 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -371,7 +409,7 @@ class _CompanionGuidePage2WidgetState
               color: theme.secondaryText,
             ),
           ),
-          const SizedBox(height: 10.0),
+          const SizedBox(height: 6.0),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -461,10 +499,13 @@ class _CompanionGuidePage2WidgetState
         children: [
           GestureDetector(
             onTap: _clearSelection,
-            child: Icon(Icons.arrow_back_ios_rounded,
-                color: theme.primary, size: 18.0),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 4.0),
+              child: Icon(Icons.arrow_back_ios_rounded,
+                  color: theme.primary, size: 18.0),
+            ),
           ),
-          const SizedBox(width: 8.0),
+          const SizedBox(width: 10.0),
           Expanded(
             child: Text(
               plant.plantName ?? 'Plant',

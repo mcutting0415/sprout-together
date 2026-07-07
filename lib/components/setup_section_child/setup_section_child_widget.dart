@@ -63,7 +63,7 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
             onTap: () async {
               final selectedMedia = await selectMediaWithSourceBottomSheet(
                 context: context,
-                storageFolderPath: 'profiles/$currentUserUid/',
+                storageFolderPath: '$currentUserUid/',
                 allowPhoto: true,
               );
               if (selectedMedia != null &&
@@ -92,10 +92,17 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                 } catch (e) {
                   safeSetState(() => _model.isDataUploading_uploadDataWq4 = false);
                   if (mounted) {
+                    final msg = e.toString().toLowerCase();
+                    final hint = msg.contains('not found') || msg.contains('bucket')
+                        ? 'Storage bucket not set up — create a public "profile-photos" bucket in Supabase Storage.'
+                        : msg.contains('policy') || msg.contains('permission') || msg.contains('rls')
+                            ? 'Upload blocked — add an RLS policy allowing authenticated users to insert in the "profile-photos" bucket.'
+                            : 'Upload failed: $e';
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                          content: Text(
-                              'Failed to upload photo. Please try again.')),
+                        content: Text(hint),
+                        duration: const Duration(seconds: 6),
+                      ),
                     );
                   }
                   return;
@@ -205,6 +212,7 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                 autofocus: false,
                 enabled: true,
                 obscureText: false,
+                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   isDense: true,
                   labelStyle: FlutterFlowTheme.of(context).labelMedium.override(
@@ -240,15 +248,15 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                       ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Color(0x00000000),
+                      color: FlutterFlowTheme.of(context).alternate,
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Color(0x00000000),
-                      width: 1.0,
+                      color: FlutterFlowTheme.of(context).primary,
+                      width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -329,6 +337,7 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                   autofocus: false,
                   enabled: true,
                   obscureText: false,
+                  textCapitalization: TextCapitalization.words,
                   decoration: InputDecoration(
                     isDense: true,
                     labelStyle:
@@ -370,15 +379,15 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                             ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Color(0x00000000),
+                        color: FlutterFlowTheme.of(context).alternate,
                         width: 1.0,
                       ),
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Color(0x00000000),
-                        width: 1.0,
+                        color: FlutterFlowTheme.of(context).primary,
+                        width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(8.0),
                     ),

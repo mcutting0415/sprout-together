@@ -16,8 +16,8 @@ import 'package:provider/provider.dart';
 import 'garden_journal_page2_model.dart';
 export 'garden_journal_page2_model.dart';
 
-// Helper to show the "add entry" bottom sheet
-Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) async {
+// Helper to show the "add entry" bottom sheet (public so other pages can invoke it)
+Future<void> showAddJournalEntrySheet(BuildContext context, VoidCallback onSaved) async {
   final titleController = TextEditingController();
   final notesController = TextEditingController();
   String? selectedGardenId;
@@ -130,6 +130,7 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
                     TextFormField(
                       controller: titleController,
                       textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.words,
                       decoration: InputDecoration(
                         labelText: 'Entry Title',
                         hintText: 'e.g. First tomatoes sprouting!',
@@ -187,6 +188,7 @@ Future<void> _showAddEntrySheet(BuildContext context, VoidCallback onSaved) asyn
                       controller: notesController,
                       maxLines: 4,
                       textInputAction: TextInputAction.done,
+                      textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
                         labelText: 'Notes',
                         hintText: 'What did you notice today?',
@@ -432,16 +434,84 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                           ),
                         ),
                         if (!isEditing)
-                          TextButton.icon(
-                            onPressed: () => setModalState(() => isEditing = true),
-                            icon: Icon(Icons.edit_rounded,
-                                size: 16.0, color: FlutterFlowTheme.of(ctx).primary),
-                            label: Text('Edit',
-                                style: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w600,
-                                  color: FlutterFlowTheme.of(ctx).primary,
-                                  fontSize: 13.0,
-                                )),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextButton.icon(
+                                onPressed: () =>
+                                    setModalState(() => isEditing = true),
+                                icon: Icon(Icons.edit_rounded,
+                                    size: 16.0,
+                                    color: FlutterFlowTheme.of(ctx).primary),
+                                label: Text('Edit',
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                      color: FlutterFlowTheme.of(ctx).primary,
+                                      fontSize: 13.0,
+                                    )),
+                              ),
+                              IconButton(
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: ctx,
+                                    builder: (dialogCtx) => AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0)),
+                                      title: Text('Delete Entry?',
+                                          style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.bold)),
+                                      content: Text(
+                                          'This will permanently remove this journal entry.',
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 14.0)),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(dialogCtx, false),
+                                          child: Text('Cancel',
+                                              style: GoogleFonts.poppins(
+                                                  color: FlutterFlowTheme.of(
+                                                          ctx)
+                                                      .secondaryText)),
+                                        ),
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                FlutterFlowTheme.of(ctx).error,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        10.0)),
+                                          ),
+                                          onPressed: () =>
+                                              Navigator.pop(dialogCtx, true),
+                                          child: Text('Delete',
+                                              style: GoogleFonts.poppins(
+                                                  color: Colors.white)),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirm == true && entry.id != null) {
+                                    try {
+                                      await GardenJournalEntriesTable().delete(
+                                        matchingRows: (q) =>
+                                            q.eqOrNull('id', entry.id),
+                                      );
+                                      Navigator.pop(ctx);
+                                      _loadData();
+                                    } catch (_) {}
+                                  }
+                                },
+                                icon: Icon(Icons.delete_outline_rounded,
+                                    color: FlutterFlowTheme.of(ctx).error,
+                                    size: 20.0),
+                                tooltip: 'Delete entry',
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                              ),
+                            ],
                           ),
                       ],
                     ),
@@ -497,6 +567,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                       TextFormField(
                         controller: titleController,
                         textInputAction: TextInputAction.next,
+                        textCapitalization: TextCapitalization.words,
                         decoration: InputDecoration(
                           labelText: 'Title',
                           filled: true,
@@ -535,6 +606,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                         controller: notesController,
                         maxLines: 6,
                         textInputAction: TextInputAction.done,
+                        textCapitalization: TextCapitalization.sentences,
                         decoration: InputDecoration(
                           labelText: 'Notes',
                           alignLabelWithHint: true,
@@ -677,7 +749,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => _showAddEntrySheet(context, () {
+          onPressed: () => showAddJournalEntrySheet(context, () {
             _loadData(); // refresh after save
           }),
           backgroundColor: FlutterFlowTheme.of(context).primary,
@@ -718,7 +790,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                     ),
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 15.0, 0.0, 0.0),
+                          EdgeInsetsDirectional.fromSTEB(0.0, 6.0, 0.0, 0.0),
                       child: Container(
                         decoration: BoxDecoration(
                           color: FlutterFlowTheme.of(context).alternate,
@@ -726,7 +798,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                         ),
                         child: Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(
-                              16.0, 0.0, 16.0, 16.0),
+                              16.0, 8.0, 16.0, 8.0),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             children: [
@@ -739,7 +811,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                       Icons.auto_stories_rounded,
                                       color: FlutterFlowTheme.of(context)
                                           .primary,
-                                      size: 16.0,
+                                      size: 14.0,
                                     ),
                                     value: _isLoading
                                         ? '–'
@@ -758,7 +830,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                       Icons.image_rounded,
                                       color: FlutterFlowTheme.of(context)
                                           .primary,
-                                      size: 16.0,
+                                      size: 14.0,
                                     ),
                                     value: _isLoading
                                         ? '–'
@@ -782,16 +854,11 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                       Icons.local_florist_rounded,
                                       color: FlutterFlowTheme.of(context)
                                           .primary,
-                                      size: 16.0,
+                                      size: 14.0,
                                     ),
                                     value: _isLoading
                                         ? '–'
-                                        : _entries
-                                            .map((e) => e.gardenId)
-                                            .whereType<String>()
-                                            .toSet()
-                                            .length
-                                            .toString(),
+                                        : _gardenNames.length.toString(),
                                     label: 'Gardens',
                                   ),
                                 ),

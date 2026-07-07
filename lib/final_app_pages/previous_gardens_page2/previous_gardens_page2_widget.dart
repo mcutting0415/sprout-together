@@ -1,6 +1,7 @@
 import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/components/garden_card_widget.dart';
+import '/final_app_pages/garden_builder_page/garden_builder_page_widget.dart';
 import '/components/summary_stat_widget.dart';
 import '/components/timeline_item3_widget.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
@@ -181,6 +182,63 @@ class _PreviousGardensPage2WidgetState
         _latestJournalEntry = entries.isNotEmpty ? entries.first : null;
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _reuseLayout(GardensRow source) async {
+    try {
+      // 1. Create a new garden with the same dimensions and type
+      final newGarden = await GardensTable().insert({
+        'user_id': currentUserUid,
+        'garden_name': '${source.gardenName ?? 'Garden'} (Copy)',
+        'garden_type': source.gardenType,
+        'width': source.width,
+        'length': source.length,
+        'is_archived': false,
+      });
+      final newId = newGarden.id;
+      if (newId == null) return;
+
+      // 2. Copy plots from the archived garden
+      if (source.id != null) {
+        final plots = await GardenPlotsTable().queryRows(
+          queryFn: (q) => q.eqOrNull('garden_id', source.id),
+        );
+        for (final plot in plots) {
+          await GardenPlotsTable().insert({
+            'garden_id': newId,
+            'row_index': plot.rowIndex,
+            'col_index': plot.colIndex,
+            'plant_id': plot.plantId,
+          });
+        }
+      }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✅ Layout copied! Opening new garden…'),
+          backgroundColor: FlutterFlowTheme.of(context).primary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        ),
+      );
+      context.pushNamed(
+        GardenBuilderPageWidget.routeName,
+        queryParameters: {
+          'gardenID': serializeParam(newId, ParamType.String),
+        }.withoutNulls,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Could not reuse layout. Please try again.'),
+          backgroundColor: FlutterFlowTheme.of(context).error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        ),
+      );
     }
   }
 
@@ -680,6 +738,7 @@ class _PreviousGardensPage2WidgetState
                           name: garden.gardenName ?? 'Unnamed Garden',
                           info:
                               'Archived • ${garden.gardenType ?? 'Garden'} • ${garden.width ?? 0}×${garden.length ?? 0}',
+                          onReuseLayout: () => _reuseLayout(garden),
                         );
                       }),
                   ].divide(SizedBox(height: 24.0)),

@@ -196,8 +196,8 @@ class _SectionCardChild3WidgetState extends State<SectionCardChild3Widget> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: Color(0x00000000),
-                          width: 1.0,
+                          color: FlutterFlowTheme.of(context).primary,
+                          width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(8.0),
                       ),

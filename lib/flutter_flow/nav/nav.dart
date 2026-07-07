@@ -165,7 +165,9 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: CurrentGardens3Widget.routeName,
           path: CurrentGardens3Widget.routePath,
-          builder: (context, params) => CurrentGardens3Widget(),
+          builder: (context, params) => CurrentGardens3Widget(
+            fromPlanner: params.getParam('fromPlanner', ParamType.bool) ?? false,
+          ),
         ),
         FFRoute(
           name: GardenBuilderPageWidget.routeName,

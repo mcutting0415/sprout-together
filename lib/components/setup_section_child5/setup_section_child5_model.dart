@@ -23,6 +23,24 @@ class SetupSectionChild5Model
   bool? checkboxListTileValue5;
   // State field(s) for CheckboxListTile widget.
   bool? checkboxListTileValue6;
+  // State field(s) for CheckboxListTile widget.
+  bool? checkboxListTileValue7;
+  // State field(s) for CheckboxListTile widget.
+  bool? checkboxListTileValue8;
+  // State field(s) for CheckboxListTile widget.
+  bool? checkboxListTileValue9;
+  // State field(s) for CheckboxListTile widget.
+  bool? checkboxListTileValue10;
+  // State field(s) for CheckboxListTile widget.
+  bool? checkboxListTileValue11;
+  // State field(s) for CheckboxListTile widget.
+  bool? checkboxListTileValue12;
+  // State field(s) for CheckboxListTile widget.
+  bool? checkboxListTileValue13;
+  // State field(s) for CheckboxListTile widget.
+  bool? checkboxListTileValue14;
+  // State field(s) for CheckboxListTile widget.
+  bool? checkboxListTileValue15;
 
   @override
   void initState(BuildContext context) {}

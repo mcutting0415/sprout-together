@@ -1,4 +1,3 @@
-import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -18,6 +17,7 @@ class GardenCardWidget extends StatefulWidget {
     String? season,
     String? name,
     String? info,
+    this.onReuseLayout,
   })  : this.imageDesc = imageDesc ??
             'https://dimg.dreamflow.cloud/v1/image/Lush%20vegetable%20garden%20with%20tomatoes%20and%20peppers',
         this.tag = tag ?? 'Completed',
@@ -30,6 +30,7 @@ class GardenCardWidget extends StatefulWidget {
   final String season;
   final String name;
   final String info;
+  final VoidCallback? onReuseLayout;
 
   @override
   State<GardenCardWidget> createState() => _GardenCardWidgetState();
@@ -239,64 +240,28 @@ class _GardenCardWidgetState extends State<GardenCardWidget> {
                         endIndent: 0.0,
                         color: FlutterFlowTheme.of(context).alternate,
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          FlutterFlowIconButton(
-                            borderRadius: 8.0,
-                            buttonSize: 40.0,
-                            fillColor: Colors.transparent,
-                            icon: Icon(
-                              Icons.visibility_outlined,
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                              size: 24.0,
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: widget.onReuseLayout,
+                          icon: const Icon(Icons.content_copy_rounded, size: 18.0),
+                          label: Text(
+                            'Reuse Layout',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14.0,
                             ),
-                            onPressed: () {
-                              print('IconButton pressed ...');
-                            },
                           ),
-                          FlutterFlowIconButton(
-                            borderRadius: 8.0,
-                            buttonSize: 40.0,
-                            fillColor: Colors.transparent,
-                            icon: Icon(
-                              Icons.content_copy_outlined,
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                              size: 24.0,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: FlutterFlowTheme.of(context).primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
-                            onPressed: () {
-                              print('IconButton pressed ...');
-                            },
+                            elevation: 0,
                           ),
-                          FlutterFlowIconButton(
-                            borderRadius: 8.0,
-                            buttonSize: 40.0,
-                            fillColor: Colors.transparent,
-                            icon: Icon(
-                              Icons.settings_backup_restore_outlined,
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                              size: 24.0,
-                            ),
-                            onPressed: () {
-                              print('IconButton pressed ...');
-                            },
-                          ),
-                          FlutterFlowIconButton(
-                            borderRadius: 8.0,
-                            buttonSize: 40.0,
-                            fillColor: Colors.transparent,
-                            icon: Icon(
-                              Icons.description_outlined,
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                              size: 24.0,
-                            ),
-                            onPressed: () {
-                              print('IconButton pressed ...');
-                            },
-                          ),
-                        ],
+                        ),
                       ),
                     ].divide(SizedBox(height: 16.0)),
                   ),

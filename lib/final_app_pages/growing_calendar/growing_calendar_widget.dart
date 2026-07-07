@@ -37,6 +37,9 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => GrowingCalendarModel());
+    // Pre-select the current month chip
+    const _months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    _model.choiceChipsValue = _months[DateTime.now().month - 1];
     _loadTasks();
   }
 
@@ -150,6 +153,202 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
     await _loadTasks();
   }
 
+  // ── Directions card ──────────────────────────────────────────────────────
+  Widget _buildDirectionsCard() {
+    final tips = [
+      _DirectionTip(Icons.add_circle_outline_rounded, const Color(0xFF4E7A2E),
+          'Add a task', 'Tap the green + button to schedule watering, planting, fertilizing, pruning, or harvesting.'),
+      _DirectionTip(Icons.touch_app_rounded, const Color(0xFFD4685F),
+          'Select a date', 'Tap any day on the calendar to see or add tasks for that date.'),
+      _DirectionTip(Icons.check_circle_outline_rounded, const Color(0xFF4A90A4),
+          'Mark complete', 'Tap a task card to check it off. The count above updates automatically.'),
+      _DirectionTip(Icons.swipe_left_rounded, const Color(0xFF9B59B6),
+          'Delete a task', 'Swipe a task card left to delete it.'),
+    ];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 4.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: FlutterFlowTheme.of(context).secondaryBackground,
+          borderRadius: BorderRadius.circular(20.0),
+          border: Border.all(color: FlutterFlowTheme.of(context).alternate),
+        ),
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansibleTips(tips: tips, context: context),
+        ),
+      ),
+    );
+  }
+
+  // ── Weather card ─────────────────────────────────────────────────────────
+  // TODO: Wire up to a real weather API (e.g. OpenWeatherMap or WeatherAPI)
+  // Replace _weatherData below with live data from your chosen provider.
+  Widget _buildWeatherCard() {
+    final now = DateTime.now();
+    final month = now.month;
+    // Simulated seasonal data — replace with real API response
+    final String condition;
+    final String tempHigh;
+    final String tempLow;
+    final IconData weatherIcon;
+    final Color weatherColor;
+    if (month >= 6 && month <= 8) {
+      condition = 'Sunny'; tempHigh = '87°F'; tempLow = '68°F';
+      weatherIcon = Icons.wb_sunny_rounded; weatherColor = const Color(0xFFE0A43A);
+    } else if (month >= 3 && month <= 5) {
+      condition = 'Partly Cloudy'; tempHigh = '68°F'; tempLow = '52°F';
+      weatherIcon = Icons.cloud_queue_rounded; weatherColor = const Color(0xFF4A90A4);
+    } else if (month >= 9 && month <= 11) {
+      condition = 'Breezy'; tempHigh = '62°F'; tempLow = '44°F';
+      weatherIcon = Icons.air_rounded; weatherColor = const Color(0xFF7BA05B);
+    } else {
+      condition = 'Cold'; tempHigh = '38°F'; tempLow = '24°F';
+      weatherIcon = Icons.ac_unit_rounded; weatherColor = const Color(0xFF4A90A4);
+    }
+
+    final forecast = [
+      _ForecastDay('Mon', Icons.wb_sunny_rounded, '85°', const Color(0xFFE0A43A)),
+      _ForecastDay('Tue', Icons.cloud_queue_rounded, '79°', const Color(0xFF4A90A4)),
+      _ForecastDay('Wed', Icons.grain_rounded, '72°', const Color(0xFF4A90A4)),
+      _ForecastDay('Thu', Icons.wb_sunny_rounded, '83°', const Color(0xFFE0A43A)),
+      _ForecastDay('Fri', Icons.wb_cloudy_rounded, '77°', const Color(0xFF95A5A6)),
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 4.0),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              weatherColor.withOpacity(0.12),
+              FlutterFlowTheme.of(context).secondaryBackground,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20.0),
+          border: Border.all(color: weatherColor.withOpacity(0.3)),
+        ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.location_on_rounded,
+                    color: FlutterFlowTheme.of(context).secondaryText, size: 14.0),
+                const SizedBox(width: 4.0),
+                Text(
+                  'Your Garden',
+                  style: GoogleFonts.poppins(
+                      fontSize: 12.0,
+                      color: FlutterFlowTheme.of(context).secondaryText),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                  decoration: BoxDecoration(
+                    color: weatherColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Text(
+                    '5-Day Forecast',
+                    style: GoogleFonts.poppins(
+                        fontSize: 10.0,
+                        fontWeight: FontWeight.w600,
+                        color: weatherColor),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10.0),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(weatherIcon, color: weatherColor, size: 48.0),
+                const SizedBox(width: 14.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tempHigh,
+                      style: GoogleFonts.poppins(
+                          fontSize: 32.0,
+                          fontWeight: FontWeight.bold,
+                          color: FlutterFlowTheme.of(context).primaryText),
+                    ),
+                    Text(
+                      '$condition · Low $tempLow',
+                      style: GoogleFonts.poppins(
+                          fontSize: 13.0,
+                          color: FlutterFlowTheme.of(context).secondaryText),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                // Garden tip based on weather
+                Container(
+                  width: 100.0,
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4E7A2E).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(
+                        color: const Color(0xFF4E7A2E).withOpacity(0.25)),
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.tips_and_updates_rounded,
+                          color: Color(0xFF4E7A2E), size: 16.0),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        month >= 6 && month <= 8
+                            ? 'Water morning or evening to reduce evaporation'
+                            : month >= 3 && month <= 5
+                                ? 'Great planting weather — soil is warming up'
+                                : month >= 9 && month <= 11
+                                    ? 'Time to harvest before first frost'
+                                    : 'Protect plants from hard freezes',
+                        style: GoogleFonts.poppins(
+                            fontSize: 9.5,
+                            color: const Color(0xFF4E7A2E),
+                            height: 1.3),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12.0),
+            Divider(height: 1.0, color: weatherColor.withOpacity(0.2)),
+            const SizedBox(height: 10.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: forecast.map((f) => Column(
+                children: [
+                  Text(f.day,
+                      style: GoogleFonts.poppins(
+                          fontSize: 11.0,
+                          color: FlutterFlowTheme.of(context).secondaryText)),
+                  const SizedBox(height: 4.0),
+                  Icon(f.icon, color: f.color, size: 20.0),
+                  const SizedBox(height: 4.0),
+                  Text(f.temp,
+                      style: GoogleFonts.poppins(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w600,
+                          color: FlutterFlowTheme.of(context).primaryText)),
+                ],
+              )).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _model.maybeDispose();
@@ -224,9 +423,9 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                   onChanged: (val) => safeSetState(
                       () => _model.choiceChipsValue = val?.firstOrNull),
                   selectedChipStyle: ChipStyle(
-                    backgroundColor: FlutterFlowTheme.of(context).primary,
+                    backgroundColor: const Color(0xFFD4685F),
                     textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
-                          font: GoogleFonts.poppins(),
+                          font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                           color: Colors.white,
                           letterSpacing: 0.0,
                         ),
@@ -254,7 +453,11 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                   multiselect: false,
                   alignment: WrapAlignment.center,
                   controller: _model.choiceChipsValueController ??=
-                      FormFieldController<List<String>>([]),
+                      FormFieldController<List<String>>(
+                        _model.choiceChipsValue != null
+                            ? [_model.choiceChipsValue!]
+                            : [],
+                      ),
                   wrapped: true,
                 ),
               ),
@@ -262,6 +465,7 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
               FlutterFlowCalendar(
                 key: ValueKey(_model.choiceChipsValue ?? 'default'),
                 color: const Color(0xFFD4685F),
+                eventLoader: (day) => _hasTasksOnDay(day) ? [1] : [],
                 iconColor: FlutterFlowTheme.of(context).primaryText,
                 weekFormat: false,
                 weekStartsMonday: false,
@@ -322,6 +526,10 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                           letterSpacing: 0.0,
                         ),
               ),
+              // ── How to use this calendar ──────────────────────────
+              _buildDirectionsCard(),
+              // ── Weather forecast ──────────────────────────────────
+              _buildWeatherCard(),
               // Tasks section
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 8.0),
@@ -339,15 +547,23 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                           ),
                     ),
                     if (_tasksForSelectedDay.isNotEmpty)
-                      Text(
-                        '${_tasksForSelectedDay.length} task${_tasksForSelectedDay.length == 1 ? '' : 's'}',
-                        style: FlutterFlowTheme.of(context).bodySmall.override(
-                              font: GoogleFonts.poppins(),
-                              color:
-                                  FlutterFlowTheme.of(context).secondaryText,
-                              letterSpacing: 0.0,
-                            ),
-                      ),
+                      Builder(builder: (ctx) {
+                        final total = _tasksForSelectedDay.length;
+                        final done = _tasksForSelectedDay.where((t) => t.completed ?? false).length;
+                        final remaining = total - done;
+                        return Text(
+                          remaining == 0
+                              ? '✅ All done!'
+                              : '$remaining remaining',
+                          style: FlutterFlowTheme.of(context).bodySmall.override(
+                                font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                color: remaining == 0
+                                    ? const Color(0xFF4E7A2E)
+                                    : FlutterFlowTheme.of(context).secondaryText,
+                                letterSpacing: 0.0,
+                              ),
+                        );
+                      }),
                   ],
                 ),
               ),
@@ -728,6 +944,133 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ── Data helpers ────────────────────────────────────────────────────────────
+
+class _DirectionTip {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String body;
+  const _DirectionTip(this.icon, this.color, this.title, this.body);
+}
+
+class _ForecastDay {
+  final String day;
+  final IconData icon;
+  final String temp;
+  final Color color;
+  const _ForecastDay(this.day, this.icon, this.temp, this.color);
+}
+
+// ── Expansible tips card ────────────────────────────────────────────────────
+
+class ExpansibleTips extends StatefulWidget {
+  const ExpansibleTips({super.key, required this.tips, required this.context});
+  final List<_DirectionTip> tips;
+  final BuildContext context;
+
+  @override
+  State<ExpansibleTips> createState() => _ExpansibleTipsState();
+}
+
+class _ExpansibleTipsState extends State<ExpansibleTips> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(20.0),
+          onTap: () => setState(() => _expanded = !_expanded),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 14.0, 16.0, 14.0),
+            child: Row(
+              children: [
+                Container(
+                  width: 36.0, height: 36.0,
+                  decoration: BoxDecoration(
+                    color: const Color(0x1A4E7A2E),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: const Icon(Icons.help_outline_rounded,
+                      color: Color(0xFF4E7A2E), size: 18.0),
+                ),
+                const SizedBox(width: 12.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('How to use the Growing Calendar',
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold, fontSize: 14.0)),
+                      Text('Tap to ${_expanded ? 'hide' : 'show'} tips',
+                          style: GoogleFonts.poppins(
+                              fontSize: 11.0,
+                              color: FlutterFlowTheme.of(context).secondaryText)),
+                    ],
+                  ),
+                ),
+                Icon(
+                  _expanded
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
+                  color: FlutterFlowTheme.of(context).secondaryText,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_expanded) ...[
+          Divider(
+              height: 1.0,
+              color: FlutterFlowTheme.of(context).alternate,
+              indent: 16.0,
+              endIndent: 16.0),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 14.0),
+            child: Column(
+              children: widget.tips.map((tip) => Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 32.0, height: 32.0,
+                      decoration: BoxDecoration(
+                        color: tip.color.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Icon(tip.icon, color: tip.color, size: 16.0),
+                    ),
+                    const SizedBox(width: 10.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(tip.title,
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600, fontSize: 13.0)),
+                          Text(tip.body,
+                              style: GoogleFonts.poppins(
+                                  fontSize: 12.0,
+                                  color: FlutterFlowTheme.of(context).secondaryText,
+                                  height: 1.4)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )).toList(),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

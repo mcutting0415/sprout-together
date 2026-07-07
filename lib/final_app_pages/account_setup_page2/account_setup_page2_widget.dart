@@ -301,7 +301,7 @@ class _AccountSetupPage2WidgetState extends State<AccountSetupPage2Widget> {
                                   ),
                                   title: 'Your Goals',
                                   desc:
-                                      'Select what you\'d like to achieve this season.',
+                                      'Select the gardening goals you\'re looking to achieve.',
                                   child: () => SetupSectionChild5Widget(),
                                 ),
                               ),

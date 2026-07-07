@@ -150,7 +150,7 @@ class _SetupSectionChild2WidgetState extends State<SetupSectionChild2Widget> {
                   fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
                   lineHeight: 1.4,
                 ),
-            hintText: 'Zone 1-3',
+            hintText: 'Select Zone',
             icon: Icon(
               Icons.keyboard_arrow_down_rounded,
               color: FlutterFlowTheme.of(context).secondaryText,
@@ -203,7 +203,8 @@ class _SetupSectionChild2WidgetState extends State<SetupSectionChild2Widget> {
                     },
                     autofocus: false,
                     enabled: true,
-                    textInputAction: TextInputAction.next,
+                    textInputAction: TextInputAction.done,
+                    onEditingComplete: () => FocusScope.of(context).unfocus(),
                     obscureText: false,
                     decoration: InputDecoration(
                       isDense: true,
@@ -236,8 +237,8 @@ class _SetupSectionChild2WidgetState extends State<SetupSectionChild2Widget> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: Color(0x00000000),
-                          width: 1.0,
+                          color: FlutterFlowTheme.of(context).primary,
+                          width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -290,6 +291,7 @@ class _SetupSectionChild2WidgetState extends State<SetupSectionChild2Widget> {
               SizedBox(width: 8.0),
               ElevatedButton(
                 onPressed: () {
+                  FocusScope.of(context).unfocus();
                   final zip = (_model.textController?.text ?? '').trim();
                   if (zip.length < 5) return;
                   final zone = _zoneFromZip(zip);

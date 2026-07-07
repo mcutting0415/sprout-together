@@ -43,6 +43,9 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
   bool _plantsLoading = true;
   bool _scheduling = false;
 
+  // All plants (for add-plants popup)
+  List<PlantsRow> _allPlants = [];
+
   static String _weatherEmoji(int code) {
     if (code == 0) return '☀️';
     if (code <= 3) return '⛅';
@@ -230,6 +233,158 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
     super.initState();
     _model = createModel(context, () => PlannerOverviewPageModel());
     _fetchWeather();
+    _loadSelectedPlants();
+    _loadAllPlants();
+  }
+
+  Future<void> _loadAllPlants() async {
+    try {
+      final plants = await PlantsTable().queryRows(
+        queryFn: (q) => q.order('plant_name'),
+      );
+      if (mounted) setState(() => _allPlants = plants);
+    } catch (_) {}
+  }
+
+  Future<void> _showAddPlantsSheet(BuildContext context) async {
+    final selectedIds = _selectedPlants.map((p) => p['plant_id'] as String? ?? '').toSet();
+    String searchQuery = '';
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final plants = _allPlants;
+            final filtered = searchQuery.isEmpty
+                ? plants
+                : plants.where((p) => (p.plantName ?? '').toLowerCase().contains(searchQuery.toLowerCase())).toList();
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.70,
+              decoration: BoxDecoration(
+                color: FlutterFlowTheme.of(context).primaryBackground,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24.0),
+                  topRight: Radius.circular(24.0),
+                ),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8.0),
+                  Container(
+                    width: 40.0,
+                    height: 4.0,
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).alternate,
+                      borderRadius: BorderRadius.circular(2.0),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    child: Row(
+                      children: [
+                        Icon(Icons.local_florist_rounded,
+                            color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                        const SizedBox(width: 8.0),
+                        Text(
+                          'Add Plants to My List',
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 15.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
+                    child: TextField(
+                      onChanged: (v) => setSheetState(() => searchQuery = v),
+                      decoration: InputDecoration(
+                        hintText: 'Search plants...',
+                        prefixIcon: const Icon(Icons.search, size: 18.0),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(color: FlutterFlowTheme.of(context).alternate),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(color: FlutterFlowTheme.of(context).primary, width: 1.5),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                      ),
+                    ),
+                  ),
+                  Divider(height: 1.0, color: FlutterFlowTheme.of(context).alternate),
+                  Expanded(
+                    child: filtered.isEmpty
+                        ? Center(
+                            child: Text('No plants found',
+                                style: GoogleFonts.poppins(color: FlutterFlowTheme.of(context).secondaryText)))
+                        : ListView.builder(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            itemCount: filtered.length,
+                            itemBuilder: (context, index) {
+                              final plant = filtered[index];
+                              final pid = plant.id ?? '';
+                              final alreadyAdded = selectedIds.contains(pid);
+                              return ListTile(
+                                leading: Container(
+                                  width: 36.0,
+                                  height: 36.0,
+                                  decoration: BoxDecoration(
+                                    color: alreadyAdded
+                                        ? FlutterFlowTheme.of(context).primary.withOpacity(0.15)
+                                        : const Color(0x1A6F8F72),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Icon(
+                                    alreadyAdded ? Icons.check_rounded : Icons.local_florist_rounded,
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    size: 18.0,
+                                  ),
+                                ),
+                                title: Text(plant.plantName ?? 'Unknown',
+                                    style: GoogleFonts.poppins(fontSize: 14.0)),
+                                trailing: alreadyAdded
+                                    ? Text('Added',
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 12.0,
+                                            color: FlutterFlowTheme.of(context).secondaryText))
+                                    : null,
+                                onTap: alreadyAdded
+                                    ? null
+                                    : () async {
+                                        try {
+                                          await UserSelectedPlantsTable().insert({
+                                            'user_id': currentUserUid,
+                                            'plant_id': pid,
+                                          });
+                                          setSheetState(() => selectedIds.add(pid));
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('${plant.plantName} added to your list!'),
+                                              backgroundColor: FlutterFlowTheme.of(context).primary,
+                                              behavior: SnackBarBehavior.floating,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(12.0)),
+                                              duration: const Duration(seconds: 2),
+                                            ),
+                                          );
+                                        } catch (_) {}
+                                      },
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+    // Reload the plant list after the sheet closes
     _loadSelectedPlants();
   }
 
@@ -654,7 +809,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                   .bodyMedium
                                   .fontStyle,
                             ),
-                            color: FlutterFlowTheme.of(context).primary,
+                            color: FlutterFlowTheme.of(context).primaryText,
                             letterSpacing: 0.0,
                             fontWeight: FontWeight.bold,
                             fontStyle: FlutterFlowTheme.of(context)
@@ -664,7 +819,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                     ),
                     Icon(
                       Icons.arrow_right,
-                      color: FlutterFlowTheme.of(context).primary,
+                      color: FlutterFlowTheme.of(context).primaryText,
                       size: 20.0,
                     ),
                     Padding(
@@ -672,7 +827,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                       child: FlutterFlowIconButton(
                         borderRadius: 8.0,
                         buttonSize: 40.0,
-                        fillColor: FlutterFlowTheme.of(context).primary,
+                        fillColor: FlutterFlowTheme.of(context).primaryText,
                         icon: Icon(
                           Icons.add,
                           color: FlutterFlowTheme.of(context).info,
@@ -695,7 +850,12 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                     Expanded(
                       child: FFButtonWidget(
                         onPressed: () async {
-                          context.pushNamed(CurrentGardens3Widget.routeName);
+                          context.pushNamed(
+                            CurrentGardens3Widget.routeName,
+                            queryParameters: {
+                              'fromPlanner': serializeParam(true, ParamType.bool),
+                            },
+                          );
                         },
                         text: 'View Current Garden',
                         options: FFButtonOptions(
@@ -993,15 +1153,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           children: [
                             Expanded(
                               child: GestureDetector(
-                                onTap: () => context.pushNamed(
-                                  PlantLibraryPageWidget.routeName,
-                                  queryParameters: {
-                                    'plotNumber': serializeParam(0, ParamType.int),
-                                    'gardenID': serializeParam('', ParamType.String),
-                                    'plantID': serializeParam('', ParamType.String),
-                                    'addMode': serializeParam(true, ParamType.bool),
-                                  }.withoutNulls,
-                                ),
+                                onTap: () => _showAddPlantsSheet(context),
                                 child: Container(
                                   height: 40.0,
                                   decoration: BoxDecoration(
@@ -1385,7 +1537,12 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                         alignment: Alignment.centerRight,
                         child: FFButtonWidget(
                           onPressed: () {
-                            context.pushNamed(CurrentGardens3Widget.routeName);
+                            context.pushNamed(
+                              CurrentGardens3Widget.routeName,
+                              queryParameters: {
+                                'fromPlanner': serializeParam(true, ParamType.bool),
+                              },
+                            );
                           },
                           text: 'View Full Garden Analysis',
                           options: FFButtonOptions(
@@ -1418,26 +1575,26 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                     width: double.infinity,
                     padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
                     decoration: BoxDecoration(
-                      color: Color(0xFF4A90A4).withOpacity(0.1),
+                      color: FlutterFlowTheme.of(context).primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(16.0),
-                      border: Border.all(color: Color(0xFF4A90A4).withOpacity(0.35)),
+                      border: Border.all(color: FlutterFlowTheme.of(context).primary.withOpacity(0.4)),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.storefront_outlined, color: Color(0xFF4A90A4), size: 22.0),
+                        Icon(Icons.storefront_outlined, color: FlutterFlowTheme.of(context).primary, size: 22.0),
                         SizedBox(width: 10.0),
                         Text(
                           'Shop Seeds, Tools & More',
                           style: FlutterFlowTheme.of(context).titleSmall.override(
                                 font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                                color: Color(0xFF4A90A4),
+                                color: FlutterFlowTheme.of(context).primary,
                                 letterSpacing: 0.0,
                                 fontWeight: FontWeight.w600,
                               ),
                         ),
                         Spacer(),
-                        Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF4A90A4), size: 14.0),
+                        Icon(Icons.arrow_forward_ios_rounded, color: FlutterFlowTheme.of(context).primary, size: 14.0),
                       ],
                     ),
                   ),
@@ -1455,13 +1612,14 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                       width: double.infinity,
                       padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD4685F),
+                        color: const Color(0xFFD4685F).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(16.0),
+                        border: Border.all(color: const Color(0xFFD4685F).withOpacity(0.4)),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.calendar_month_rounded, color: Colors.white, size: 22.0),
+                          Icon(Icons.calendar_month_rounded, color: const Color(0xFFD4685F), size: 22.0),
                           SizedBox(width: 10.0),
                           Flexible(
                             child: Text(
@@ -1469,7 +1627,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                               textAlign: TextAlign.center,
                               style: FlutterFlowTheme.of(context).titleSmall.override(
                                     font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                                    color: Colors.white,
+                                    color: const Color(0xFFD4685F),
                                     letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
                                   ),

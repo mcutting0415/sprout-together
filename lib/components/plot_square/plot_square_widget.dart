@@ -104,15 +104,15 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        String searchQuery = '';
+        final searchController = TextEditingController();
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
-            final filtered = searchQuery.isEmpty
+            final filtered = searchController.text.isEmpty
                 ? allPlants
                 : allPlants
                     .where((p) => (p.plantName ?? '')
                         .toLowerCase()
-                        .contains(searchQuery.toLowerCase()))
+                        .contains(searchController.text.toLowerCase()))
                     .toList();
             return Container(
               height: MediaQuery.of(context).size.height * 0.65,
@@ -191,8 +191,9 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
                     child: TextField(
-                      onChanged: (v) =>
-                          setSheetState(() => searchQuery = v),
+                      controller: searchController,
+                      textInputAction: TextInputAction.search,
+                      onChanged: (v) => setSheetState(() {}),
                       decoration: InputDecoration(
                         hintText: 'Search plants...',
                         prefixIcon: const Icon(Icons.search, size: 18.0),

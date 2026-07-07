@@ -15,7 +15,9 @@ import 'current_gardens3_model.dart';
 export 'current_gardens3_model.dart';
 
 class CurrentGardens3Widget extends StatefulWidget {
-  const CurrentGardens3Widget({super.key});
+  const CurrentGardens3Widget({super.key, this.fromPlanner = false});
+
+  final bool fromPlanner;
 
   static String routeName = 'CurrentGardens3';
   static String routePath = '/currentGardens3';
@@ -285,8 +287,9 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
             wrapWithModel(
               model: _model.finalHeaderModel,
               updateCallback: () => safeSetState(() {}),
-              child: const FinalHeaderWidget(
+              child: FinalHeaderWidget(
                 pageTitle: 'Garden Insights',
+                menuReplaceBackAction: widget.fromPlanner ? () => context.pop() : null,
               ),
             ),
             Expanded(
@@ -307,10 +310,10 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                           children: [
                             _buildStatsRow(theme),
                             const SizedBox(height: 8.0),
-                            _buildTipsSection(theme),
-                            _buildUpcomingTasksSection(theme),
                             _buildGardensSection(theme),
+                            _buildUpcomingTasksSection(theme),
                             _buildJournalSection(theme),
+                            _buildTipsSection(theme),
                           ],
                         ),
                       ),
@@ -593,10 +596,9 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                     child: ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pop(ctx);
-                        context.pushNamed(
-                          GardenJournalPage2Widget.routeName,
-                          queryParameters: {'fromInsights': serializeParam(true, ParamType.bool)}.withoutNulls,
-                        );
+                        showAddJournalEntrySheet(context, () {
+                          _loadData();
+                        });
                       },
                       icon: const Icon(Icons.menu_book_rounded, size: 18.0),
                       label: const Text('Log a Note in Garden Journal'),

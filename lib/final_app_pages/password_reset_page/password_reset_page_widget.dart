@@ -251,8 +251,10 @@ class _PasswordResetPageWidgetState extends State<PasswordResetPageWidget> {
                                                 focusedBorder:
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: Color(0x00000000),
-                                                    width: 1.0,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primary,
+                                                    width: 1.5,
                                                   ),
                                                   borderRadius:
                                                       BorderRadius.circular(

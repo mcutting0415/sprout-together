@@ -304,6 +304,283 @@ const _allTips = [
     category: 'Tools',
     levels: ['Advanced'],
   ),
+
+  // ── COMPOSTING ────────────────────────────────────────────────────────────
+  _Tip(
+    icon: Icons.recycling_rounded,
+    color: Color(0xFF795548),
+    title: 'A compost pile needs four things: greens, browns, moisture, and air.',
+    detail:
+        'Greens (nitrogen-rich): vegetable scraps, coffee grounds, fresh grass clippings, plant trimmings. Browns (carbon-rich): cardboard, dry leaves, straw, paper towels. Aim for a 1:2 or 1:3 green-to-brown ratio by volume. Keep the pile as moist as a wrung-out sponge and turn it every 5–7 days to introduce oxygen. Without air, the pile goes anaerobic and smells foul.',
+    category: 'Composting',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.thermostat_rounded,
+    color: Color(0xFF795548),
+    title: 'A hot compost pile (55–65°C) kills weed seeds and pathogens in 2–3 weeks.',
+    detail:
+        'A pile that reaches 55–65°C (130–150°F) in its core will kill most weed seeds, plant diseases, and harmful bacteria. Measure with a compost thermometer. If the pile isn\'t heating up, it likely needs more greens (nitrogen) or more moisture. Turn it to re-aerate and it should reheat within 24–48 hours.',
+    category: 'Composting',
+    levels: ['Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.do_not_disturb_on_rounded,
+    color: Color(0xFF795548),
+    title: 'Never compost meat, dairy, or diseased plants — they cause problems.',
+    detail:
+        'Meat and dairy attract rodents and create odours. Diseased plant material (tomato blight, powdery mildew) may survive in a cold pile and re-infect your garden. Also avoid: pet waste (contains pathogens), treated wood products, and plants that went to seed if your pile doesn\'t get hot enough to kill them.',
+    category: 'Composting',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.access_time_rounded,
+    color: Color(0xFF795548),
+    title: 'Finished compost smells like earth and crumbles in your hand — use it before it\'s "done".',
+    detail:
+        'Mature compost is dark brown, crumbly, and earthy-smelling with no recognisable original materials. If you see chunks still decomposing, it\'s not ready. But "almost finished" compost can still be used: dig it into beds where it will finish breaking down. Only apply truly finished compost directly to seedling roots — unfinished compost can temporarily lock up nitrogen.',
+    category: 'Composting',
+    levels: ['Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.bug_report_rounded,
+    color: Color(0xFF795548),
+    title: 'Vermicomposting (worm bins) produces the richest compost of all — indoors year-round.',
+    detail:
+        'Red wigglers (Eisenia fetida) eat kitchen scraps and produce castings that are 5–7× more nutrient-rich than standard compost. A bin needs: bedding (shredded cardboard), food scraps in small pieces, and moisture. Keep it in a dark location between 15–25°C. Harvest castings every 2–3 months. A 1 sq ft bin can process 0.5 kg of scraps per week.',
+    category: 'Composting',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+
+  // ── ORGANIC GARDENING ─────────────────────────────────────────────────────
+  _Tip(
+    icon: Icons.eco_rounded,
+    color: Color(0xFF2E7D32),
+    title: 'Build healthy soil and you\'ll need far fewer pesticides and fertilizers.',
+    detail:
+        'Healthy soil teems with bacteria, fungi, nematodes, and earthworms that suppress disease, fix nutrients, and break down organic matter. Adding compost, minimizing tillage, and avoiding synthetic pesticides builds this ecosystem over time. Plants growing in biologically active soil are inherently more pest- and disease-resistant.',
+    category: 'Organic',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.spa_rounded,
+    color: Color(0xFF2E7D32),
+    title: 'Neem oil is a broad-spectrum organic spray that works on over 200 pest species.',
+    detail:
+        'Cold-pressed neem oil disrupts the hormone system of insects at the larval stage, preventing them from maturing and reproducing. It also has antifungal properties. Mix 2 tsp neem oil + 1 tsp dish soap per litre of water. Spray at dusk (to protect bees) on the entire plant including leaf undersides. Reapply every 7 days and after rain.',
+    category: 'Organic',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.pest_control_rounded,
+    color: Color(0xFF2E7D32),
+    title: 'Diatomaceous earth (food grade) kills crawling insects without chemicals.',
+    detail:
+        'DE is made from fossilised diatoms with microscopic sharp edges that damage the waxy outer layer of crawling insects (slugs, beetles, earwigs), causing them to dehydrate. Dust around the base of plants and on foliage. Reapply after rain. Use only food-grade DE — pool-grade DE is dangerous to inhale. Wear a mask when applying since it can irritate lungs.',
+    category: 'Organic',
+    levels: ['Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.grass_rounded,
+    color: Color(0xFF2E7D32),
+    title: 'Plant "banker plants" to keep a permanent population of beneficial insects.',
+    detail:
+        'Banker plants host beneficial insects (predatory wasps, lacewings, hoverflies) throughout the season so they\'re present when pests appear. Good banker plants: dill, fennel, yarrow, sweet alyssum, and phacelia. Plant them in permanent patches throughout your garden, not just next to problem crops. Once established, beneficials will patrol your whole garden.',
+    category: 'Organic',
+    levels: ['Advanced'],
+  ),
+  _Tip(
+    icon: Icons.water_drop_rounded,
+    color: Color(0xFF2E7D32),
+    title: 'Compost tea amplifies the beneficial microbes in your soil with each watering.',
+    detail:
+        'Brew compost tea by aerating finished compost in water for 24–48 hours. The aeration multiplies beneficial bacteria and fungi. Apply it as a soil drench or foliar spray. Use within 4 hours of brewing. Compost tea can suppress some foliar diseases and inoculate new beds with a microbial community faster than compost alone.',
+    category: 'Organic',
+    levels: ['Advanced'],
+  ),
+
+  // ── FERTILIZING ──────────────────────────────────────────────────────────
+  _Tip(
+    icon: Icons.science_outlined,
+    color: Color(0xFF6B8E6B),
+    title: 'Feed plants during active growth — fertilizing dormant plants wastes money.',
+    detail:
+        'Plants can only absorb nutrients when they\'re actively growing. Apply fertilizer in spring when new growth begins and through midsummer. Stop feeding 6–8 weeks before your first expected frost so plants can harden off properly. Fertilizing late in the season pushes tender new growth that\'s easily damaged by cold.',
+    category: 'Fertilizing',
+    levels: ['Beginner', 'Intermediate'],
+  ),
+  _Tip(
+    icon: Icons.eco_outlined,
+    color: Color(0xFF6B8E6B),
+    title: 'Organic fertilizers feed soil life; synthetic fertilizers feed plants directly.',
+    detail:
+        'Fish emulsion, bone meal, and kelp meal break down slowly and feed the microbes that build healthy soil long-term. Synthetic fertilizers (like 10-10-10) deliver nutrients immediately but don\'t improve soil structure. Beginners often get better long-term results combining both: organic as a base, synthetic for a quick boost when plants struggle.',
+    category: 'Fertilizing',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.warning_amber_rounded,
+    color: Color(0xFF6B8E6B),
+    title: 'Yellow leaves usually mean nitrogen deficiency — but don\'t guess, diagnose first.',
+    detail:
+        'Yellowing starting from lower, older leaves is classic nitrogen deficiency. Yellowing between leaf veins (veins stay green) points to iron or magnesium deficiency. Yellowing from the tips inward suggests potassium or salt stress. Applying the wrong fix can make things worse — check soil pH first, since nutrients become unavailable outside the 6.0–7.0 range regardless of what you add.',
+    category: 'Fertilizing',
+    levels: ['Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.block_rounded,
+    color: Color(0xFF6B8E6B),
+    title: 'More fertilizer is not better — over-fertilizing burns roots and attracts pests.',
+    detail:
+        'Salt build-up from excess fertilizer draws water out of roots (osmotic stress), causing brown leaf edges and wilting that looks like drought. High nitrogen also produces lush, soft growth that aphids and mites love. Always follow label rates. When in doubt, use half the recommended dose and watch the plant\'s response before adding more.',
+    category: 'Fertilizing',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.local_drink_rounded,
+    color: Color(0xFF6B8E6B),
+    title: 'Liquid fertilizer works twice as fast as granular — use it for quick correction.',
+    detail:
+        'Liquid fertilizers (fish emulsion, liquid kelp, or diluted synthetic) are absorbed through both roots and leaves within hours. Use them when you spot a deficiency and need a fast response. Granular fertilizers feed over weeks as they break down. Use granulars as a steady background feed and liquids for targeted rescue.',
+    category: 'Fertilizing',
+    levels: ['Intermediate', 'Advanced'],
+  ),
+
+  // ── CONTAINER GARDENING ──────────────────────────────────────────────────
+  _Tip(
+    icon: Icons.inventory_2_rounded,
+    color: Color(0xFF9E7B4A),
+    title: 'Drainage holes are non-negotiable — roots sitting in water rot within days.',
+    detail:
+        'Even "drought-tolerant" plants die quickly in waterlogged soil. Every container must have drainage holes. If you\'re using a decorative pot without holes, use it as a cachepot: grow in a smaller plastic pot with drainage inside the decorative one, and empty collected water within 30 minutes of watering.',
+    category: 'Containers',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.thermostat_rounded,
+    color: Color(0xFF9E7B4A),
+    title: 'Containers dry out 2× faster than ground beds — check daily in summer.',
+    detail:
+        'Terracotta dries even faster than plastic or glazed ceramic because moisture evaporates through the walls. On hot summer days, a large container may need watering twice. Lift the pot — if it feels light, it needs water. Push a finger 2 inches in. Mulching the top of a container cuts moisture loss significantly.',
+    category: 'Containers',
+    levels: ['Beginner', 'Intermediate'],
+  ),
+  _Tip(
+    icon: Icons.open_with_rounded,
+    color: Color(0xFF9E7B4A),
+    title: 'Go bigger than you think — most vegetables need at least 12 inches of depth.',
+    detail:
+        'Root vegetables (carrots, beets) need 12–18 inches deep. Tomatoes and peppers do best in 15-gallon (or larger) containers. Herbs are happy in 6–8 inch pots. Small containers stress roots, dry out constantly, and limit yield. If your tomatoes are struggling in containers, pot size is often the first thing to check.',
+    category: 'Containers',
+    levels: ['Beginner', 'Intermediate'],
+  ),
+  _Tip(
+    icon: Icons.wb_shade_rounded,
+    color: Color(0xFF9E7B4A),
+    title: 'Dark-colored pots absorb heat and can cook roots — choose light colors in hot climates.',
+    detail:
+        'Black or dark brown pots in full sun can reach soil temperatures of 130°F+ in summer, which kills roots and beneficial microbes. In hot climates, choose white, cream, or light gray containers. Alternatively, double-pot (place a smaller pot inside a larger one with an air gap) or wrap pots in burlap to insulate roots.',
+    category: 'Containers',
+    levels: ['Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.water_drop_rounded,
+    color: Color(0xFF9E7B4A),
+    title: 'Self-watering containers cut watering frequency by half — great for busy gardeners.',
+    detail:
+        'Self-watering pots have a water reservoir at the bottom; plants draw up what they need via a wicking system. Fill the reservoir every 5–7 days instead of watering daily. They also prevent both overwatering and underwatering, which is the main cause of container plant failure. Ideal for tomatoes, peppers, and herbs.',
+    category: 'Containers',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+
+  // ── WEEDS ─────────────────────────────────────────────────────────────────
+  _Tip(
+    icon: Icons.grass_rounded,
+    color: Color(0xFFB5651D),
+    title: 'Weed when small — a 30-second pull now prevents 30 minutes of work later.',
+    detail:
+        'Young weeds have shallow roots and pull out cleanly. Wait until they\'re established and you\'re digging out deep taproots (dandelion, dock) or untangling runners (bindweed, quackgrass). A quick 10-minute pass through your garden every few days keeps weeds from ever getting established.',
+    category: 'Weeds',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.emergency_rounded,
+    color: Color(0xFFB5651D),
+    title: 'Never let a weed go to seed — one plant can produce 10,000+ seeds.',
+    detail:
+        'A single dandelion produces up to 15,000 seeds; a pigweed can produce 100,000. If you can\'t pull a weed before it flowers, cut off the seed head immediately and bag it — don\'t compost it unless you have a hot pile. "One year\'s seeding = seven years\' weeding" is a real phenomenon.',
+    category: 'Weeds',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.cut_rounded,
+    color: Color(0xFFB5651D),
+    title: 'Cultivate the top inch of soil in dry weather to kill germinating weed seeds.',
+    detail:
+        'Weed seeds in the top inch of soil need light and contact with moist soil to germinate. A quick scrape with a hoe on a dry, sunny day kills germinating seeds before they emerge. This "stale seedbed" technique, done every 5–7 days, dramatically reduces the weed seedbank over a season. Don\'t dig deep — you\'ll expose more buried seeds.',
+    category: 'Weeds',
+    levels: ['Intermediate', 'Advanced'],
+  ),
+
+  // ── MORE PLANTING ─────────────────────────────────────────────────────────
+  _Tip(
+    icon: Icons.access_time_rounded,
+    color: Color(0xFF4E7A2E),
+    title: 'Transplant in the evening or on a cloudy day to reduce transplant shock.',
+    detail:
+        'Moving a plant severs some roots and disrupts water uptake. Planting in the cool of the evening or on an overcast day gives plants 12–18 hours to settle before facing full sun. Water in thoroughly, and if possible shade new transplants with a cloth or pot for the first 2–3 days during extreme heat.',
+    category: 'Planting',
+    levels: ['Beginner', 'Intermediate'],
+  ),
+  _Tip(
+    icon: Icons.straighten_rounded,
+    color: Color(0xFF4E7A2E),
+    title: 'Spacing matters more than most beginners expect — crowded plants underperform.',
+    detail:
+        'Crowded plants compete for water, nutrients, and light. They also trap humidity between leaves, creating ideal conditions for fungal disease. Spacing guidelines on seed packets are minimums, not targets. In raised beds with rich soil you can plant 10–20% closer, but in typical garden soil, follow or exceed them.',
+    category: 'Planting',
+    levels: ['Beginner', 'Intermediate'],
+  ),
+
+  // ── MORE HARVESTING ───────────────────────────────────────────────────────
+  _Tip(
+    icon: Icons.content_cut_rounded,
+    color: Color(0xFF7BA05B),
+    title: 'Use clean scissors or pruners to harvest — tearing damages plants and spreads disease.',
+    detail:
+        'Ragged cuts from pulling or tearing are entry points for bacteria and fungi. Clean, sharp cuts heal quickly. Wipe blades with isopropyl alcohol between plants when harvesting from a bed with any sign of disease. This simple habit can prevent an isolated problem from spreading across your entire garden.',
+    category: 'Harvesting',
+    levels: ['Beginner', 'Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.local_florist_rounded,
+    color: Color(0xFF7BA05B),
+    title: 'Deadhead flowers regularly to extend blooming by weeks or months.',
+    detail:
+        'Once a flower sets seed, the plant\'s energy shifts to seed production and blooming slows or stops. Removing spent flowers (deadheading) tricks the plant into continuing to flower. Pinch or cut just below the spent flower back to a leaf node. Works especially well with zinnias, cosmos, marigolds, and basil.',
+    category: 'Harvesting',
+    levels: ['Beginner', 'Intermediate'],
+  ),
+
+  // ── MORE SOIL ─────────────────────────────────────────────────────────────
+  _Tip(
+    icon: Icons.recycling_rounded,
+    color: Color(0xFFE0A43A),
+    title: 'Plant cover crops in fall to protect and improve soil over winter.',
+    detail:
+        'Cover crops like winter rye, clover, or hairy vetch prevent erosion, suppress weeds, and fix nitrogen. Legume covers (clover, vetch) feed soil bacteria that convert atmospheric nitrogen into plant-available nutrients — a free fertilizer boost. Till them in 2–3 weeks before planting, giving them time to break down.',
+    category: 'Soil',
+    levels: ['Intermediate', 'Advanced'],
+  ),
+  _Tip(
+    icon: Icons.pest_control_rounded,
+    color: Color(0xFFE0A43A),
+    title: 'Worm castings are the single best soil amendment — use them sparingly, they\'re potent.',
+    detail:
+        'Worm castings (vermicompost) improve soil structure, suppress certain plant diseases, and contain plant-growth hormones not found in regular compost. A little goes a long way — mix 10–20% castings into potting mix or top-dress a tablespoon around each transplant. You can make your own with a worm bin using kitchen scraps year-round.',
+    category: 'Soil',
+    levels: ['Intermediate', 'Advanced'],
+  ),
 ];
 
 // Tips shown on the Garden Insights page (top 4, relevant to level)
@@ -343,7 +620,7 @@ class _GardenTipsPageWidgetState extends State<GardenTipsPageWidget> {
   String? _selectedCategory;
 
   static const _categories = [
-    'All', 'Watering', 'Soil', 'Planting', 'Pests', 'Harvesting', 'Season', 'Tools'
+    'All', 'Watering', 'Soil', 'Composting', 'Planting', 'Fertilizing', 'Containers', 'Pests', 'Harvesting', 'Weeds', 'Season', 'Organic', 'Tools'
   ];
 
   @override
@@ -506,7 +783,7 @@ class _GardenTipsPageWidgetState extends State<GardenTipsPageWidget> {
               updateCallback: () => safeSetState(() {}),
               child: FinalHeaderWidget(
                 pageTitle: 'Tips & Hacks',
-                backAction: () => context.pop(),
+                menuReplaceBackAction: () => context.pop(),
               ),
             ),
             Expanded(

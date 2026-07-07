@@ -187,8 +187,7 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-      bottomNavigationBar:
-          _wishListMode ? _buildDoneBar(context) : null,
+      bottomNavigationBar: null,
       floatingActionButton: _showBackToTop
           ? FloatingActionButton.small(
               onPressed: () => _scrollController.animateTo(
@@ -359,7 +358,7 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
                   if (category != null && category != 'All') {
                     query = query.eqOrNull('category', category);
                   }
-                  return query;
+                  return query.order('plant_name', ascending: true);
                 },
               ),
               builder: (context, snapshot) {
@@ -417,7 +416,9 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
                     .where((p) =>
                         search.isEmpty ||
                         (p.plantName ?? '').toLowerCase().contains(search))
-                    .toList();
+                    .toList()
+                  ..sort((a, b) => (a.plantName ?? '').toLowerCase()
+                      .compareTo((b.plantName ?? '').toLowerCase()));
 
                 if (plants.isEmpty) {
                   return Padding(
@@ -474,45 +475,7 @@ class _PlantLibraryPageWidgetState extends State<PlantLibraryPageWidget> {
                         waterRequirement: plant.waterRequirement ?? 'Moderate',
                         plantID: pid,
                       );
-                      if (!_wishListMode) return card;
-                      // Wish-list mode: overlay a "+" add button
-                      return Stack(
-                        children: [
-                          card,
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: GestureDetector(
-                              onTap: () => _toggleWishList(context, pid, pname),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                width: 34,
-                                height: 34,
-                                decoration: BoxDecoration(
-                                  color: isAdded
-                                      ? FlutterFlowTheme.of(context).primary
-                                      : Colors.white.withOpacity(0.92),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.12),
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Icon(
-                                  isAdded ? Icons.close_rounded : Icons.add_rounded,
-                                  color: isAdded
-                                      ? Colors.white
-                                      : FlutterFlowTheme.of(context).primary,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
+                      return card;
                     },
                   ),
                 );

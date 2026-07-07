@@ -90,9 +90,9 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
         borderRadius: BorderRadius.circular(16.0),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(
-          color: Color(0x00000000),
-          width: 1.0,
+        borderSide: BorderSide(
+          color: FlutterFlowTheme.of(context).primary,
+          width: 1.5,
         ),
         borderRadius: BorderRadius.circular(16.0),
       ),

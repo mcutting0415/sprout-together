@@ -29,6 +29,7 @@ class FlutterFlowCalendar extends StatefulWidget {
     this.titleStyle,
     this.rowHeight,
     this.locale,
+    this.eventLoader,
   });
 
   final bool weekFormat;
@@ -45,6 +46,8 @@ class FlutterFlowCalendar extends StatefulWidget {
   final TextStyle? titleStyle;
   final double? rowHeight;
   final String? locale;
+  /// Return a non-empty list for any day that should show a dot indicator.
+  final List<Object> Function(DateTime day)? eventLoader;
 
   @override
   State<StatefulWidget> createState() => _FlutterFlowCalendarState();
@@ -133,6 +136,7 @@ class _FlutterFlowCalendarState extends State<FlutterFlowCalendar> {
             headerVisible: false,
             locale: widget.locale,
             rowHeight: widget.rowHeight ?? MediaQuery.sizeOf(context).width / 7,
+            eventLoader: widget.eventLoader,
             calendarStyle: CalendarStyle(
               defaultTextStyle:
                   widget.dateStyle ?? const TextStyle(color: Color(0xFF5A5A5A)),

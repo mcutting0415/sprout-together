@@ -379,7 +379,136 @@ class _SetupSectionChild5WidgetState extends State<SetupSectionChild5Widget> {
             ),
           ),
         ),
+        _goalCheckbox(
+          value: _model.checkboxListTileValue7 ??= false,
+          onChanged: (v) {
+            safeSetState(() => _model.checkboxListTileValue7 = v!);
+            if (v!) FFAppState().addToSetupGoals('Track My Progress');
+            else FFAppState().removeFromSetupGoals('Track My Progress');
+          },
+          label: 'Track My Progress',
+        ),
+        _goalCheckbox(
+          value: _model.checkboxListTileValue8 ??= false,
+          onChanged: (v) {
+            safeSetState(() => _model.checkboxListTileValue8 = v!);
+            if (v!) FFAppState().addToSetupGoals('Grow Organically');
+            else FFAppState().removeFromSetupGoals('Grow Organically');
+          },
+          label: 'Grow Organically',
+        ),
+        _goalCheckbox(
+          value: _model.checkboxListTileValue9 ??= false,
+          onChanged: (v) {
+            safeSetState(() => _model.checkboxListTileValue9 = v!);
+            if (v!) FFAppState().addToSetupGoals('Learn New Techniques');
+            else FFAppState().removeFromSetupGoals('Learn New Techniques');
+          },
+          label: 'Learn New Techniques',
+        ),
+        _goalCheckbox(
+          value: _model.checkboxListTileValue10 ??= false,
+          onChanged: (v) {
+            safeSetState(() => _model.checkboxListTileValue10 = v!);
+            if (v!) FFAppState().addToSetupGoals('Grow Year-Round');
+            else FFAppState().removeFromSetupGoals('Grow Year-Round');
+          },
+          label: 'Grow Year-Round',
+        ),
+        _goalCheckbox(
+          value: _model.checkboxListTileValue11 ??= false,
+          onChanged: (v) {
+            safeSetState(() => _model.checkboxListTileValue11 = v!);
+            if (v!) FFAppState().addToSetupGoals('Preserve My Harvest');
+            else FFAppState().removeFromSetupGoals('Preserve My Harvest');
+          },
+          label: 'Preserve My Harvest',
+        ),
+        _goalCheckbox(
+          value: _model.checkboxListTileValue12 ??= false,
+          onChanged: (v) {
+            safeSetState(() => _model.checkboxListTileValue12 = v!);
+            if (v!) FFAppState().addToSetupGoals('Compost & Reduce Waste');
+            else FFAppState().removeFromSetupGoals('Compost & Reduce Waste');
+          },
+          label: 'Compost & Reduce Waste',
+        ),
+        _goalCheckbox(
+          value: _model.checkboxListTileValue13 ??= false,
+          onChanged: (v) {
+            safeSetState(() => _model.checkboxListTileValue13 = v!);
+            if (v!) FFAppState().addToSetupGoals('Eat Local, Grow Local');
+            else FFAppState().removeFromSetupGoals('Eat Local, Grow Local');
+          },
+          label: 'Eat Local, Grow Local',
+        ),
+        _goalCheckbox(
+          value: _model.checkboxListTileValue14 ??= false,
+          onChanged: (v) {
+            safeSetState(() => _model.checkboxListTileValue14 = v!);
+            if (v!) FFAppState().addToSetupGoals('Teach My Kids');
+            else FFAppState().removeFromSetupGoals('Teach My Kids');
+          },
+          label: 'Teach My Kids',
+        ),
+        _goalCheckbox(
+          value: _model.checkboxListTileValue15 ??= false,
+          onChanged: (v) {
+            safeSetState(() => _model.checkboxListTileValue15 = v!);
+            if (v!) FFAppState().addToSetupGoals('Build a Raised Bed');
+            else FFAppState().removeFromSetupGoals('Build a Raised Bed');
+          },
+          label: 'Build a Raised Bed',
+        ),
       ],
+    );
+  }
+
+  Widget _goalCheckbox({
+    required bool value,
+    required ValueChanged<bool?> onChanged,
+    required String label,
+  }) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 10.0),
+      child: Material(
+        color: Colors.transparent,
+        child: Theme(
+          data: ThemeData(
+            checkboxTheme: CheckboxThemeData(
+              visualDensity: VisualDensity.compact,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            unselectedWidgetColor: FlutterFlowTheme.of(context).alternate,
+          ),
+          child: CheckboxListTile(
+            value: value,
+            onChanged: onChanged,
+            title: Text(
+              label,
+              style: FlutterFlowTheme.of(context).titleLarge.override(
+                    font: GoogleFonts.poppins(
+                      fontWeight: FlutterFlowTheme.of(context).titleLarge.fontWeight,
+                      fontStyle: FlutterFlowTheme.of(context).titleLarge.fontStyle,
+                    ),
+                    fontSize: 20.0,
+                    letterSpacing: 0.0,
+                    fontWeight: FlutterFlowTheme.of(context).titleLarge.fontWeight,
+                    fontStyle: FlutterFlowTheme.of(context).titleLarge.fontStyle,
+                  ),
+            ),
+            tileColor: FlutterFlowTheme.of(context).secondaryBackground,
+            activeColor: FlutterFlowTheme.of(context).primary,
+            checkColor: FlutterFlowTheme.of(context).info,
+            dense: false,
+            controlAffinity: ListTileControlAffinity.trailing,
+            contentPadding: const EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 12.0, 0.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

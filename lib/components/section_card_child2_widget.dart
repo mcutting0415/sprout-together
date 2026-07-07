@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'section_card_child2_model.dart';
 export 'section_card_child2_model.dart';
 
@@ -25,10 +26,33 @@ class _SectionCardChild2WidgetState extends State<SectionCardChild2Widget> {
     _model.onUpdate();
   }
 
+  // Persisted toggle values — loaded from SharedPreferences
+  bool _watering = true;
+  bool _planting = true;
+  bool _harvest = true;
+  bool _frost = true;
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => SectionCardChild2Model());
+    _loadPrefs();
+  }
+
+  Future<void> _loadPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    safeSetState(() {
+      _watering = prefs.getBool('pref_watering_reminders') ?? true;
+      _planting = prefs.getBool('pref_planting_reminders') ?? true;
+      _harvest  = prefs.getBool('pref_harvest_reminders')  ?? true;
+      _frost    = prefs.getBool('pref_frost_reminders')    ?? true;
+    });
+  }
+
+  Future<void> _savePref(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
   }
 
   @override
@@ -48,9 +72,10 @@ class _SectionCardChild2WidgetState extends State<SectionCardChild2Widget> {
           child: Material(
             color: Colors.transparent,
             child: SwitchListTile.adaptive(
-              value: _model.switchListTileValue1 ??= true,
+              value: _watering,
               onChanged: (newValue) async {
-                safeSetState(() => _model.switchListTileValue1 = newValue!);
+                safeSetState(() => _watering = newValue!);
+                await _savePref('pref_watering_reminders', newValue!);
               },
               title: Text(
                 'Watering Reminders',
@@ -87,9 +112,10 @@ class _SectionCardChild2WidgetState extends State<SectionCardChild2Widget> {
           child: Material(
             color: Colors.transparent,
             child: SwitchListTile.adaptive(
-              value: _model.switchListTileValue2 ??= true,
+              value: _planting,
               onChanged: (newValue) async {
-                safeSetState(() => _model.switchListTileValue2 = newValue!);
+                safeSetState(() => _planting = newValue!);
+                await _savePref('pref_planting_reminders', newValue!);
               },
               title: Text(
                 'Planting Reminders',
@@ -126,9 +152,10 @@ class _SectionCardChild2WidgetState extends State<SectionCardChild2Widget> {
           child: Material(
             color: Colors.transparent,
             child: SwitchListTile.adaptive(
-              value: _model.switchListTileValue3 ??= true,
+              value: _harvest,
               onChanged: (newValue) async {
-                safeSetState(() => _model.switchListTileValue3 = newValue!);
+                safeSetState(() => _harvest = newValue!);
+                await _savePref('pref_harvest_reminders', newValue!);
               },
               title: Text(
                 'Harvest Reminders',
@@ -165,9 +192,10 @@ class _SectionCardChild2WidgetState extends State<SectionCardChild2Widget> {
           child: Material(
             color: Colors.transparent,
             child: SwitchListTile.adaptive(
-              value: _model.switchListTileValue4 ??= true,
+              value: _frost,
               onChanged: (newValue) async {
-                safeSetState(() => _model.switchListTileValue4 = newValue!);
+                safeSetState(() => _frost = newValue!);
+                await _savePref('pref_frost_reminders', newValue!);
               },
               title: Text(
                 'Frost\nReminders',

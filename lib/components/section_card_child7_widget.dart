@@ -77,20 +77,49 @@ class _SectionCardChild7WidgetState extends State<SectionCardChild7Widget> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding:
-                      EdgeInsetsDirectional.fromSTEB(20.0, 10.0, 20.0, 0.0),
-                  child: wrapWithModel(
-                    model: _model.settingRowModel1,
-                    updateCallback: () => safeSetState(() {}),
-                    child: SettingRowWidget(
-                      icon: Icon(
-                        Icons.info_outline_rounded,
-                        color: FlutterFlowTheme.of(context).primary,
-                        size: 20.0,
-                      ),
-                      title: 'App Version',
-                      subtitle: 'v1.0.0 (42)',
-                      isLast: false,
+                  padding: EdgeInsetsDirectional.fromSTEB(20.0, 10.0, 20.0, 0.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).secondaryBackground,
+                      borderRadius: BorderRadius.circular(16.0),
+                      border: Border.all(color: FlutterFlowTheme.of(context).alternate),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40.0,
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            color: const Color(0x1A6F8F72),
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: Icon(Icons.info_outline_rounded,
+                              color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                        ),
+                        const SizedBox(width: 16.0),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'App Version',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.0,
+                                color: FlutterFlowTheme.of(context).primaryText,
+                              ),
+                            ),
+                            Text(
+                              'v1.0.0 (42)',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12.0,
+                                color: FlutterFlowTheme.of(context).secondaryText,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),

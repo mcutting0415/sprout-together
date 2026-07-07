@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'plant_details_page_model.dart';
 export 'plant_details_page_model.dart';
+import 'plant_knowledge_base.dart';
 
 class PlantDetailsPageWidget extends StatefulWidget {
   const PlantDetailsPageWidget({
@@ -43,6 +44,7 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
   List<Map<String, dynamic>> _purchaseLinks = [];
   List<String> _goodCompanions = [];
   List<String> _avoidCompanions = [];
+  PlantKnowledge? _knowledge;
 
   @override
   void initState() {
@@ -65,6 +67,7 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
       if (mounted) {
         setState(() {
           _plant = plant;
+          _knowledge = lookupPlantKnowledge(plant?.plantName);
           _loadingPlant = false;
         });
       }
@@ -166,7 +169,7 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
         builder: (ctx) => AlertDialog(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0)),
-          title: Text('✅ ${plant.plantName ?? 'Plant'} Added!',
+          title: Text('✅ ${plant.plantName ?? 'Plant'} added to your grow list!',
               style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
           content: Text(
               'Would you like to auto-schedule care tasks for this plant?',
@@ -321,6 +324,63 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
   void dispose() {
     _model.dispose();
     super.dispose();
+  }
+
+  /// Renders a knowledge section card with an icon, title, and body text.
+  Widget _knowledgeCard({
+    required IconData icon,
+    required Color iconColor,
+    required Color bgColor,
+    required Color borderColor,
+    required String title,
+    required String body,
+  }) {
+    final theme = FlutterFlowTheme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20.0),
+        border: Border.all(color: borderColor, width: 1.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: iconColor.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 18.0),
+                ),
+                const SizedBox(width: 10.0),
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.bold,
+                    color: theme.primaryText,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12.0),
+            Text(
+              body,
+              style: GoogleFonts.poppins(
+                fontSize: 13.5,
+                color: theme.primaryText,
+                height: 1.6,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _chipTag(String text, Color borderColor, Color textColor) {
@@ -626,6 +686,75 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
 
                     const SizedBox(height: 20.0),
 
+                    // ── Knowledge Base sections ──────────────────────────
+                    if (_knowledge != null) ...[
+                      // How & When to Harvest
+                      _knowledgeCard(
+                        icon: Icons.agriculture_rounded,
+                        iconColor: const Color(0xFF7BA05B),
+                        bgColor: const Color(0x0D7BA05B),
+                        borderColor: const Color(0x337BA05B),
+                        title: 'How & When to Harvest',
+                        body: '🌿 Signs of Ripeness\n${_knowledge!.harvestSigns}\n\n✂️ How to Harvest\n${_knowledge!.harvestHow}',
+                      ),
+                      const SizedBox(height: 16.0),
+
+                      // Best Season to Plant
+                      _knowledgeCard(
+                        icon: Icons.wb_sunny_rounded,
+                        iconColor: const Color(0xFFE8A838),
+                        bgColor: const Color(0x0DE8A838),
+                        borderColor: const Color(0x33E8A838),
+                        title: 'Best Season to Plant',
+                        body: _knowledge!.bestSeason,
+                      ),
+                      const SizedBox(height: 16.0),
+
+                      // Soil Preparation
+                      _knowledgeCard(
+                        icon: Icons.grass_rounded,
+                        iconColor: const Color(0xFF795548),
+                        bgColor: const Color(0x0D795548),
+                        borderColor: const Color(0x33795548),
+                        title: 'Soil Preparation',
+                        body: _knowledge!.soilPrep,
+                      ),
+                      const SizedBox(height: 16.0),
+
+                      // Fertilizing Guide
+                      _knowledgeCard(
+                        icon: Icons.science_rounded,
+                        iconColor: const Color(0xFF4A90A4),
+                        bgColor: const Color(0x0D4A90A4),
+                        borderColor: const Color(0x334A90A4),
+                        title: 'Fertilizing Guide',
+                        body: _knowledge!.fertilizing,
+                      ),
+                      const SizedBox(height: 16.0),
+
+                      // Common Problems
+                      _knowledgeCard(
+                        icon: Icons.bug_report_rounded,
+                        iconColor: const Color(0xFFE57373),
+                        bgColor: const Color(0x0DE57373),
+                        borderColor: const Color(0x33E57373),
+                        title: 'Common Problems',
+                        body: _knowledge!.commonProblems,
+                      ),
+                      const SizedBox(height: 16.0),
+
+                      // Storage & Use
+                      _knowledgeCard(
+                        icon: Icons.kitchen_rounded,
+                        iconColor: const Color(0xFF9C6ADE),
+                        bgColor: const Color(0x0D9C6ADE),
+                        borderColor: const Color(0x339C6ADE),
+                        title: 'Storage & Use',
+                        body: _knowledge!.storageUse,
+                      ),
+                      const SizedBox(height: 20.0),
+                    ],
+
                     // ── Companion Planting ───────────────────────────────
                     if (_goodCompanions.isNotEmpty || _avoidCompanions.isNotEmpty) ...[
                       Text(
@@ -907,8 +1036,8 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                                   ),
                             label: Text(
                               _addedToGarden
-                                  ? 'Added to Garden'
-                                  : 'Add to My Garden',
+                                  ? 'Added to My Plants'
+                                  : 'Add to Plants I Want to Grow',
                               style: GoogleFonts.poppins(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.w600,

@@ -1,3 +1,4 @@
+import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/components/plot_square/plot_square_widget.dart';
 import '/draft_pages/side_menu/side_menu_widget.dart';
@@ -256,15 +257,15 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
         String selectedSize = 'Medium';
         String? selectedPlantId;
         String? selectedPlantName;
-        String searchQuery = '';
+        final searchController = TextEditingController();
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
-            final filtered = searchQuery.isEmpty
+            final filtered = searchController.text.isEmpty
                 ? allPlants
                 : allPlants
                     .where((p) => (p.plantName ?? '')
                         .toLowerCase()
-                        .contains(searchQuery.toLowerCase()))
+                        .contains(searchController.text.toLowerCase()))
                     .toList();
             return Padding(
               padding: MediaQuery.viewInsetsOf(sheetContext),
@@ -322,7 +323,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                     fontSize: 12.0,
                                     fontWeight: FontWeight.w600,
                                     color: FlutterFlowTheme.of(context)
-                                        .secondaryText)),
+                                        .primaryText)),
                             const SizedBox(height: 8.0),
                             TextField(
                               controller: nameController,
@@ -396,12 +397,12 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                               }).toList(),
                             ),
                             const SizedBox(height: 20.0),
-                            Text('Assign Plant (Optional)',
+                            Text('Assign Plant',
                                 style: GoogleFonts.poppins(
                                     fontSize: 12.0,
                                     fontWeight: FontWeight.w600,
                                     color: FlutterFlowTheme.of(context)
-                                        .secondaryText)),
+                                        .primaryText)),
                             const SizedBox(height: 8.0),
                             if (selectedPlantId != null) ...[
                               Container(
@@ -440,8 +441,9 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                               ),
                             ],
                             TextField(
-                              onChanged: (v) =>
-                                  setSheetState(() => searchQuery = v),
+                              controller: searchController,
+                              textInputAction: TextInputAction.search,
+                              onChanged: (v) => setSheetState(() {}),
                               decoration: InputDecoration(
                                 hintText: 'Search plants...',
                                 prefixIcon:
@@ -613,15 +615,15 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        String searchQuery = '';
+        final searchController = TextEditingController();
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
-            final filtered = searchQuery.isEmpty
+            final filtered = searchController.text.isEmpty
                 ? allPlants
                 : allPlants
                     .where((p) => (p.plantName ?? '')
                         .toLowerCase()
-                        .contains(searchQuery.toLowerCase()))
+                        .contains(searchController.text.toLowerCase()))
                     .toList();
             return Container(
               height: MediaQuery.of(context).size.height * 0.65,
@@ -665,8 +667,9 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
                     child: TextField(
-                      onChanged: (v) =>
-                          setSheetState(() => searchQuery = v),
+                      controller: searchController,
+                      textInputAction: TextInputAction.search,
+                      onChanged: (v) => setSheetState(() {}),
                       decoration: InputDecoration(
                         hintText: 'Search plants...',
                         prefixIcon: const Icon(Icons.search, size: 18.0),
@@ -739,6 +742,15 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
       await GardenPlotsTable().update(
         data: {'plant_id': selectedPlant!.id},
         matchingRows: (rows) => rows.eqOrNull('id', plotId),
+      );
+    }
+    // Mark the plant as planted in the user's planner list
+    if (selectedPlant!.id != null) {
+      await UserSelectedPlantsTable().update(
+        data: {'season': 'planted'},
+        matchingRows: (q) => q
+            .eqOrNull('user_id', currentUserUid)
+            .eqOrNull('plant_id', selectedPlant!.id),
       );
     }
     safeSetState(() {
@@ -1205,6 +1217,25 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                         ),
                       ),
                       Padding(
+                        padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.06),
+                                blurRadius: 10.0,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                      Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(
                             24.0, 0.0, 24.0, 0.0),
                         child: Column(
@@ -1452,7 +1483,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                   padding: const EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 12.0, 0.0),
                                   color: _combineMode
                                       ? FlutterFlowTheme.of(context).error
-                                      : const Color(0xFF3D7A8A),
+                                      : FlutterFlowTheme.of(context).primary,
                                   textStyle: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14.0),
                                   elevation: 0.0,
                                   borderRadius: BorderRadius.circular(20.0),
@@ -1499,56 +1530,9 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                   ),
                                 ),
                         ),
-                      Padding(
-                        padding: EdgeInsets.all(24.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              'Individual Containers',
-                              style: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .titleMedium
-                                          .fontStyle,
-                                    ),
-                                    fontSize: 20.0,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.bold,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .titleMedium
-                                        .fontStyle,
-                                    lineHeight: 1.4,
-                                  ),
+                              ],
                             ),
-                            OutlinedButton.icon(
-                              onPressed: _showAddContainerSheet,
-                              icon: const Icon(Icons.add_rounded, size: 18.0),
-                              label: Text('Add Container',
-                                  style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14.0)),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor:
-                                    FlutterFlowTheme.of(context).primary,
-                                side: BorderSide(
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    width: 1.5),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14.0)),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0, vertical: 12.0),
-                              ),
-                            ),
-                            if (_containers.isNotEmpty)
-                              ..._containers
-                                  .map((c) => _buildContainerCard(c)),
-                          ].divide(SizedBox(height: 16.0)),
+                          ),
                         ),
                       ),
                       Padding(
@@ -1808,6 +1792,74 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 16.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.06),
+                                blurRadius: 10.0,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                            Text(
+                              'Individual Containers',
+                              style: FlutterFlowTheme.of(context)
+                                  .titleMedium
+                                  .override(
+                                    font: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .titleMedium
+                                          .fontStyle,
+                                    ),
+                                    fontSize: 20.0,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .titleMedium
+                                        .fontStyle,
+                                    lineHeight: 1.4,
+                                  ),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: _showAddContainerSheet,
+                              icon: const Icon(Icons.add_rounded, size: 18.0),
+                              label: Text('Add Container',
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14.0)),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor:
+                                    FlutterFlowTheme.of(context).primary,
+                                side: BorderSide(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    width: 1.5),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14.0)),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 12.0),
+                              ),
+                            ),
+                            if (_containers.isNotEmpty)
+                              ..._containers
+                                  .map((c) => _buildContainerCard(c)),
+                          ].divide(SizedBox(height: 16.0)),
+                        ),
+                      ),
+                          ),
+                        ),
                       SizedBox(height: 24.0),
                     ],
                   ),

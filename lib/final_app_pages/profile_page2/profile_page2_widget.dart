@@ -262,7 +262,10 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
     final customGoals = _goals.where((g) => g.goalType == 'custom').toList();
     final seasonalMap = <String, List<UserGoalsRow>>{};
     for (final g in _goals.where((g) => g.goalType == 'seasonal')) {
-      seasonalMap.putIfAbsent(g.season ?? 'Seasonal', () => []).add(g);
+      final key = (g.season == null || g.season!.toLowerCase() == 'getting started')
+          ? 'Overall Goals'
+          : g.season!;
+      seasonalMap.putIfAbsent(key, () => []).add(g);
     }
 
     return Column(
@@ -466,7 +469,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
   Future<void> _handleGardenPhotoUpload() async {
     final selectedMedia = await selectMediaWithSourceBottomSheet(
       context: context,
-      storageFolderPath: 'garden-photos/$currentUserUid/',
+      storageFolderPath: '$currentUserUid/',
       allowPhoto: true,
     );
     if (selectedMedia == null || selectedMedia.isEmpty) return;
@@ -498,7 +501,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
   Future<void> _handlePhotoUpload() async {
     final selectedMedia = await selectMediaWithSourceBottomSheet(
       context: context,
-      storageFolderPath: 'profiles/$currentUserUid/',
+      storageFolderPath: '$currentUserUid/',
       allowPhoto: true,
     );
     if (selectedMedia == null || selectedMedia.isEmpty) return;
@@ -1213,37 +1216,30 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 32.0),
-                child: GestureDetector(
-                  onTap: () async {
+                child: FFButtonWidget(
+                  onPressed: () async {
                     await authManager.signOut();
                     context.goNamedAuth('LoginPage', context.mounted);
                   },
-                  child: Container(
+                  text: 'Log Out',
+                  icon: const Icon(Icons.logout_rounded, size: 18.0),
+                  options: FFButtonOptions(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 14.0),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD4685F).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16.0),
-                      border: Border.all(
-                        color: const Color(0xFFD4685F).withOpacity(0.4),
-                      ),
+                    height: 40.0,
+                    padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                    iconPadding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                    iconColor: const Color(0xFFD4685F),
+                    color: const Color(0xFFD4685F).withOpacity(0.1),
+                    textStyle: GoogleFonts.poppins(
+                      color: const Color(0xFFD4685F),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15.0,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.logout_rounded,
-                            color: Color(0xFFD4685F), size: 18.0),
-                        const SizedBox(width: 8.0),
-                        Text(
-                          'Log Out',
-                          style: GoogleFonts.poppins(
-                            color: const Color(0xFFD4685F),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15.0,
-                          ),
-                        ),
-                      ],
+                    elevation: 5.0,
+                    borderSide: BorderSide(
+                      color: const Color(0xFFD4685F).withOpacity(0.4),
                     ),
+                    borderRadius: BorderRadius.circular(16.0),
                   ),
                 ),
               ),

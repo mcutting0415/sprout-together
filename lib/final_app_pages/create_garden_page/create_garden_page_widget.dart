@@ -213,7 +213,9 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                     color: FlutterFlowTheme.of(context).primary,
                   ),
                 ),
-                child: Padding(
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 5.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -290,6 +292,7 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                     ].divide(SizedBox(height: 8.0)),
                   ),
                 ),
+                ),
               ),
               // ── QUICK START TEMPLATES ─────────────────────────────────
               Padding(
@@ -298,27 +301,35 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(right: 24.0, bottom: 10.0),
-                      child: Row(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.auto_awesome_mosaic_rounded,
-                              color: FlutterFlowTheme.of(context).primary,
-                              size: 18.0),
-                          const SizedBox(width: 8.0),
-                          Text(
-                            'Quick Start',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15.0,
-                              color: FlutterFlowTheme.of(context).primaryText,
-                            ),
+                          Row(
+                            children: [
+                              Icon(Icons.auto_awesome_mosaic_rounded,
+                                  color: FlutterFlowTheme.of(context).primary,
+                                  size: 18.0),
+                              const SizedBox(width: 8.0),
+                              Text(
+                                'Quick Start',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15.0,
+                                  color: FlutterFlowTheme.of(context).primaryText,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8.0),
-                          Text(
-                            '— tap a template to pre-fill the form',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12.0,
-                              color: FlutterFlowTheme.of(context).secondaryText,
+                          const SizedBox(height: 4.0),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 26.0),
+                            child: Text(
+                              'Tap a template to pre-fill the form',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12.0,
+                                color: FlutterFlowTheme.of(context).secondaryText,
+                              ),
                             ),
                           ),
                         ],
@@ -398,16 +409,6 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  Text(
-                                    tmpl['subtitle'] as String,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 10.5,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                    ),
-                                  ),
                                 ],
                               ),
                             ),
@@ -453,6 +454,7 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                         autofocus: false,
                         enabled: true,
                         obscureText: false,
+                        textCapitalization: TextCapitalization.words,
                         decoration: InputDecoration(
                           isDense: true,
                           labelStyle:
@@ -501,8 +503,8 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Color(0x00000000),
-                              width: 1.0,
+                              color: FlutterFlowTheme.of(context).primary,
+                              width: 1.5,
                             ),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -914,8 +916,9 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: Color(0x00000000),
-                                          width: 1.0,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primary,
+                                          width: 1.5,
                                         ),
                                         borderRadius:
                                             BorderRadius.circular(8.0),
@@ -1047,8 +1050,9 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: Color(0x00000000),
-                                          width: 1.0,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primary,
+                                          width: 1.5,
                                         ),
                                         borderRadius:
                                             BorderRadius.circular(8.0),
@@ -1287,6 +1291,25 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                         wrapped: true,
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.explore_rounded,
+                              color: FlutterFlowTheme.of(context).primary,
+                              size: 16.0),
+                          const SizedBox(width: 6.0),
+                          Text(
+                            'Which direction does your garden face?',
+                            style: GoogleFonts.poppins(
+                              fontSize: 13.0,
+                              fontWeight: FontWeight.w500,
+                              color: FlutterFlowTheme.of(context).primaryText,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     Align(
                       alignment: AlignmentDirectional(0.0, 0.0),
                       child: FlutterFlowChoiceChips(
@@ -1447,8 +1470,8 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Color(0x00000000),
-                              width: 1.0,
+                              color: FlutterFlowTheme.of(context).primary,
+                              width: 1.5,
                             ),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -1529,126 +1552,19 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                         });
                         FFAppState().currentGardenID = _model.newGarden!.id!;
                         safeSetState(() {});
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 0,
-                          'col_index': 0,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 0,
-                          'col_index': 1,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 0,
-                          'col_index': 2,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 0,
-                          'col_index': 3,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 1,
-                          'col_index': 0,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 1,
-                          'col_index': 1,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 1,
-                          'col_index': 2,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 1,
-                          'col_index': 3,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 2,
-                          'col_index': 0,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 2,
-                          'col_index': 1,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 2,
-                          'col_index': 2,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 2,
-                          'col_index': 3,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 3,
-                          'col_index': 0,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 3,
-                          'col_index': 1,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 3,
-                          'col_index': 2,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 3,
-                          'col_index': 3,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 4,
-                          'col_index': 0,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 4,
-                          'col_index': 1,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 4,
-                          'col_index': 2,
-                          'plant_id': null,
-                        });
-                        await GardenPlotsTable().insert({
-                                                    'garden_id': _model.newGarden?.id,
-                          'row_index': 4,
-                          'col_index': 3,
-                          'plant_id': null,
-                        });
+                        // Dynamically generate plots based on width (cols) × length (rows)
+                        final cols = int.tryParse(_model.textController2.text) ?? 4;
+                        final rows = int.tryParse(_model.textController3.text) ?? 4;
+                        for (int r = 0; r < rows; r++) {
+                          for (int c = 0; c < cols; c++) {
+                            await GardenPlotsTable().insert({
+                              'garden_id': _model.newGarden?.id,
+                              'row_index': r,
+                              'col_index': c,
+                              'plant_id': null,
+                            });
+                          }
+                        }
 
                         context.pushNamed(
                           GardenBuilderPageWidget.routeName,

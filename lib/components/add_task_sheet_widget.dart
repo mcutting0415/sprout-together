@@ -135,15 +135,15 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                   ),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0x00000000),
+                  color: FlutterFlowTheme.of(context).alternate,
                   width: 1.0,
                 ),
                 borderRadius: BorderRadius.circular(8.0),
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0x00000000),
-                  width: 1.0,
+                  color: FlutterFlowTheme.of(context).primary,
+                  width: 1.5,
                 ),
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -418,15 +418,15 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
                   ),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0x00000000),
+                  color: FlutterFlowTheme.of(context).alternate,
                   width: 1.0,
                 ),
                 borderRadius: BorderRadius.circular(8.0),
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0x00000000),
-                  width: 1.0,
+                  color: FlutterFlowTheme.of(context).primary,
+                  width: 1.5,
                 ),
                 borderRadius: BorderRadius.circular(8.0),
               ),

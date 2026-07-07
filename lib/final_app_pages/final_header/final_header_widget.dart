@@ -17,13 +17,16 @@ class FinalHeaderWidget extends StatefulWidget {
     String? pageTitle,
     this.saveAction,
     this.backAction,
+    this.menuReplaceBackAction,
   }) : this.pageTitle = pageTitle ?? 'Page Title';
 
   final String pageTitle;
   /// When set, shows a green checkmark Save button (Garden Builder).
   final VoidCallback? saveAction;
-  /// When set, shows a back arrow button (e.g. sub-pages returning to Insights).
+  /// When set, shows a back arrow button on the RIGHT (e.g. sub-pages returning to Insights).
   final VoidCallback? backAction;
+  /// When set, replaces the LEFT menu icon with a back arrow (e.g. Garden Insights from Planner).
+  final VoidCallback? menuReplaceBackAction;
 
   @override
   State<FinalHeaderWidget> createState() => _FinalHeaderWidgetState();
@@ -84,7 +87,19 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
               children: [
                 Align(
                   alignment: AlignmentDirectional(-0.88, 0.73),
-                  child: FlutterFlowIconButton(
+                  child: widget.menuReplaceBackAction != null
+                      ? FlutterFlowIconButton(
+                          borderRadius: 8.0,
+                          buttonSize: 48.0,
+                          fillColor: FlutterFlowTheme.of(context).primaryBackground,
+                          icon: Icon(
+                            Icons.arrow_back_rounded,
+                            color: FlutterFlowTheme.of(context).primary,
+                            size: 24.0,
+                          ),
+                          onPressed: widget.menuReplaceBackAction,
+                        )
+                      : FlutterFlowIconButton(
                     borderRadius: 8.0,
                     buttonSize: 48.0,
                     fillColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -132,164 +147,134 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                                     ),
                                   ),
                                 ),
+                                // 1. My Profile
                                 ListTile(
                                   leading: Icon(Icons.person_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary),
+                                      color: FlutterFlowTheme.of(context).primary),
                                   title: Text('My Profile',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge),
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
                                   trailing: Icon(Icons.chevron_right_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
+                                      color: FlutterFlowTheme.of(context).secondaryText),
                                   onTap: () {
                                     Navigator.pop(ctx);
-                                    context.pushNamed(
-                                        ProfilePage2Widget.routeName);
+                                    context.pushNamed(ProfilePage2Widget.routeName);
                                   },
                                 ),
+                                // 2. My Planner
                                 ListTile(
                                   leading: Icon(Icons.eco_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary),
+                                      color: FlutterFlowTheme.of(context).primary),
                                   title: Text('My Planner',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge),
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
                                   trailing: Icon(Icons.chevron_right_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
+                                      color: FlutterFlowTheme.of(context).secondaryText),
                                   onTap: () {
                                     Navigator.pop(ctx);
-                                    context.pushNamed(
-                                        PlannerOverviewPageWidget.routeName);
+                                    context.pushNamed(PlannerOverviewPageWidget.routeName);
                                   },
                                 ),
-                                ListTile(
-                                  leading: Icon(Icons.grid_view_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary),
-                                  title: Text('Current Gardens',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge),
-                                  trailing: Icon(Icons.chevron_right_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
-                                  onTap: () {
-                                    Navigator.pop(ctx);
-                                    context.pushNamed(
-                                        CurrentGardens3Widget.routeName);
-                                  },
-                                ),
-                                ListTile(
-                                  leading: Icon(Icons.calendar_month_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary),
-                                  title: Text('Growing Calendar',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge),
-                                  trailing: Icon(Icons.chevron_right_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
-                                  onTap: () {
-                                    Navigator.pop(ctx);
-                                    context.pushNamed(
-                                        GrowingCalendarWidget.routeName);
-                                  },
-                                ),
-                                ListTile(
-                                  leading: Icon(Icons.archive_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary),
-                                  title: Text('Previous Gardens',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge),
-                                  trailing: Icon(Icons.chevron_right_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
-                                  onTap: () {
-                                    Navigator.pop(ctx);
-                                    context.pushNamed(
-                                        PreviousGardensPage2Widget.routeName);
-                                  },
-                                ),
+                                // 3. Plant Library
                                 ListTile(
                                   leading: Icon(Icons.local_florist_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary),
+                                      color: FlutterFlowTheme.of(context).primary),
                                   title: Text('Plant Library',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge),
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
                                   trailing: Icon(Icons.chevron_right_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
+                                      color: FlutterFlowTheme.of(context).secondaryText),
                                   onTap: () {
                                     Navigator.pop(ctx);
-                                    context.pushNamed(
-                                        PlantLibraryPageWidget.routeName);
+                                    context.pushNamed(PlantLibraryPageWidget.routeName);
                                   },
                                 ),
+                                // 4. Companion Plants
                                 ListTile(
                                   leading: Icon(Icons.people_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary),
-                                  title: Text('Companion Guide',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge),
+                                      color: FlutterFlowTheme.of(context).primary),
+                                  title: Text('Companion Plants',
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
                                   trailing: Icon(Icons.chevron_right_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
+                                      color: FlutterFlowTheme.of(context).secondaryText),
                                   onTap: () {
                                     Navigator.pop(ctx);
-                                    context.pushNamed(
-                                        CompanionGuidePage2Widget.routeName);
+                                    context.pushNamed(CompanionGuidePage2Widget.routeName);
                                   },
                                 ),
+                                // 5. Growing Calendar
+                                ListTile(
+                                  leading: Icon(Icons.calendar_month_rounded,
+                                      color: FlutterFlowTheme.of(context).primary),
+                                  title: Text('Growing Calendar',
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context).secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(GrowingCalendarWidget.routeName);
+                                  },
+                                ),
+                                // 6. Garden Journal
                                 ListTile(
                                   leading: Icon(Icons.book_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary),
+                                      color: FlutterFlowTheme.of(context).primary),
                                   title: Text('Garden Journal',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge),
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
                                   trailing: Icon(Icons.chevron_right_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
+                                      color: FlutterFlowTheme.of(context).secondaryText),
                                   onTap: () {
                                     Navigator.pop(ctx);
-                                    context.pushNamed(
-                                        GardenJournalPage2Widget.routeName);
+                                    context.pushNamed(GardenJournalPage2Widget.routeName);
                                   },
                                 ),
+                                // 7. Current Gardens
+                                ListTile(
+                                  leading: Icon(Icons.grid_view_rounded,
+                                      color: FlutterFlowTheme.of(context).primary),
+                                  title: Text('Current Gardens',
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context).secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(CurrentGardens3Widget.routeName);
+                                  },
+                                ),
+                                // 8. Your Archive
+                                ListTile(
+                                  leading: Icon(Icons.archive_rounded,
+                                      color: FlutterFlowTheme.of(context).primary),
+                                  title: Text('Your Archive',
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context).secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(PreviousGardensPage2Widget.routeName);
+                                  },
+                                ),
+                                // 9. Garden Shop
                                 ListTile(
                                   leading: Icon(Icons.storefront_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary),
+                                      color: FlutterFlowTheme.of(context).primary),
                                   title: Text('Garden Shop',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge),
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
                                   trailing: Icon(Icons.chevron_right_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
+                                      color: FlutterFlowTheme.of(context).secondaryText),
                                   onTap: () {
                                     Navigator.pop(ctx);
-                                    context.pushNamed(
-                                        ShopPageWidget.routeName);
+                                    context.pushNamed(ShopPageWidget.routeName);
                                   },
                                 ),
+                                // 10. Settings
                                 ListTile(
                                   leading: Icon(Icons.settings_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary),
+                                      color: FlutterFlowTheme.of(context).primary),
                                   title: Text('Settings',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge),
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
                                   trailing: Icon(Icons.chevron_right_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
+                                      color: FlutterFlowTheme.of(context).secondaryText),
                                   onTap: () {
                                     Navigator.pop(ctx);
-                                    context.pushNamed(
-                                        SettingsPage2Widget.routeName);
+                                    context.pushNamed(SettingsPage2Widget.routeName);
                                   },
                                 ),
                                 SizedBox(
