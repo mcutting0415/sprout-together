@@ -74,7 +74,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'logo_emoji': '📦',
       'color': 0xFFFF9900,
       // TODO: replace with your Amazon Associates affiliate URL
-      'url': 'https://www.amazon.com/gardening',
+      'url': 'https://www.amazon.com/gardening?tag=sprouttogether-20',
     },
     {
       'name': "Johnny's Selected Seeds",
@@ -243,7 +243,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$22–$35',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=hori+hori+soil+knife',
+      'affiliate_url': 'https://www.amazon.com/s?k=hori+hori+soil+knife&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -252,7 +252,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$18–$32',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=garden+pruning+shears',
+      'affiliate_url': 'https://www.amazon.com/s?k=garden+pruning+shears&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -279,7 +279,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$12–$20',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=soil+pH+moisture+meter',
+      'affiliate_url': 'https://www.amazon.com/s?k=soil+pH+moisture+meter&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -317,7 +317,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$14–$18',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=horticultural+perlite',
+      'affiliate_url': 'https://www.amazon.com/s?k=horticultural+perlite&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -335,7 +335,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$17–$24',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=raised+bed+soil',
+      'affiliate_url': 'https://www.amazon.com/s?k=raised+bed+soil&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -344,7 +344,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$18–$28',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=coco+coir+brick',
+      'affiliate_url': 'https://www.amazon.com/s?k=coco+coir+brick&tag=sprouttogether-20',
       'image_url': '',
     },
 
@@ -364,7 +364,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$15–$22',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=tomato+vegetable+fertilizer',
+      'affiliate_url': 'https://www.amazon.com/s?k=tomato+vegetable+fertilizer&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -373,7 +373,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$18–$26',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=slow+release+garden+fertilizer',
+      'affiliate_url': 'https://www.amazon.com/s?k=slow+release+garden+fertilizer&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -400,7 +400,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$16–$24',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=mycorrhizae+root+stimulator',
+      'affiliate_url': 'https://www.amazon.com/s?k=mycorrhizae+root+stimulator&tag=sprouttogether-20',
       'image_url': '',
     },
 
@@ -429,7 +429,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$15–$22',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=fabric+grow+bags+5+gallon',
+      'affiliate_url': 'https://www.amazon.com/s?k=fabric+grow+bags+5+gallon&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -438,7 +438,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$18–$26',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=fabric+grow+bags+10+gallon',
+      'affiliate_url': 'https://www.amazon.com/s?k=fabric+grow+bags+10+gallon&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -476,7 +476,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$18–$28',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=soaker+hose+garden',
+      'affiliate_url': 'https://www.amazon.com/s?k=soaker+hose+garden&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -494,7 +494,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$20–$35',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=garden+hose+wand',
+      'affiliate_url': 'https://www.amazon.com/s?k=garden+hose+wand&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -503,7 +503,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$14–$20',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=automatic+plant+watering+spikes',
+      'affiliate_url': 'https://www.amazon.com/s?k=automatic+plant+watering+spikes&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -532,7 +532,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$12–$18',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=bamboo+garden+stakes',
+      'affiliate_url': 'https://www.amazon.com/s?k=bamboo+garden+stakes&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -550,7 +550,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$10–$16',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=garden+trellis+netting',
+      'affiliate_url': 'https://www.amazon.com/s?k=garden+trellis+netting&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -559,7 +559,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$8–$14',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=garden+plant+clips+ties',
+      'affiliate_url': 'https://www.amazon.com/s?k=garden+plant+clips+ties&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -579,7 +579,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$14–$20',
       'is_featured': true,
-      'affiliate_url': 'https://www.amazon.com/s?k=neem+oil+garden+spray',
+      'affiliate_url': 'https://www.amazon.com/s?k=neem+oil+garden+spray&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -597,7 +597,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$10–$16',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=copper+slug+snail+barrier+tape',
+      'affiliate_url': 'https://www.amazon.com/s?k=copper+slug+snail+barrier+tape&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -606,7 +606,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$8–$14',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=yellow+sticky+traps+garden',
+      'affiliate_url': 'https://www.amazon.com/s?k=yellow+sticky+traps+garden&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -615,7 +615,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$12–$18',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=food+grade+diatomaceous+earth',
+      'affiliate_url': 'https://www.amazon.com/s?k=food+grade+diatomaceous+earth&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -644,7 +644,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$28–$45',
       'is_featured': true,
-      'affiliate_url': 'https://www.amazon.com/s?k=led+grow+light+bar+full+spectrum',
+      'affiliate_url': 'https://www.amazon.com/s?k=led+grow+light+bar+full+spectrum&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -662,7 +662,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$18–$30',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=clip+on+grow+light+plant',
+      'affiliate_url': 'https://www.amazon.com/s?k=clip+on+grow+light+plant&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -671,7 +671,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$35–$55',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=45w+led+grow+light+panel',
+      'affiliate_url': 'https://www.amazon.com/s?k=45w+led+grow+light+panel&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -691,7 +691,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$22–$36',
       'is_featured': true,
-      'affiliate_url': 'https://www.amazon.com/s?k=solar+pathway+garden+lights',
+      'affiliate_url': 'https://www.amazon.com/s?k=solar+pathway+garden+lights&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -700,7 +700,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$28–$45',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=waterproof+led+garden+spotlights',
+      'affiliate_url': 'https://www.amazon.com/s?k=waterproof+led+garden+spotlights&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -709,7 +709,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$16–$25',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=solar+string+fairy+lights+outdoor',
+      'affiliate_url': 'https://www.amazon.com/s?k=solar+string+fairy+lights+outdoor&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -718,7 +718,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$30–$50',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=motion+sensor+outdoor+floodlight',
+      'affiliate_url': 'https://www.amazon.com/s?k=motion+sensor+outdoor+floodlight&tag=sprouttogether-20',
       'image_url': '',
     },
     {
@@ -727,7 +727,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'store_name': 'Amazon Garden',
       'price_estimate': r'$20–$32',
       'is_featured': false,
-      'affiliate_url': 'https://www.amazon.com/s?k=mason+jar+solar+lanterns+outdoor',
+      'affiliate_url': 'https://www.amazon.com/s?k=mason+jar+solar+lanterns+outdoor&tag=sprouttogether-20',
       'image_url': '',
     },
   ];
