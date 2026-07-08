@@ -207,8 +207,8 @@ class CompanionPlantingService {
       'tip': 'Cantaloupes benefit from the same companions as cucumbers and other melons.',
     },
     'asparagus': {
-      'good': ['tomato', 'parsley', 'basil', 'marigold'],
-      'bad': ['onion', 'garlic', 'potato'],
+      'good': ['tomato', 'parsley', 'basil', 'marigold', 'nasturtium'],
+      'bad': ['onion', 'garlic', 'potato', 'fennel'],
       'tip': 'Tomatoes and asparagus are excellent long-term companions — both benefit from the pairing.',
     },
     'okra': {
@@ -348,11 +348,6 @@ class CompanionPlantingService {
     },
 
     // ── New additions ────────────────────────────────────────────────────────
-    'asparagus': {
-      'good': ['tomato', 'parsley', 'basil', 'marigold', 'nasturtium'],
-      'bad': ['onion', 'garlic', 'potato', 'fennel'],
-      'tip': 'Tomatoes and asparagus are excellent long-term companions — both benefit from the pairing.',
-    },
     'blueberry': {
       'good': ['strawberry', 'thyme', 'lavender', 'basil', 'azalea'],
       'bad': ['fennel', 'nightshade', 'tomato', 'pepper'],
