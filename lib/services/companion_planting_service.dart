@@ -347,66 +347,11 @@ class CompanionPlantingService {
       'tip': 'Nasturtiums repel aphids and cucumber beetles that target melons. Corn provides windbreak and support.',
     },
 
-    // ── New additions ────────────────────────────────────────────────────────
-    'blueberry': {
-      'good': ['strawberry', 'thyme', 'lavender', 'basil', 'azalea'],
-      'bad': ['fennel', 'nightshade', 'tomato', 'pepper'],
-      'tip': 'Blueberries need acidic soil. Thyme as a groundcover helps retain moisture and deter pests.',
-    },
-    'broccoli': {
-      'good': ['onion', 'chamomile', 'beet', 'celery', 'dill', 'rosemary', 'thyme'],
-      'bad': ['tomato', 'strawberry', 'pepper', 'bean', 'mustard'],
-      'tip': 'Chamomile improves growth and flavor of broccoli when planted nearby.',
-    },
-    'cabbage': {
-      'good': ['mint', 'rosemary', 'thyme', 'onion', 'beet', 'chamomile', 'dill'],
-      'bad': ['tomato', 'strawberry', 'pepper', 'fennel', 'bean'],
-      'tip': 'Aromatic herbs like thyme and rosemary repel cabbage moths. Chamomile improves growth.',
-    },
-    'corn': {
-      'good': ['bean', 'squash', 'cucumber', 'pumpkin', 'melon', 'sunflower'],
-      'bad': ['tomato', 'celery', 'fennel'],
-      'tip': 'The "Three Sisters" — corn, beans, and squash — work together perfectly.',
-    },
-    'dill': {
-      'good': ['cabbage', 'lettuce', 'onion', 'broccoli', 'cucumber', 'asparagus'],
-      'bad': ['carrot', 'tomato', 'fennel', 'pepper'],
-      'tip': 'Dill attracts beneficial wasps and hoverflies. Avoid planting near carrot — they cross-pollinate.',
-    },
-    'eggplant': {
-      'good': ['pepper', 'tomato', 'basil', 'marigold', 'spinach', 'thyme'],
-      'bad': ['fennel', 'potato', 'corn'],
-      'tip': 'Eggplant pairs well with peppers and basil. Marigolds help deter aphids and whiteflies.',
-    },
+    // ── Additional varieties ─────────────────────────────────────────────────
     'hot pepper': {
       'good': ['basil', 'carrot', 'tomato', 'parsley', 'oregano', 'marigold'],
       'bad': ['fennel', 'kohlrabi', 'brassica'],
       'tip': 'Hot peppers benefit from the same companions as sweet peppers. Marigolds deter nematodes.',
-    },
-    'lavender': {
-      'good': ['tomato', 'rose', 'brassica', 'thyme', 'oregano', 'sage'],
-      'bad': ['mint', 'basil', 'camint'],
-      'tip': 'Lavender attracts pollinators and repels fleas, flies, and moths.',
-    },
-    'oregano': {
-      'good': ['tomato', 'pepper', 'squash', 'broccoli', 'cucumber', 'eggplant'],
-      'bad': ['fennel', 'mint'],
-      'tip': 'Oregano is a broadly beneficial herb — it repels many pests and attracts pollinators.',
-    },
-    'potato': {
-      'good': ['bean', 'corn', 'horseradish', 'chamomile', 'marigold', 'nasturtium'],
-      'bad': ['tomato', 'squash', 'sunflower', 'cucumber', 'pumpkin', 'fennel', 'rosemary'],
-      'tip': 'Horseradish planted at the corners of a potato bed deters Colorado potato beetles.',
-    },
-    'sage': {
-      'good': ['carrot', 'cabbage', 'broccoli', 'strawberry', 'rosemary', 'bean'],
-      'bad': ['cucumber', 'onion', 'fennel', 'basil'],
-      'tip': 'Sage deters cabbage moths and carrot flies. It pairs well with rosemary in an herb bed.',
-    },
-    'sweet potato': {
-      'good': ['bean', 'beet', 'thyme', 'lavender', 'oregano'],
-      'bad': ['squash', 'potato', 'fennel'],
-      'tip': 'Sweet potatoes fix nitrogen and grow well with beans. Their spreading vines shade out weeds.',
     },
   };
 
