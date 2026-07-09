@@ -251,7 +251,33 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                                     context.pushNamed(PreviousGardensPage2Widget.routeName);
                                   },
                                 ),
-                                // 9. Garden Shop
+                                // 9. Garden Tips
+                                ListTile(
+                                  leading: Icon(Icons.lightbulb_rounded,
+                                      color: FlutterFlowTheme.of(context).primary),
+                                  title: Text('Garden Tips',
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context).secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(GardenTipsPageWidget.routeName);
+                                  },
+                                ),
+                                // 10. Garden Goals
+                                ListTile(
+                                  leading: Icon(Icons.flag_rounded,
+                                      color: FlutterFlowTheme.of(context).primary),
+                                  title: Text('Garden Goals',
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context).secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(GardenGoalsPageWidget.routeName);
+                                  },
+                                ),
+                                // 11. Garden Shop
                                 ListTile(
                                   leading: Icon(Icons.storefront_rounded,
                                       color: FlutterFlowTheme.of(context).primary),
@@ -264,7 +290,20 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                                     context.pushNamed(ShopPageWidget.routeName);
                                   },
                                 ),
-                                // 10. Settings
+                                // 12. Help Center
+                                ListTile(
+                                  leading: Icon(Icons.help_outline_rounded,
+                                      color: FlutterFlowTheme.of(context).primary),
+                                  title: Text('Help Center',
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context).secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed(HelpPageWidget.routeName);
+                                  },
+                                ),
+                                // 13. Settings
                                 ListTile(
                                   leading: Icon(Icons.settings_rounded,
                                       color: FlutterFlowTheme.of(context).primary),

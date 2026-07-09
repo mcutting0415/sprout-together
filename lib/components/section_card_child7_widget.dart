@@ -111,7 +111,7 @@ class _SectionCardChild7WidgetState extends State<SectionCardChild7Widget> {
                               ),
                             ),
                             Text(
-                              'v1.0.0 (42)',
+                              'v1.0.0 (43)',
                               style: GoogleFonts.poppins(
                                 fontSize: 12.0,
                                 color: FlutterFlowTheme.of(context).secondaryText,

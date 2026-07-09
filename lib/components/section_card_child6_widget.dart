@@ -58,12 +58,9 @@ class _SectionCardChild6WidgetState extends State<SectionCardChild6Widget> {
               size: 20.0,
             ),
             title: 'Help Center',
-            subtitle: 'Chat or email our team',
+            subtitle: 'Browse guides and tips',
             isLast: false,
-            onTap: () async {
-              final uri = Uri.parse('mailto:support@sprouttogether.app?subject=Help%20Request');
-              if (await canLaunchUrl(uri)) await launchUrl(uri);
-            },
+            onTap: () => context.pushNamed(HelpPageWidget.routeName),
           ),
         ),
         wrapWithModel(
