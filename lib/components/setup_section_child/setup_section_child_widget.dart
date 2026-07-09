@@ -86,7 +86,7 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                       .toList();
 
                   downloadUrls = await uploadSupabaseStorageFiles(
-                    bucketName: 'profile-photos',
+                    bucketName: 'profile-photo',
                     selectedFiles: selectedMedia,
                   );
                 } catch (e) {
@@ -94,9 +94,9 @@ class _SetupSectionChildWidgetState extends State<SetupSectionChildWidget> {
                   if (mounted) {
                     final msg = e.toString().toLowerCase();
                     final hint = msg.contains('not found') || msg.contains('bucket')
-                        ? 'Storage bucket not set up — create a public "profile-photos" bucket in Supabase Storage.'
+                        ? 'Storage bucket not set up — create a public "profile-photo" bucket in Supabase Storage.'
                         : msg.contains('policy') || msg.contains('permission') || msg.contains('rls')
-                            ? 'Upload blocked — add an RLS policy allowing authenticated users to insert in the "profile-photos" bucket.'
+                            ? 'Upload blocked — add an RLS policy allowing authenticated users to insert in the "profile-photo" bucket.'
                             : 'Upload failed: $e';
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

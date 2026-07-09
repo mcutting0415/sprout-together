@@ -510,7 +510,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
     safeSetState(() => _isUploadingPhoto = true);
     try {
       final downloadUrls = await uploadSupabaseStorageFiles(
-        bucketName: 'profile-photos',
+        bucketName: 'profile-photo',
         selectedFiles: selectedMedia,
       );
       if (downloadUrls.isNotEmpty) {
@@ -532,7 +532,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
       if (mounted) {
         final msg = e.toString().toLowerCase();
         final hint = msg.contains('not found') || msg.contains('bucket')
-            ? 'Storage bucket not set up — please create a public "profile-photos" bucket in your Supabase dashboard.'
+            ? 'Storage bucket not set up — please create a public "profile-photo" bucket in your Supabase dashboard.'
             : 'Upload failed: $e';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(hint), duration: const Duration(seconds: 5)),
