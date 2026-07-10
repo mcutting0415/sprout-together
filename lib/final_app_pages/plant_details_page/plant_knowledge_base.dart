@@ -597,7 +597,7 @@ const Map<String, PlantKnowledge> _plantKnowledgeBase = {
   ),
 
   // ── CORN ──────────────────────────────────────────────────────────────────
-  'corn': PlantKnowledge(
+  'sweet corn': PlantKnowledge(
     harvestSigns:
         'Sweet corn is ready when the silk turns dry and brown (but the husk is still green), and the ear feels plump when squeezed. Peel back a small section of husk and pierce a kernel with your thumbnail — milky juice means it\'s ready. Watery = too early, doughy/starchy = too late. Corn has a very short harvest window of 2–3 days.',
     harvestHow:
