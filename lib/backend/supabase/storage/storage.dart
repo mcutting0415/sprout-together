@@ -32,7 +32,7 @@ Future<String> uploadSupabaseStorageFile({
   await storageBucket.uploadBinary(
     selectedFile.storagePath,
     selectedFile.bytes,
-    fileOptions: FileOptions(contentType: contentType),
+    fileOptions: FileOptions(contentType: contentType, upsert: true),
     retryAttempts: 3,
   );
   return storageBucket.getPublicUrl(selectedFile.storagePath);

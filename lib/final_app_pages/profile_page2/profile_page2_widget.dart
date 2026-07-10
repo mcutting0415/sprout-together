@@ -1228,16 +1228,16 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                     height: 40.0,
                     padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                     iconPadding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                    iconColor: Colors.white,
-                    color: const Color(0xFFD4685F),
+                    iconColor: const Color(0xFFD4685F),
+                    color: const Color(0xFFD4685F).withOpacity(0.1),
                     textStyle: GoogleFonts.poppins(
-                      color: Colors.white,
+                      color: const Color(0xFFD4685F),
                       fontWeight: FontWeight.w600,
                       fontSize: 15.0,
                     ),
-                    elevation: 5.0,
-                    borderSide: const BorderSide(
-                      color: Color(0xFFD4685F),
+                    elevation: 0.0,
+                    borderSide: BorderSide(
+                      color: const Color(0xFFD4685F).withOpacity(0.4),
                     ),
                     borderRadius: BorderRadius.circular(16.0),
                   ),
