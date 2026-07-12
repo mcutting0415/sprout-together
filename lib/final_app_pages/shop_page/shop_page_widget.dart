@@ -134,7 +134,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$4.99',
       'is_featured': true,
       'affiliate_url': 'https://www.burpee.com/vegetables/tomatoes/',
-      'image_url': 'https://www.burpee.com/media/catalog/product/p/r/prod000976_main_3.jpg',
+      'image_url': 'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
     },
     {
       'name': 'Patio Garden Pepper Seed Mix',
@@ -143,7 +143,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$5.99',
       'is_featured': false,
       'affiliate_url': 'https://www.burpee.com/vegetables/peppers/',
-      'image_url': 'https://www.burpee.com/media/catalog/product/5/2/52c961756f836dba7c9255569b5c65232da41ea4358553d12f7bdf3f687ba37a.jpeg',
+      'image_url': 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&q=80&fit=crop',
     },
     {
       'name': 'Organic Salad Green Blend',
@@ -161,7 +161,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$5.49',
       'is_featured': false,
       'affiliate_url': 'https://www.burpee.com/vegetables/cucumbers/',
-      'image_url': 'https://www.burpee.com/media/catalog/product/d/e/de3c743767ee292b6396a3290691f7f1d472a01adc3bb6bfbbc8b36dad46fb31.jpeg',
+      'image_url': 'https://images.unsplash.com/photo-1604977042946-1eecc30f269e?w=400&q=80&fit=crop',
     },
     {
       'name': 'Herb Garden Seed Collection',
@@ -170,7 +170,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$9.99',
       'is_featured': false,
       'affiliate_url': 'https://www.burpee.com/herbs/',
-      'image_url': 'https://www.burpee.com/media/catalog/product/f/6/f68d8d90dc240dc2c23d9ee349b8ed72fe5e781f5c2f956ddb980f38bbe2f991.jpeg',
+      'image_url': 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
     },
     {
       'name': 'Sungold Cherry Tomato Seeds',

@@ -1,6 +1,7 @@
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/final_app_pages/plant_library_page/plant_images.dart';
 import 'dart:ui';
 import '/index.dart';
 import 'package:flutter/material.dart';
@@ -126,16 +127,24 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                 alignment: AlignmentDirectional(0.0, 0.77),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(30.0),
-                  child: widget.plantImage.startsWith('http')
-                      ? Image.network(
-                          widget.plantImage,
-                          width: double.infinity,
-                          height: 135.0,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              _plantPlaceholder(context),
-                        )
-                      : _plantPlaceholder(context),
+                  child: Builder(builder: (context) {
+                    final imageUrl = bestPlantImageUrl(
+                      widget.plantImage.startsWith('http')
+                          ? widget.plantImage
+                          : null,
+                      widget.plantName,
+                    );
+                    return imageUrl != null
+                        ? Image.network(
+                            imageUrl,
+                            width: double.infinity,
+                            height: 135.0,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                _plantPlaceholder(context),
+                          )
+                        : _plantPlaceholder(context);
+                  }),
                 ),
               ),
             ),

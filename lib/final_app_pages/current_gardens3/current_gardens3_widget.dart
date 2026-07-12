@@ -797,103 +797,208 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
     return GestureDetector(
       onTap: () => _showGardenDetail(theme, garden),
       child: Container(
-      margin: const EdgeInsets.only(bottom: 10.0),
-      padding: const EdgeInsets.all(14.0),
-      decoration: BoxDecoration(
-        color: theme.secondaryBackground,
-        borderRadius: BorderRadius.circular(14.0),
-        border: Border.all(color: theme.alternate),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 42.0,
-            height: 42.0,
-            decoration: BoxDecoration(
-              color: const Color(0xFF4E7A2E).withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: const Icon(Icons.yard_rounded,
-                color: Color(0xFF4E7A2E), size: 22.0),
-          ),
-          const SizedBox(width: 12.0),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  garden.gardenName ?? 'Garden',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w600,
-                    color: theme.primaryText,
-                  ),
-                ),
-                Row(
-                  children: [
-                    if (garden.gardenType != null) ...[
-                      Text(
-                        garden.gardenType!,
-                        style: GoogleFonts.poppins(
-                            fontSize: 11.0, color: theme.secondaryText),
-                      ),
-                      if (size != null)
-                        Text(' · ',
-                            style: GoogleFonts.poppins(
-                                fontSize: 11.0, color: theme.secondaryText)),
-                    ],
-                    if (size != null)
-                      Text(
-                        size,
-                        style: GoogleFonts.poppins(
-                            fontSize: 11.0, color: theme.secondaryText),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          if (garden.sunExposure != null)
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE0A43A).withOpacity(0.15),
-                borderRadius: BorderRadius.circular(8.0),
+        margin: const EdgeInsets.only(bottom: 10.0),
+        decoration: BoxDecoration(
+          color: theme.secondaryBackground,
+          borderRadius: BorderRadius.circular(14.0),
+          border: Border.all(color: theme.alternate),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Mini garden grid thumbnail ──────────────────────────────
+            FutureBuilder<List<GardenPlotsRow>>(
+              future: GardenPlotsTable().queryRows(
+                queryFn: (q) => q
+                    .eqOrNull('garden_id', garden.id)
+                    .order('row_index', ascending: true)
+                    .order('col_index', ascending: true),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.wb_sunny_rounded,
-                      color: Color(0xFFE0A43A), size: 12.0),
-                  const SizedBox(width: 3.0),
-                  Text(
-                    garden.sunExposure!,
-                    style: GoogleFonts.poppins(
-                      fontSize: 10.0,
-                      color: const Color(0xFFE0A43A),
-                      fontWeight: FontWeight.w600,
+              builder: (context, snapshot) {
+                final plots = snapshot.data ?? [];
+                if (plots.isEmpty) return const SizedBox.shrink();
+                final colCount = (garden.width?.toInt() ?? 4).clamp(1, 10);
+                final previewCount = plots.length.clamp(0, colCount * 3);
+                return ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(14.0)),
+                  child: Container(
+                    color: const Color(0x0D6F8F72),
+                    padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 6.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: colCount,
+                            crossAxisSpacing: 3.0,
+                            mainAxisSpacing: 3.0,
+                            childAspectRatio: 1.0,
+                          ),
+                          itemCount: previewCount,
+                          itemBuilder: (context, i) {
+                            final plot = plots[i];
+                            final hasPlant = plot.plantId != null && plot.plantId!.isNotEmpty;
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: hasPlant
+                                    ? const Color(0xFF6F8F72)
+                                    : theme.secondaryBackground,
+                                borderRadius: BorderRadius.circular(3.0),
+                                border: Border.all(
+                                  color: hasPlant
+                                      ? const Color(0xFF4E7A2E)
+                                      : theme.alternate,
+                                  width: 0.5,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        if (plots.length > previewCount)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Text(
+                              '+${plots.length - previewCount} more squares',
+                              style: GoogleFonts.poppins(
+                                fontSize: 9.0,
+                                color: theme.secondaryText,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
+                );
+              },
+            ),
+            // ── Garden info row ─────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Row(
+                children: [
+                  Container(
+                    width: 42.0,
+                    height: 42.0,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4E7A2E).withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: const Icon(Icons.yard_rounded,
+                        color: Color(0xFF4E7A2E), size: 22.0),
+                  ),
+                  const SizedBox(width: 12.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          garden.gardenName ?? 'Garden',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w600,
+                            color: theme.primaryText,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            if (garden.gardenType != null) ...[
+                              Text(
+                                garden.gardenType!,
+                                style: GoogleFonts.poppins(
+                                    fontSize: 11.0, color: theme.secondaryText),
+                              ),
+                              if (size != null)
+                                Text(' · ',
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 11.0, color: theme.secondaryText)),
+                            ],
+                            if (size != null)
+                              Text(
+                                size,
+                                style: GoogleFonts.poppins(
+                                    fontSize: 11.0, color: theme.secondaryText),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (garden.sunExposure != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0A43A).withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.wb_sunny_rounded,
+                              color: Color(0xFFE0A43A), size: 12.0),
+                          const SizedBox(width: 3.0),
+                          Text(
+                            garden.sunExposure!,
+                            style: GoogleFonts.poppins(
+                              fontSize: 10.0,
+                              color: const Color(0xFFE0A43A),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
 
-  void _showGardenDetail(FlutterFlowTheme theme, GardensRow garden) {
+  Future<void> _showGardenDetail(FlutterFlowTheme theme, GardensRow garden) async {
     final size = (garden.width != null && garden.length != null)
         ? '${garden.width} × ${garden.length} ${garden.measurementUnit ?? 'ft'}'
         : null;
+
+    // ── Load plots and plant names before showing the sheet ──────────────────
+    List<GardenPlotsRow> plots = [];
+    Map<String, String> plantNames = {};
+    try {
+      plots = await GardenPlotsTable().queryRows(
+        queryFn: (q) => q
+            .eqOrNull('garden_id', garden.id)
+            .order('row_index', ascending: true)
+            .order('col_index', ascending: true),
+      );
+      final plantIds = plots
+          .where((p) => p.plantId != null && p.plantId!.isNotEmpty)
+          .map((p) => p.plantId!)
+          .toSet()
+          .toList();
+      if (plantIds.isNotEmpty) {
+        final plantRows = await PlantsTable().queryRows(
+          queryFn: (q) => q.inFilterOrNull('id', plantIds),
+        );
+        for (final p in plantRows) {
+          if (p.id != null) plantNames[p.id!] = p.plantName ?? 'Plant';
+        }
+      }
+    } catch (_) {}
+
+    if (!mounted) return;
+
+    final colCount = (garden.width?.toInt() ?? 4).clamp(1, 12);
+    final assignedCount = plots.where((p) => p.plantId != null && p.plantId!.isNotEmpty).length;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
-        margin: const EdgeInsets.only(top: 120.0),
+        margin: const EdgeInsets.only(top: 80.0),
         decoration: BoxDecoration(
           color: theme.secondaryBackground,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
@@ -901,12 +1006,13 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
         ),
         child: SafeArea(
           top: false,
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Drag handle
                 Center(
                   child: Container(
                     width: 40, height: 4,
@@ -917,6 +1023,8 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                   ),
                 ),
                 const SizedBox(height: 20.0),
+
+                // Garden name + type header
                 Row(
                   children: [
                     Container(
@@ -948,9 +1056,178 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                   ],
                 ),
                 const SizedBox(height: 16.0),
+
+                // Detail rows
                 if (size != null) _detailRow(theme, Icons.straighten_rounded, 'Size', size),
                 if (garden.sunExposure != null)
                   _detailRow(theme, Icons.wb_sunny_rounded, 'Sun Exposure', garden.sunExposure!),
+                if (plots.isNotEmpty)
+                  _detailRow(theme, Icons.local_florist_rounded, 'Plants Placed',
+                      '$assignedCount / ${plots.length} squares'),
+
+                // ── Read-only garden layout preview ──────────────────────────
+                if (plots.isNotEmpty) ...[
+                  const SizedBox(height: 20.0),
+                  Row(
+                    children: [
+                      const Icon(Icons.grid_view_rounded, size: 15.0, color: Color(0xFF4E7A2E)),
+                      const SizedBox(width: 6.0),
+                      Text(
+                        'Garden Layout',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13.0,
+                          fontWeight: FontWeight.w600,
+                          color: theme.secondaryText,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10.0),
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0x0D6F8F72),
+                      borderRadius: BorderRadius.circular(14.0),
+                      border: Border.all(color: const Color(0x336F8F72)),
+                    ),
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: colCount,
+                        crossAxisSpacing: 4.0,
+                        mainAxisSpacing: 4.0,
+                        childAspectRatio: 1.0,
+                      ),
+                      itemCount: plots.length,
+                      itemBuilder: (context, i) {
+                        final plot = plots[i];
+                        final hasPlant =
+                            plot.plantId != null && plot.plantId!.isNotEmpty;
+                        final plantName =
+                            hasPlant ? (plantNames[plot.plantId] ?? 'Plant') : null;
+                        // Two-letter abbreviation: e.g. "Cherry Tomato" → "CT"
+                        final abbrev = plantName != null
+                            ? plantName
+                                .split(' ')
+                                .where((w) => w.isNotEmpty)
+                                .take(2)
+                                .map((w) => w[0].toUpperCase())
+                                .join()
+                            : null;
+                        return Tooltip(
+                          message: plantName ?? '',
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: hasPlant
+                                  ? const Color(0x1A6F8F72)
+                                  : theme.secondaryBackground,
+                              borderRadius: BorderRadius.circular(5.0),
+                              border: Border.all(
+                                color: hasPlant
+                                    ? const Color(0xFF6F8F72)
+                                    : theme.alternate,
+                                width: 1.0,
+                              ),
+                            ),
+                            child: Center(
+                              child: hasPlant
+                                  ? Text(
+                                      abbrev!,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 9.0,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF4E7A2E),
+                                      ),
+                                    )
+                                  : Icon(Icons.add,
+                                      size: 10.0,
+                                      color: theme.secondaryText
+                                          .withOpacity(0.3)),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  if (plantNames.isNotEmpty) ...[
+                    const SizedBox(height: 10.0),
+                    Wrap(
+                      spacing: 6.0,
+                      runSpacing: 6.0,
+                      children: plantNames.values.toSet().map((name) {
+                        final abbrev = name
+                            .split(' ')
+                            .where((w) => w.isNotEmpty)
+                            .take(2)
+                            .map((w) => w[0].toUpperCase())
+                            .join();
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                          decoration: BoxDecoration(
+                            color: const Color(0x1A6F8F72),
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: const Color(0x336F8F72)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                abbrev,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 10.0,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF4E7A2E),
+                                ),
+                              ),
+                              const SizedBox(width: 5.0),
+                              Text(
+                                name,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11.0,
+                                  color: theme.primaryText,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ] else if (garden.id != null) ...[
+                  const SizedBox(height: 20.0),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0x0D6F8F72),
+                      borderRadius: BorderRadius.circular(14.0),
+                      border: Border.all(color: const Color(0x336F8F72)),
+                    ),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.grid_view_rounded,
+                            size: 28.0, color: Color(0xFF6F8F72)),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          'No plots yet',
+                          style: GoogleFonts.poppins(
+                            fontSize: 13.0,
+                            color: theme.secondaryText,
+                          ),
+                        ),
+                        Text(
+                          'Open Garden Builder to add plants',
+                          style: GoogleFonts.poppins(
+                            fontSize: 11.0,
+                            color: theme.secondaryText,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
                 const SizedBox(height: 20.0),
                 Row(
                   children: [
