@@ -128,22 +128,45 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(30.0),
                   child: Builder(builder: (context) {
-                    final imageUrl = bestPlantImageUrl(
-                      widget.plantImage.startsWith('http')
-                          ? widget.plantImage
-                          : null,
-                      widget.plantName,
-                    );
-                    return imageUrl != null
-                        ? Image.network(
-                            imageUrl,
-                            width: double.infinity,
-                            height: 135.0,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                _plantPlaceholder(context),
-                          )
-                        : _plantPlaceholder(context);
+                    // Two-stage loading:
+                    // 1. Try Supabase URL (if it starts with http)
+                    // 2. On error, try Unsplash fallback from the map
+                    // 3. On second error (or no URL), show emoji placeholder
+                    final supabaseUrl = widget.plantImage.startsWith('http')
+                        ? widget.plantImage
+                        : null;
+                    final fallbackUrl =
+                        bestPlantImageUrl(null, widget.plantName);
+
+                    if (supabaseUrl != null) {
+                      return Image.network(
+                        supabaseUrl,
+                        width: double.infinity,
+                        height: 135.0,
+                        fit: BoxFit.cover,
+                        errorBuilder: (ctx, err, stack) => fallbackUrl != null
+                            ? Image.network(
+                                fallbackUrl,
+                                width: double.infinity,
+                                height: 135.0,
+                                fit: BoxFit.cover,
+                                errorBuilder: (ctx2, err2, stack2) =>
+                                    _plantPlaceholder(context),
+                              )
+                            : _plantPlaceholder(context),
+                      );
+                    } else if (fallbackUrl != null) {
+                      return Image.network(
+                        fallbackUrl,
+                        width: double.infinity,
+                        height: 135.0,
+                        fit: BoxFit.cover,
+                        errorBuilder: (ctx, err, stack) =>
+                            _plantPlaceholder(context),
+                      );
+                    } else {
+                      return _plantPlaceholder(context);
+                    }
                   }),
                 ),
               ),

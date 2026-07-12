@@ -1039,12 +1039,42 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
   }
 }
 
+// Reliable Unsplash fallback images per category.
+// These are the same Unsplash photos used in the plant-library fallback map,
+// so we know they load. Chosen to be thematically relevant to each category.
+const _kShopCategoryFallbacks = <String, String>{
+  'Seeds':
+      'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
+  'Tools':
+      'https://images.unsplash.com/photo-1447175008436-054170c2e979?w=400&q=80&fit=crop',
+  'Soil & Amendments':
+      'https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=400&q=80&fit=crop',
+  'Fertilizers':
+      'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400&q=80&fit=crop',
+  'Pots & Containers':
+      'https://images.unsplash.com/photo-1569828781423-32fd2e80c72c?w=400&q=80&fit=crop',
+  'Watering':
+      'https://images.unsplash.com/photo-1576552770741-ea5e56da3a04?w=400&q=80&fit=crop',
+  'Trellises & Supports':
+      'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
+  'Pest Control':
+      'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
+  'Grow Lights':
+      'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=400&q=80&fit=crop',
+  'Outdoor Lighting':
+      'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400&q=80&fit=crop',
+};
+
 Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
   final rawUrl = (product['image_url'] ?? '') as String;
   final productName = (product['name'] ?? 'garden product') as String;
   final category = (product['category'] ?? '') as String;
 
-  // Map categories to emojis for the placeholder
+  // Unsplash fallback for this category (guaranteed to load)
+  final categoryFallback = _kShopCategoryFallbacks[category]
+      ?? 'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop';
+
+  // Map categories to emojis for the last-resort placeholder
   final emoji = category == 'Seeds' ? '🌱'
       : category == 'Tools' ? '🔧'
       : category == 'Soil & Amendments' ? '🪱'
@@ -1054,7 +1084,7 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
       : category == 'Outdoor Lighting' ? '🔆'
       : '🛍️';
 
-  Widget placeholder() => Container(
+  Widget emojiPlaceholder() => Container(
     height: 120.0,
     width: double.infinity,
     decoration: BoxDecoration(
@@ -1086,19 +1116,36 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
     ),
   );
 
-  // If no URL, generate one via dreamflow
-  final imageUrl = rawUrl.isNotEmpty
-      ? rawUrl
-      : 'https://dimg.dreamflow.cloud/v1/image/${Uri.encodeComponent(productName)}';
-
-  return CachedNetworkImage(
-    imageUrl: imageUrl,
-    height: 120.0,
-    width: double.infinity,
-    fit: BoxFit.cover,
-    placeholder: (context, url) => placeholder(),
-    errorWidget: (context, url, error) => placeholder(),
-  );
+  // Two-stage loading:
+  // 1. Try the product's own image_url
+  // 2. On error, load the Unsplash category fallback (always works)
+  // 3. On second error, show emoji placeholder
+  if (rawUrl.isNotEmpty) {
+    return CachedNetworkImage(
+      imageUrl: rawUrl,
+      height: 120.0,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => emojiPlaceholder(),
+      errorWidget: (context, url, error) => CachedNetworkImage(
+        imageUrl: categoryFallback,
+        height: 120.0,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => emojiPlaceholder(),
+        errorWidget: (context, url, error) => emojiPlaceholder(),
+      ),
+    );
+  } else {
+    return CachedNetworkImage(
+      imageUrl: categoryFallback,
+      height: 120.0,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => emojiPlaceholder(),
+      errorWidget: (context, url, error) => emojiPlaceholder(),
+    );
+  }
 }
 
 Color _storeColor(String storeName) {
