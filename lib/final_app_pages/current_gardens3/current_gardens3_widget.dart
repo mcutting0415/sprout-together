@@ -807,72 +807,82 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Mini garden grid thumbnail ──────────────────────────────
-            FutureBuilder<List<GardenPlotsRow>>(
-              future: GardenPlotsTable().queryRows(
-                queryFn: (q) => q
-                    .eqOrNull('garden_id', garden.id)
-                    .order('row_index', ascending: true)
-                    .order('col_index', ascending: true),
-              ),
-              builder: (context, snapshot) {
-                final plots = snapshot.data ?? [];
-                if (plots.isEmpty) return const SizedBox.shrink();
-                final colCount = (garden.width?.toInt() ?? 4).clamp(1, 10);
-                final previewCount = plots.length.clamp(0, colCount * 3);
-                return ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(14.0)),
-                  child: Container(
-                    color: const Color(0x0D6F8F72),
-                    padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 6.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: colCount,
-                            crossAxisSpacing: 3.0,
-                            mainAxisSpacing: 3.0,
-                            childAspectRatio: 1.0,
-                          ),
-                          itemCount: previewCount,
-                          itemBuilder: (context, i) {
-                            final plot = plots[i];
-                            final hasPlant = plot.plantId != null && plot.plantId!.isNotEmpty;
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: hasPlant
-                                    ? const Color(0xFF6F8F72)
-                                    : theme.secondaryBackground,
-                                borderRadius: BorderRadius.circular(3.0),
-                                border: Border.all(
+            if (garden.width != null && garden.length != null)
+              FutureBuilder<List<GardenPlotsRow>>(
+                future: GardenPlotsTable().queryRows(
+                  queryFn: (q) => q
+                      .eqOrNull('garden_id', garden.id)
+                      .order('row_index', ascending: true)
+                      .order('col_index', ascending: true),
+                ),
+                builder: (context, snapshot) {
+                  final plots = snapshot.data ?? [];
+                  final colCount = (garden.width!).clamp(1, 10);
+                  final rowCount = (garden.length!).clamp(1, 10);
+                  final previewRows = rowCount.clamp(1, 3);
+                  final previewCount = colCount * previewRows;
+                  // Build set of planted cell positions from real data
+                  final plantedCells = <String>{};
+                  for (final p in plots) {
+                    if (p.plantId != null && p.plantId!.isNotEmpty) {
+                      plantedCells.add('${p.rowIndex}_${p.colIndex}');
+                    }
+                  }
+                  return ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(14.0)),
+                    child: Container(
+                      color: const Color(0x0D6F8F72),
+                      padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 6.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: colCount,
+                              crossAxisSpacing: 3.0,
+                              mainAxisSpacing: 3.0,
+                              childAspectRatio: 1.0,
+                            ),
+                            itemCount: previewCount,
+                            itemBuilder: (context, i) {
+                              final row = i ~/ colCount;
+                              final col = i % colCount;
+                              final hasPlant = plantedCells.contains('${row}_${col}');
+                              return Container(
+                                decoration: BoxDecoration(
                                   color: hasPlant
-                                      ? const Color(0xFF4E7A2E)
-                                      : theme.alternate,
-                                  width: 0.5,
+                                      ? const Color(0xFF6F8F72)
+                                      : theme.secondaryBackground,
+                                  borderRadius: BorderRadius.circular(3.0),
+                                  border: Border.all(
+                                    color: hasPlant
+                                        ? const Color(0xFF4E7A2E)
+                                        : theme.alternate,
+                                    width: 0.5,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          if (rowCount > previewRows)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Text(
+                                '+${rowCount - previewRows} more rows',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 9.0,
+                                  color: theme.secondaryText,
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                        if (plots.length > previewCount)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Text(
-                              '+${plots.length - previewCount} more squares',
-                              style: GoogleFonts.poppins(
-                                fontSize: 9.0,
-                                color: theme.secondaryText,
-                              ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
             // ── Garden info row ─────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.all(14.0),
@@ -991,7 +1001,16 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
     if (!mounted) return;
 
     final colCount = (garden.width?.toInt() ?? 4).clamp(1, 12);
+    final rowCount = (garden.length?.toInt() ?? 4).clamp(1, 12);
+    final totalCells = colCount * rowCount;
     final assignedCount = plots.where((p) => p.plantId != null && p.plantId!.isNotEmpty).length;
+    // Position-based map: 'row_col' → plot
+    final plotMap = <String, GardenPlotsRow>{};
+    for (final p in plots) {
+      if (p.rowIndex != null && p.colIndex != null) {
+        plotMap['${p.rowIndex}_${p.colIndex}'] = p;
+      }
+    }
 
     showModalBottomSheet(
       context: context,
@@ -1061,12 +1080,11 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                 if (size != null) _detailRow(theme, Icons.straighten_rounded, 'Size', size),
                 if (garden.sunExposure != null)
                   _detailRow(theme, Icons.wb_sunny_rounded, 'Sun Exposure', garden.sunExposure!),
-                if (plots.isNotEmpty)
-                  _detailRow(theme, Icons.local_florist_rounded, 'Plants Placed',
-                      '$assignedCount / ${plots.length} squares'),
+                _detailRow(theme, Icons.local_florist_rounded, 'Plants Placed',
+                    '$assignedCount / $totalCells squares'),
 
                 // ── Read-only garden layout preview ──────────────────────────
-                if (plots.isNotEmpty) ...[
+                ...[
                   const SizedBox(height: 20.0),
                   Row(
                     children: [
@@ -1099,13 +1117,15 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                         mainAxisSpacing: 4.0,
                         childAspectRatio: 1.0,
                       ),
-                      itemCount: plots.length,
+                      itemCount: totalCells,
                       itemBuilder: (context, i) {
-                        final plot = plots[i];
-                        final hasPlant =
+                        final row = i ~/ colCount;
+                        final col = i % colCount;
+                        final plot = plotMap['${row}_${col}'];
+                        final hasPlant = plot != null &&
                             plot.plantId != null && plot.plantId!.isNotEmpty;
                         final plantName =
-                            hasPlant ? (plantNames[plot.plantId] ?? 'Plant') : null;
+                            hasPlant ? (plantNames[plot!.plantId] ?? 'Plant') : null;
                         // Two-letter abbreviation: e.g. "Cherry Tomato" → "CT"
                         final abbrev = plantName != null
                             ? plantName
@@ -1194,38 +1214,6 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                       }).toList(),
                     ),
                   ],
-                ] else if (garden.id != null) ...[
-                  const SizedBox(height: 20.0),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    decoration: BoxDecoration(
-                      color: const Color(0x0D6F8F72),
-                      borderRadius: BorderRadius.circular(14.0),
-                      border: Border.all(color: const Color(0x336F8F72)),
-                    ),
-                    child: Column(
-                      children: [
-                        const Icon(Icons.grid_view_rounded,
-                            size: 28.0, color: Color(0xFF6F8F72)),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          'No plots yet',
-                          style: GoogleFonts.poppins(
-                            fontSize: 13.0,
-                            color: theme.secondaryText,
-                          ),
-                        ),
-                        Text(
-                          'Open Garden Builder to add plants',
-                          style: GoogleFonts.poppins(
-                            fontSize: 11.0,
-                            color: theme.secondaryText,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
 
                 const SizedBox(height: 20.0),
