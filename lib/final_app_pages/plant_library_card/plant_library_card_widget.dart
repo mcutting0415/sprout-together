@@ -128,36 +128,19 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(30.0),
                   child: Builder(builder: (context) {
-                    // Two-stage loading:
-                    // 1. Try Supabase URL (if it starts with http)
-                    // 2. On error, try Unsplash fallback from the map
-                    // 3. On second error (or no URL), show emoji placeholder
-                    final supabaseUrl = widget.plantImage.startsWith('http')
+                    // bestPlantImageUrl skips Wikipedia/Wikimedia URLs (all
+                    // current Supabase plant images are Wikipedia and block
+                    // external hotlinking). It returns the best Unsplash URL
+                    // keyed by plant name instead.
+                    final rawUrl = widget.plantImage.startsWith('http')
                         ? widget.plantImage
                         : null;
-                    final fallbackUrl =
-                        bestPlantImageUrl(null, widget.plantName);
+                    final imageUrl =
+                        bestPlantImageUrl(rawUrl, widget.plantName);
 
-                    if (supabaseUrl != null) {
+                    if (imageUrl != null) {
                       return Image.network(
-                        supabaseUrl,
-                        width: double.infinity,
-                        height: 135.0,
-                        fit: BoxFit.cover,
-                        errorBuilder: (ctx, err, stack) => fallbackUrl != null
-                            ? Image.network(
-                                fallbackUrl,
-                                width: double.infinity,
-                                height: 135.0,
-                                fit: BoxFit.cover,
-                                errorBuilder: (ctx2, err2, stack2) =>
-                                    _plantPlaceholder(context),
-                              )
-                            : _plantPlaceholder(context),
-                      );
-                    } else if (fallbackUrl != null) {
-                      return Image.network(
-                        fallbackUrl,
+                        imageUrl,
                         width: double.infinity,
                         height: 135.0,
                         fit: BoxFit.cover,

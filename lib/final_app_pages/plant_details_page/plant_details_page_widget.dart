@@ -17,6 +17,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'plant_details_page_model.dart';
 export 'plant_details_page_model.dart';
 import 'plant_knowledge_base.dart';
+import '/final_app_pages/plant_library_page/plant_images.dart';
 
 class PlantDetailsPageWidget extends StatefulWidget {
   const PlantDetailsPageWidget({
@@ -431,12 +432,19 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                                     style: TextStyle(fontSize: 64.0))),
                           )
                         : () {
-                            final url = plant?.imageUrl ?? '';
-                            if (url.startsWith('http')) {
+                            final rawUrl = plant?.imageUrl ?? '';
+                            // bestPlantImageUrl skips Wikipedia/Wikimedia
+                            // URLs (blocked by hotlink policy) and falls back
+                            // to the Unsplash map keyed by plant name.
+                            final displayUrl = bestPlantImageUrl(
+                              rawUrl.isNotEmpty ? rawUrl : null,
+                              plant?.plantName,
+                            );
+                            if (displayUrl != null) {
                               return CachedNetworkImage(
                                 fadeInDuration: Duration.zero,
                                 fadeOutDuration: Duration.zero,
-                                imageUrl: url,
+                                imageUrl: displayUrl,
                                 height: 300.0,
                                 width: double.infinity,
                                 fit: BoxFit.cover,

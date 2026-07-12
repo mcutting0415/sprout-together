@@ -125,16 +125,52 @@ const Map<String, String> kPlantImageFallbacks = {
   'clover':            'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80&fit=crop',
   'buckwheat':         'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80&fit=crop',
   'winter rye':        'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80&fit=crop',
+
+  // ── Additional plants from Supabase catalog ───────────────────────────────
+  'luffa':             'https://images.unsplash.com/photo-1583687516934-1ed72e55c6a8?w=400&q=80&fit=crop',
+  'loofah':            'https://images.unsplash.com/photo-1583687516934-1ed72e55c6a8?w=400&q=80&fit=crop',
+  'luffa / loofah':    'https://images.unsplash.com/photo-1583687516934-1ed72e55c6a8?w=400&q=80&fit=crop',
+  'aloe vera':         'https://images.unsplash.com/photo-1596547609652-9cf5d8c10616?w=400&q=80&fit=crop',
+  'aloe':              'https://images.unsplash.com/photo-1596547609652-9cf5d8c10616?w=400&q=80&fit=crop',
+  'medicinal aloe vera': 'https://images.unsplash.com/photo-1596547609652-9cf5d8c10616?w=400&q=80&fit=crop',
+  'mizuna':            'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80&fit=crop',
+  'mulberry':          'https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?w=400&q=80&fit=crop',
+  'passion fruit':     'https://images.unsplash.com/photo-1490750967868-88df5691cc8b?w=400&q=80&fit=crop',
+  'peach':             'https://images.unsplash.com/photo-1569870499705-504209102861?w=400&q=80&fit=crop',
+  'pear':              'https://images.unsplash.com/photo-1587049633312-d2d1ada99703?w=400&q=80&fit=crop',
+  'peony':             'https://images.unsplash.com/photo-1490750967868-88df5691cc8b?w=400&q=80&fit=crop',
+  'persimmon':         'https://images.unsplash.com/photo-1569870499705-504209102861?w=400&q=80&fit=crop',
+  'phacelia':          'https://images.unsplash.com/photo-1499578124509-1bada6e981b8?w=400&q=80&fit=crop',
+  'pumpkin':           'https://images.unsplash.com/photo-1506917728037-b6af01a7d403?w=400&q=80&fit=crop',
+  'quince':            'https://images.unsplash.com/photo-1569870499705-504209102861?w=400&q=80&fit=crop',
+  'quinoa':            'https://images.unsplash.com/photo-1574323347407-b7c8e0b6d3a5?w=400&q=80&fit=crop',
+  'rhubarb':           'https://images.unsplash.com/photo-1584966124256-ebe8710b7e88?w=400&q=80&fit=crop',
+  'rutabaga':          'https://images.unsplash.com/photo-1559181567-c3190ca9d70e?w=400&q=80&fit=crop',
+  'serviceberry':      'https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?w=400&q=80&fit=crop',
+  'shallot':           'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=400&q=80&fit=crop',
+  'shiso':             'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80&fit=crop',
+  'perilla':           'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80&fit=crop',
+  'shiso / perilla':   'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80&fit=crop',
+  'taro':              'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400&q=80&fit=crop',
+  'tatsoi':            'https://images.unsplash.com/photo-1550399105-c4db5fb85c18?w=400&q=80&fit=crop',
+  'turmeric':          'https://images.unsplash.com/photo-1605217613423-4f43ce29a929?w=400&q=80&fit=crop',
+  'watercress':        'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80&fit=crop',
+  'wheatgrass':        'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400&q=80&fit=crop',
+  'winter savory':     'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
 };
 
 /// Returns the best image URL for a plant.
-/// Uses [supabaseUrl] first if it is a valid http URL.
-/// Falls back to [kPlantImageFallbacks] when Supabase has no image.
+/// Skips Wikipedia/Wikimedia URLs since they block external app hotlinking.
+/// Uses [supabaseUrl] if it is a valid, non-Wikipedia http URL.
+/// Falls back to [kPlantImageFallbacks] by plant name when Supabase URL is missing or blocked.
 /// Returns null if no image is available (caller should show placeholder).
 String? bestPlantImageUrl(String? supabaseUrl, String? plantName) {
+  // Accept Supabase URL only if it's a real (non-Wikipedia) image host
   if (supabaseUrl != null &&
       supabaseUrl.isNotEmpty &&
-      supabaseUrl.startsWith('http')) {
+      supabaseUrl.startsWith('http') &&
+      !supabaseUrl.contains('wikipedia.org') &&
+      !supabaseUrl.contains('wikimedia.org')) {
     return supabaseUrl;
   }
   if (plantName == null || plantName.isEmpty) return null;
