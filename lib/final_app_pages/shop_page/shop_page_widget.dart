@@ -1125,11 +1125,15 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
     ),
   );
 
-  // Two-stage loading:
-  // 1. Try the product's own image_url
-  // 2. On error, load the Unsplash category fallback (always works)
-  // 3. On second error, show emoji placeholder
-  if (rawUrl.isNotEmpty) {
+  // Only trust URLs from known-good image hosts.
+  // Supabase shop_products rows can have bad third-party URLs (AirPods,
+  // unrelated stock photos) that load successfully but show the wrong thing.
+  // Restricting to Unsplash or Shopify CDN ensures relevant product images.
+  final bool isTrustedUrl = rawUrl.isNotEmpty &&
+      (rawUrl.contains('images.unsplash.com') ||
+       rawUrl.contains('cdn.shopify.com'));
+
+  if (isTrustedUrl) {
     return CachedNetworkImage(
       imageUrl: rawUrl,
       height: 120.0,
@@ -1146,6 +1150,7 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
       ),
     );
   } else {
+    // Untrusted or empty URL — go straight to the category fallback
     return CachedNetworkImage(
       imageUrl: categoryFallback,
       height: 120.0,

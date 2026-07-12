@@ -28,6 +28,10 @@ const Map<String, String> kPlantImageFallbacks = {
   'sweet potato':      'https://images.unsplash.com/photo-1591087583415-78c86f18e11c?w=400&q=80&fit=crop',
   'sweet corn':        'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80&fit=crop',
   'squash':            'https://images.unsplash.com/photo-1569828781423-32fd2e80c72c?w=400&q=80&fit=crop',
+  'acorn squash':      'https://images.unsplash.com/photo-1569828781423-32fd2e80c72c?w=400&q=80&fit=crop',
+  'butternut squash':  'https://images.unsplash.com/photo-1569828781423-32fd2e80c72c?w=400&q=80&fit=crop',
+  'delicata squash':   'https://images.unsplash.com/photo-1569828781423-32fd2e80c72c?w=400&q=80&fit=crop',
+  'spaghetti squash':  'https://images.unsplash.com/photo-1569828781423-32fd2e80c72c?w=400&q=80&fit=crop',
   'bean':              'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
   'pea':               'https://images.unsplash.com/photo-1576552770741-ea5e56da3a04?w=400&q=80&fit=crop',
   'beet':              'https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=400&q=80&fit=crop',
@@ -165,12 +169,14 @@ const Map<String, String> kPlantImageFallbacks = {
 /// Falls back to [kPlantImageFallbacks] by plant name when Supabase URL is missing or blocked.
 /// Returns null if no image is available (caller should show placeholder).
 String? bestPlantImageUrl(String? supabaseUrl, String? plantName) {
-  // Accept Supabase URL only if it's a real (non-Wikipedia) image host
+  // Only trust Unsplash URLs or our own Supabase storage.
+  // Many Supabase plant records have bad third-party URLs (phones, salad bowls,
+  // unrelated stock photos) that load successfully but show the wrong image.
+  // Restricting to Unsplash ensures we always show a relevant plant photo.
   if (supabaseUrl != null &&
       supabaseUrl.isNotEmpty &&
-      supabaseUrl.startsWith('http') &&
-      !supabaseUrl.contains('wikipedia.org') &&
-      !supabaseUrl.contains('wikimedia.org')) {
+      (supabaseUrl.contains('images.unsplash.com') ||
+       supabaseUrl.contains('supabase.co/storage'))) {
     return supabaseUrl;
   }
   if (plantName == null || plantName.isEmpty) return null;
