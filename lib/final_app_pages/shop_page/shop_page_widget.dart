@@ -98,7 +98,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$12–$18',
       'is_featured': true,
       'affiliate_url': 'https://www.trueleafmarket.com/collections/tomato-seeds',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/best-selling-tomatoes-collection-Comp.jpg?v=1756309253',
     },
     {
       'name': 'Microgreens Starter Seed Kit',
@@ -107,7 +107,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$19.99',
       'is_featured': false,
       'affiliate_url': 'https://www.trueleafmarket.com/collections/microgreens-seeds',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/microgreens-deluxe-kit-comp_2d791e21-5d3d-472b-982a-cc7fcf3f6e65.jpg?v=1762440795',
     },
     {
       'name': 'Heirloom Vegetable Seed Vault',
@@ -116,7 +116,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$24.99',
       'is_featured': false,
       'affiliate_url': 'https://www.trueleafmarket.com/collections/heirloom-seeds',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/Instant-Garden-Heirloom-Vegetable-Seed-Collection-With-Comp.jpg?v=1761160549',
     },
     {
       'name': 'Organic Herb Seed Collection',
@@ -125,7 +125,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$14.99',
       'is_featured': false,
       'affiliate_url': 'https://www.trueleafmarket.com/collections/herb-seeds',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/Organic_Herb_Collection_8_Pack_Collage_Comp.jpg?v=1778194453',
     },
     {
       'name': 'Burpee Big Boy Tomato Seeds',
@@ -134,7 +134,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$4.99',
       'is_featured': true,
       'affiliate_url': 'https://www.burpee.com/vegetables/tomatoes/',
-      'image_url': '',
+      'image_url': 'https://www.burpee.com/media/catalog/product/p/r/prod000976_main_3.jpg',
     },
     {
       'name': 'Patio Garden Pepper Seed Mix',
@@ -143,7 +143,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$5.99',
       'is_featured': false,
       'affiliate_url': 'https://www.burpee.com/vegetables/peppers/',
-      'image_url': '',
+      'image_url': 'https://www.burpee.com/media/catalog/product/5/2/52c961756f836dba7c9255569b5c65232da41ea4358553d12f7bdf3f687ba37a.jpeg',
     },
     {
       'name': 'Organic Salad Green Blend',
@@ -152,7 +152,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$6.49',
       'is_featured': false,
       'affiliate_url': 'https://www.burpee.com/vegetables/lettuce/',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/lettuce-salad-leaf-blend-mix-com-wm_1222x1222_3570a053-1fa4-4e2b-9828-fc381d6c3376.jpg?v=1764633742',
     },
     {
       'name': 'Cucumber Seed Variety Pack',
@@ -161,7 +161,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$5.49',
       'is_featured': false,
       'affiliate_url': 'https://www.burpee.com/vegetables/cucumbers/',
-      'image_url': '',
+      'image_url': 'https://www.burpee.com/media/catalog/product/d/e/de3c743767ee292b6396a3290691f7f1d472a01adc3bb6bfbbc8b36dad46fb31.jpeg',
     },
     {
       'name': 'Herb Garden Seed Collection',
@@ -170,7 +170,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$9.99',
       'is_featured': false,
       'affiliate_url': 'https://www.burpee.com/herbs/',
-      'image_url': '',
+      'image_url': 'https://www.burpee.com/media/catalog/product/f/6/f68d8d90dc240dc2c23d9ee349b8ed72fe5e781f5c2f956ddb980f38bbe2f991.jpeg',
     },
     {
       'name': 'Sungold Cherry Tomato Seeds',
@@ -179,7 +179,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$5.45',
       'is_featured': true,
       'affiliate_url': 'https://www.johnnyseeds.com/vegetables/tomatoes/cherry-tomatoes/',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/Tomato-Seeds-Cherry-Sungold-Hybrid-comp.jpg?v=1762440731',
     },
     {
       'name': 'Organic Carrot Mix — Rainbow Blend',
@@ -188,7 +188,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$4.75',
       'is_featured': false,
       'affiliate_url': 'https://www.johnnyseeds.com/vegetables/carrots/',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/Carrot-Seeds-Rainbow-Blend-Organic-comp.jpg?v=1762440662',
     },
     {
       'name': 'Salanova Lettuce Seeds',
@@ -197,7 +197,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$5.25',
       'is_featured': false,
       'affiliate_url': 'https://www.johnnyseeds.com/vegetables/lettuce/',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/lettuce-salad-leaf-blend-mix-com-wm_1222x1222_3570a053-1fa4-4e2b-9828-fc381d6c3376.jpg?v=1764633742',
     },
     {
       'name': 'Dragon Tongue Bean Seeds',
@@ -206,7 +206,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$3.95',
       'is_featured': false,
       'affiliate_url': 'https://www.johnnyseeds.com/vegetables/beans/',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/dragons-tongue-beans-wm_700_1222x1222_2396e638-12b9-4e6a-8554-34123c4a7bef.jpg?v=1764633795',
     },
     {
       'name': 'Sprouting Seed Variety Pack (6 types)',
@@ -215,7 +215,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$16.99',
       'is_featured': false,
       'affiliate_url': 'https://www.trueleafmarket.com/collections/sprouting-seeds',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/Sprouting-Seed-Super-Sampler_3060041e-88a5-4873-ac9a-44440c6c9f5e.jpg?v=1762440321',
     },
 
     // ── TOOLS ──────────────────────────────────────────────────────────────
@@ -226,7 +226,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$39.95',
       'is_featured': true,
       'affiliate_url': 'https://www.gardeners.com/category/garden-tools',
-      'image_url': '',
+      'image_url': 'https://www.cobrahead.com/cdn/shop/products/CobraHead_Long_Handle__25828.1556630747.1280.1280.jpg?v=1747076970',
     },
     {
       'name': 'Stainless-Steel Hand Trowel Set (3-pc)',
@@ -235,7 +235,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$29.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/garden-tools',
-      'image_url': '',
+      'image_url': 'https://www.cobrahead.com/cdn/shop/products/cobrahead_mini_15__82045.1618102065.1280.1280.jpg?v=1747076981',
     },
     {
       'name': 'Soil Knife (Hori Hori) with Sheath',
@@ -244,7 +244,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$22–$35',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=hori+hori+soil+knife&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://www.cobrahead.com/cdn/shop/products/CobraHead_Mini_one_hand_compressed__07992.1614093205.1280.1280.jpg?v=1764114694',
     },
     {
       'name': 'Heavy-Duty Garden Pruning Shears',
@@ -253,7 +253,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$18–$32',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=garden+pruning+shears&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://www.cobrahead.com/cdn/shop/files/FELCO_2Whitebackground.webp?v=1753140663',
     },
     {
       'name': 'Broadfork Garden Fork (10-tine)',
@@ -262,7 +262,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$89.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/garden-tools',
-      'image_url': '',
+      'image_url': 'https://www.cobrahead.com/cdn/shop/products/CobraHead_Broadfork_white_background__79224.1644507789.1280.1280.jpg?v=1747076956',
     },
     {
       'name': 'Transplanting Dibber & Ruler',
@@ -271,7 +271,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$12.95',
       'is_featured': false,
       'affiliate_url': 'https://www.johnnyseeds.com/tools-supplies/hand-tools/',
-      'image_url': '',
+      'image_url': 'https://www.cobrahead.com/cdn/shop/products/cobrahead_mini_12__87065.1618102066.1280.1280.jpg?v=1764114694',
     },
     {
       'name': 'Soil pH & Moisture Meter',
@@ -280,7 +280,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$12–$20',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=soil+pH+moisture+meter&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/files/LusterLeafRapitestSoilpHMeter.jpg?v=1738527527',
     },
     {
       'name': 'Seedling Heat Mat (10×20 in)',
@@ -289,7 +289,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$29.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/starting-seeds',
-      'image_url': '',
+      'image_url': 'https://trimleaf.com/cdn/shop/files/VIVOSUN_Durable_Waterproof_Seedling_Heat_Mat_10_x_20.75_Structure_600x.webp?v=1748790264',
     },
 
     // ── SOIL & AMENDMENTS ─────────────────────────────────────────────────
@@ -300,7 +300,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$19.99',
       'is_featured': true,
       'affiliate_url': 'https://www.gardeners.com/category/soil-conditioners',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/collections/fc48045ec4fa904be3f8ddc7a4eee59b.jpg?v=1635871651',
     },
     {
       'name': 'Worm Castings (20 lbs)',
@@ -309,7 +309,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$24.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/fertilizers',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/Worm-Castings-Comp.jpg?v=1762440335',
     },
     {
       'name': 'Perlite for Drainage (8 qt)',
@@ -318,7 +318,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$14–$18',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=horticultural+perlite&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/perlite-wm_1_1222x1222_0ec1fbb2-971b-46cc-b9b1-c419857199a5.jpg?v=1764633919',
     },
     {
       'name': 'Organic Compost Activator',
@@ -327,7 +327,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$16.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/compost',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/1686148576_CopyofTL-WM-Black-2023-06-07T081603.985.jpg?v=1762449629',
     },
     {
       'name': 'Raised Bed Soil Blend (1.5 cu ft)',
@@ -336,7 +336,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$17–$24',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=raised+bed+soil&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/collections/fc48045ec4fa904be3f8ddc7a4eee59b.jpg?v=1635871651',
     },
     {
       'name': 'Coco Coir Brick (10 lbs compressed)',
@@ -345,7 +345,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$18–$28',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=coco+coir+brick&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/Collage_Minute_Soil_2_50be3d92-ca63-4cdf-bbed-d3cf8fca2acd.jpg?v=1776821374',
     },
 
     // ── FERTILIZERS ───────────────────────────────────────────────────────
@@ -356,7 +356,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$18.95',
       'is_featured': true,
       'affiliate_url': 'https://www.gardeners.com/category/fertilizers',
-      'image_url': '',
+      'image_url': 'https://growitnaturally.com/cdn/shop/products/NH_Blend_Family2.png?v=1511019725',
     },
     {
       'name': 'Tomato & Vegetable Fertilizer (4 lbs)',
@@ -365,7 +365,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$15–$22',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=tomato+vegetable+fertilizer&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/1745345731_fertilizer_espoma_plant_tone_5_3_3_organic_4lb_bag_comp_ed1747a6-e555-4d09-835e-d961d8ffbac1.jpg?v=1762453402',
     },
     {
       'name': 'Slow-Release Granular Fertilizer (5 lbs)',
@@ -374,7 +374,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$18–$26',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=slow+release+garden+fertilizer&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/1740507920_fertilizer_espoma_garden_food_10_10_10_675lb_bag_wm_comp_1bbd3198-7fb7-45da-9b03-014f49de965b.jpg?v=1762453068',
     },
     {
       'name': 'Liquid Kelp Fertilizer (16 oz)',
@@ -383,7 +383,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$14.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/fertilizers',
-      'image_url': '',
+      'image_url': 'https://growitnaturally.com/cdn/shop/products/NH_Blend_Family2.png?v=1511019725',
     },
     {
       'name': 'Organic Raised Bed Fertilizer Kit',
@@ -392,7 +392,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$22.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/fertilizers',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/1686149300_CopyofTL-WM-Black-2023-06-07T081056.984.jpg?v=1762449630',
     },
     {
       'name': 'Mycorrhizae Root Builder (4 oz)',
@@ -401,7 +401,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$16–$24',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=mycorrhizae+root+stimulator&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/1686148778_CopyofTL-WM-Black-2023-06-07T081508.924.jpg?v=1762449629',
     },
 
     // ── POTS & CONTAINERS ─────────────────────────────────────────────────
@@ -412,7 +412,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$129–$179',
       'is_featured': true,
       'affiliate_url': 'https://www.gardeners.com/category/raised-garden-beds',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/files/AssembledGroRiteBed.jpg?v=1741982075',
     },
     {
       'name': 'Self-Watering Planter (12 in)',
@@ -421,7 +421,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$34.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/planters',
-      'image_url': '',
+      'image_url': 'https://growneer.com/wp-content/uploads/2024/08/AZ1172382MM-scaled.jpg',
     },
     {
       'name': 'Fabric Grow Bags — 5 Gallon (5-pack)',
@@ -430,7 +430,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$15–$22',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=fabric+grow+bags+5+gallon&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/collections/9a24eca57ca4528189a44a2abda4f4e8.jpg?v=1631817224',
     },
     {
       'name': 'Fabric Grow Bags — 10 Gallon (5-pack)',
@@ -439,7 +439,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$18–$26',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=fabric+grow+bags+10+gallon&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/collections/9a24eca57ca4528189a44a2abda4f4e8.jpg?v=1631817224',
     },
     {
       'name': 'Window Box Planter Set (3-pack)',
@@ -448,7 +448,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$49.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/window-boxes',
-      'image_url': '',
+      'image_url': 'https://growneer.com/wp-content/uploads/2024/08/1-77.jpg',
     },
     {
       'name': 'Square-Foot Gardening Grid Kit',
@@ -457,7 +457,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$24.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/raised-garden-beds',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/files/AssembledGroRiteBed.jpg?v=1741982075',
     },
 
     // ── WATERING ──────────────────────────────────────────────────────────
@@ -468,7 +468,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$34.95',
       'is_featured': true,
       'affiliate_url': 'https://www.gardeners.com/category/watering',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/products/raisedbeddripwateringkit.jpg?v=1668473813',
     },
     {
       'name': 'Adjustable Soaker Hose (25 ft)',
@@ -477,7 +477,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$18–$28',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=soaker+hose+garden&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/collections/hose.jpg?v=1684179555',
     },
     {
       'name': 'Copper Watering Can (1.3 gal)',
@@ -486,7 +486,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$44.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/watering-cans',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/products/raisedbeddripwateringkit.jpg?v=1668473813',
     },
     {
       'name': 'Hose Wand with Adjustable Head',
@@ -495,7 +495,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$20–$35',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=garden+hose+wand&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/files/DripIrrigation_1.jpg?v=1683744743',
     },
     {
       'name': 'Automatic Drip Watering Spikes (12-pack)',
@@ -504,7 +504,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$14–$20',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=automatic+plant+watering+spikes&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/files/DripIrrigation_1.jpg?v=1683744743',
     },
     {
       'name': 'Rain Gauge — Classic Glass',
@@ -513,7 +513,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$12.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/watering',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/collections/hose.jpg?v=1684179555',
     },
 
     // ── TRELLISES & SUPPORTS ──────────────────────────────────────────────
@@ -524,7 +524,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$39.95',
       'is_featured': true,
       'affiliate_url': 'https://www.gardeners.com/category/trellises-cages-supports',
-      'image_url': '',
+      'image_url': 'https://growneer.com/wp-content/uploads/2024/08/tomato-cage.webp',
     },
     {
       'name': 'Heavy-Duty Bamboo Stakes (4 ft, 25-pack)',
@@ -533,7 +533,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$12–$18',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=bamboo+garden+stakes&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://growneer.com/wp-content/uploads/2024/08/tomato-cage.webp',
     },
     {
       'name': 'A-Frame Garden Trellis (6 ft)',
@@ -542,7 +542,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$59.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/trellises-cages-supports',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/files/DIY_ARCH_EMT_624a8bad-e05c-4474-afb2-7df34a2833d2.jpg?v=1767033340',
     },
     {
       'name': 'Cucumber & Bean Trellis Netting (5×15 ft)',
@@ -551,7 +551,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$10–$16',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=garden+trellis+netting&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://trimleaf.com/cdn/shop/files/High_roller_trellis_netting_600x.webp?v=1770420986',
     },
     {
       'name': 'Plant Clips & Twist Ties Set (100-pc)',
@@ -560,7 +560,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$8–$14',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=garden+plant+clips+ties&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://growneer.com/wp-content/uploads/2024/08/1-banner-3.jpg',
     },
     {
       'name': 'Wall-Mount Fan Trellis (4 ft)',
@@ -569,7 +569,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$29.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/trellises-cages-supports',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/files/DIY_Vine_Trellis_5111dae1-26af-407b-90df-0eb413c9332a.jpg?v=1749568434',
     },
 
     // ── PEST CONTROL ──────────────────────────────────────────────────────
@@ -580,7 +580,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$14–$20',
       'is_featured': true,
       'affiliate_url': 'https://www.amazon.com/s?k=neem+oil+garden+spray&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://growitnaturally.com/cdn/shop/products/captainjacksneemoilfamily.jpg?v=1660443726',
     },
     {
       'name': 'Floating Row Cover — Frost & Pest Protection',
@@ -589,7 +589,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$19.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/pest-controls',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/files/FrostBlanket_1.jpg?v=1696435102',
     },
     {
       'name': 'Copper Slug & Snail Barrier Tape (16 ft)',
@@ -598,7 +598,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$10–$16',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=copper+slug+snail+barrier+tape&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://growitnaturally.com/cdn/shop/products/captainjacksneemoilfamily.jpg?v=1660443726',
     },
     {
       'name': 'Yellow Sticky Insect Traps (24-pack)',
@@ -607,7 +607,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$8–$14',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=yellow+sticky+traps+garden&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/files/BlueStickTrapCard12Pack.jpg?v=1727724646',
     },
     {
       'name': 'Diatomaceous Earth (4 lbs food grade)',
@@ -616,7 +616,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$12–$18',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=food+grade+diatomaceous+earth&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://growitnaturally.com/cdn/shop/products/Diatomaceousearthfamily.png?v=1660443726',
     },
     {
       'name': 'BT Spray — Caterpillar & Worm Control',
@@ -625,7 +625,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$14.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/pest-controls',
-      'image_url': '',
+      'image_url': 'https://growitnaturally.com/cdn/shop/products/captainjacksdeadbugfamily.jpg?v=1660443658',
     },
     {
       'name': 'Insect Netting with Frame (3×6 ft)',
@@ -634,7 +634,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$29.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/pest-controls',
-      'image_url': '',
+      'image_url': 'https://www.bootstrapfarmer.com/cdn/shop/files/InsectNetting_4c30afea-fa02-4053-9670-a08a2f7b1ea9.jpg?v=1699913403',
     },
 
     // ── GROW LIGHTS ───────────────────────────────────────────────────────
@@ -645,7 +645,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$28–$45',
       'is_featured': true,
       'affiliate_url': 'https://www.amazon.com/s?k=led+grow+light+bar+full+spectrum&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/Boost-MaxPro-Grow-Lights-Comp.jpg?v=1762450181',
     },
     {
       'name': 'Seedling Grow Light with Timer (4-panel)',
@@ -654,7 +654,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$69.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/grow-lights',
-      'image_url': '',
+      'image_url': 'https://trimleaf.com/cdn/shop/products/horticulture-lighting-group-hlg-65-v2-led-grow-light-19937730298016_600x.jpg?v=1733805852',
     },
     {
       'name': 'Clip-On Grow Light for Windowsill',
@@ -663,7 +663,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$18–$30',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=clip+on+grow+light+plant&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://trimleaf.com/cdn/shop/files/IONLED36WCloneLEDFront_600x.webp?v=1754514804',
     },
     {
       'name': 'Full-Spectrum LED Panel 45W',
@@ -672,7 +672,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$35–$55',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=45w+led+grow+light+panel&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://trimleaf.com/cdn/shop/files/horticulture-lighting-group-hlg-100-v2-veg-led-grow-light-41237983887576_600x.jpg?v=1733805845',
     },
     {
       'name': 'Indoor Herb Garden Grow Light Station',
@@ -681,7 +681,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$89.95',
       'is_featured': false,
       'affiliate_url': 'https://www.gardeners.com/category/grow-lights',
-      'image_url': '',
+      'image_url': 'https://trimleaf.com/cdn/shop/files/sunblaster-sunblaster-led-hydroponic-grow-system-39870958371032_600x.jpg?v=1733806187',
     },
 
     // ── OUTDOOR LIGHTING ──────────────────────────────────────────────────
@@ -692,7 +692,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$22–$36',
       'is_featured': true,
       'affiliate_url': 'https://www.amazon.com/s?k=solar+pathway+garden+lights&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://gigalumi.com/cdn/shop/files/XF-XIN-Warm-Scene-1200x1200-01_grande.jpg?v=1686619208',
     },
     {
       'name': 'Waterproof LED Garden Spotlights (2-pack)',
@@ -701,7 +701,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$28–$45',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=waterproof+led+garden+spotlights&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://gigalumi.com/cdn/shop/files/SP-MTY-2BC2_grande.jpg?v=1754986864',
     },
     {
       'name': 'Solar String Fairy Lights (33 ft)',
@@ -710,7 +710,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$16–$25',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=solar+string+fairy+lights+outdoor&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://gigalumi.com/cdn/shop/files/P-GX120-2YCO_-8_-2000x2000_grande.jpg?v=1775806920',
     },
     {
       'name': 'Motion-Activated Garden Floodlight',
@@ -719,7 +719,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$30–$50',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=motion+sensor+outdoor+floodlight&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://gigalumi.com/cdn/shop/files/PWL-FGMP-2BM2_grande.jpg?v=1755151770',
     },
     {
       'name': 'Mason Jar Solar Lanterns (4-pack)',
@@ -728,7 +728,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$20–$32',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=mason+jar+solar+lanterns+outdoor&tag=sprouttogether-20',
-      'image_url': '',
+      'image_url': 'https://gigalumi.com/cdn/shop/files/MJL-6-Warm-Scene-1200x1200-02_grande.jpg?v=1687748984',
     },
   ];
 
