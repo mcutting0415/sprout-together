@@ -165,28 +165,41 @@ const Map<String, String> kPlantImageFallbacks = {
 };
 
 /// Returns the best image URL for a plant.
-/// Skips Wikipedia/Wikimedia URLs since they block external app hotlinking.
-/// Uses [supabaseUrl] if it is a valid, non-Wikipedia http URL.
-/// Falls back to [kPlantImageFallbacks] by plant name when Supabase URL is missing or blocked.
+/// Priority: kPlantImageFallbacks (verified correct) > Supabase DB URL.
+/// The fallback map is checked first to guarantee correct plant images
+/// regardless of what the DB contains. The DB URL is used only for plants
+/// not covered by the map.
 /// Returns null if no image is available (caller should show placeholder).
 String? bestPlantImageUrl(String? supabaseUrl, String? plantName) {
-  // Only trust Unsplash URLs or our own Supabase storage.
+  // 1. Check kPlantImageFallbacks first — verified correct image for this plant.
+  if (plantName != null && plantName.isNotEmpty) {
+    final key = plantName.toLowerCase().trim();
+    // Exact match
+    if (kPlantImageFallbacks.containsKey(key)) {
+      return kPlantImageFallbacks[key];
+    }
+    // Partial match handles DB variants like "chamomile (german)" → "chamomile",
+    // "crimson clover" → "clover", "arugula (wild/rocket)" → "arugula".
+    // Use longest-key-first to avoid short keys (e.g. "pea") stealing longer names.
+    String? bestMatchUrl;
+    int bestMatchLen = 0;
+    for (final entry in kPlantImageFallbacks.entries) {
+      if ((key.contains(entry.key) || entry.key.contains(key)) &&
+          entry.key.length > bestMatchLen) {
+        bestMatchUrl = entry.value;
+        bestMatchLen = entry.key.length;
+      }
+    }
+    if (bestMatchUrl != null) return bestMatchUrl;
+  }
+
+  // 2. Trusted DB URL (Unsplash or our own Supabase storage) as genuine fallback.
   if (supabaseUrl != null &&
       supabaseUrl.isNotEmpty &&
       (supabaseUrl.contains('images.unsplash.com') ||
        supabaseUrl.contains('supabase.co/storage'))) {
     return supabaseUrl;
   }
-  if (plantName == null || plantName.isEmpty) return null;
-  final key = plantName.toLowerCase().trim();
-  if (kPlantImageFallbacks.containsKey(key)) {
-    return kPlantImageFallbacks[key];
-  }
-  // Partial match: e.g. "Cherry Tomatoes F1" → 'cherry tomato'
-  for (final entry in kPlantImageFallbacks.entries) {
-    if (key.contains(entry.key) || entry.key.contains(key)) {
-      return entry.value;
-    }
-  }
+
   return null;
 }
