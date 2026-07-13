@@ -22,7 +22,6 @@ const Map<String, String> kPlantImageFallbacks = {
   'bell pepper': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Green-Yellow-Red-Pepper-2009.jpg/600px-Green-Yellow-Red-Pepper-2009.jpg',
   'bitter melon': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Momordica_charantia_Blanco2.357.png/600px-Momordica_charantia_Blanco2.357.png',
   'black-eyed susan': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Rudbeckia_hirta_kz03.jpg/600px-Rudbeckia_hirta_kz03.jpg',
-  'black-eyed susan': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Rudbeckia_hirta_kz03.jpg/600px-Rudbeckia_hirta_kz03.jpg',
   'bok choy (baby)': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Bok_Choy_%2849553125456%29.jpg/600px-Bok_Choy_%2849553125456%29.jpg',
   'borage': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Borago_officinalis_%282025%29.jpg/600px-Borago_officinalis_%282025%29.jpg',
   'borage (for continuity)': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Borago_officinalis_%282025%29.jpg/600px-Borago_officinalis_%282025%29.jpg',
