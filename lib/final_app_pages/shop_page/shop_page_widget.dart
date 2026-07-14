@@ -622,7 +622,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=copper+slug+snail+barrier+tape&tag=sprouttogether-20',
       // garden bed edge — barrier context, distinct from marigolds
-      'image_url': 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80&fit=crop',
     },
     {
       'name': 'Yellow Sticky Insect Traps (24-pack)',
@@ -632,7 +632,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=yellow+sticky+traps+garden&tag=sprouttogether-20',
       // yellow pansy / bright yellow flowers — yellow sticky trap colour match
-      'image_url': 'https://images.unsplash.com/photo-1674365635962-c603b6ec772d?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
     },
     {
       'name': 'Diatomaceous Earth (4 lbs food grade)',
@@ -642,7 +642,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=food+grade+diatomaceous+earth&tag=sprouttogether-20',
       // echinacea / coneflower — natural pest resistance, distinct from marigold
-      'image_url': 'https://images.unsplash.com/photo-1595231776925-fedc9047ef4a?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
     },
     {
       'name': 'BT Spray — Caterpillar & Worm Control',
@@ -1115,7 +1115,7 @@ const _kShopProductImageOverrides = <String, String>{
   'Hori Hori Garden Knife':
       'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80&fit=crop',
   'Radius Garden Kneeler':
-      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1665395131699-f904d110acf5?w=400&q=80&fit=crop',
   'Tomato Cage Set of 3':
       'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400&q=80&fit=crop',
   // ── SOIL & AMENDMENTS ────────────────────────────────────────────────────
@@ -1137,18 +1137,18 @@ const _kShopProductImageOverrides = <String, String>{
   'Terracotta Pot Set - 3 Sizes':
       'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80&fit=crop',
   'Hanging Basket with Coconut Liner':
-      'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80&fit=crop',
   'Self-Watering Planter Box':
       'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
   'Raised Garden Bed - 4x4 Cedar':
       'https://images.unsplash.com/photo-1665395131699-f904d110acf5?w=400&q=80&fit=crop',
   // ── PEST CONTROL ─────────────────────────────────────────────────────────
   'Neem Oil Spray - Organic':
-      'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
   'Yellow Sticky Trap Strips - 20 Pack':
       'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
   'Diatomaceous Earth - 4 lb':
-      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
   'Copper Tape Slug Barrier - 30ft':
       'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80&fit=crop',
   // ── GROW LIGHTS ──────────────────────────────────────────────────────────
