@@ -14,6 +14,7 @@ import 'flutter_flow/flutter_flow_util.dart';
 import 'flutter_flow/nav/nav.dart';
 import 'index.dart';
 import 'services/notification_service.dart';
+import 'services/subscription_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +28,9 @@ void main() async {
   // Initialize local notifications
   await NotificationService.instance.initialize();
   await NotificationService.instance.requestPermission();
+
+  // Initialize RevenueCat subscriptions
+  await SubscriptionService.instance.initialize();
 
   final appState = FFAppState(); // Initialize FFAppState
   await appState.initializePersistedState();
