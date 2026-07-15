@@ -208,8 +208,8 @@ class _PaywallWidgetState extends State<PaywallWidget> {
                                   color: Colors.white, strokeWidth: 2))
                           : Text(
                               _selected == annual
-                                  ? 'Start Growing — $49.99 / year'
-                                  : 'Start Growing — $7.99 / month',
+                                  ? 'Start Growing — \$49.99 / year'
+                                  : 'Start Growing — \$7.99 / month',
                               style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w600, fontSize: 16)),
                     ),
@@ -242,7 +242,7 @@ class _PaywallWidgetState extends State<PaywallWidget> {
 
   String _annualSub(Package p) {
     final monthly = p.storeProduct.price / 12;
-    return 'Just $${monthly.toStringAsFixed(2)}/mo · billed annually';
+    return 'Just \$${monthly.toStringAsFixed(2)}/mo · billed annually';
   }
 }
 
