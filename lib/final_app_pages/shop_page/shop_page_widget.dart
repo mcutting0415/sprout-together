@@ -80,7 +80,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$129.95',
       'is_featured': true,
       'affiliate_url': 'https://www.anrdoezrs.net/click-8012865-4297609?url=https%3A%2F%2Fwww.clickandgrow.com%2Fproducts%2Fthe-smart-garden-9',
-      'image_url': 'https://images.unsplash.com/photo-1585501502957-37fca56e1e47?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
     },
     {
       'name': 'Smart Garden 9 PRO — App-Controlled Indoor Garden',
@@ -89,7 +89,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$229.95',
       'is_featured': false,
       'affiliate_url': 'https://www.anrdoezrs.net/click-8012865-4297609?url=https%3A%2F%2Fwww.clickandgrow.com%2Fproducts%2Fthe-smart-garden-9-pro',
-      'image_url': 'https://images.unsplash.com/photo-1585501502957-37fca56e1e47?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
     },
     {
       'name': 'Smart Garden 27 — Large Indoor Home Garden',
@@ -98,7 +98,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'price_estimate': r'$299.95',
       'is_featured': false,
       'affiliate_url': 'https://www.anrdoezrs.net/click-8012865-4297609?url=https%3A%2F%2Fwww.clickandgrow.com%2Fproducts%2Fsmart-garden-27-home-garden',
-      'image_url': 'https://images.unsplash.com/photo-1585501502957-37fca56e1e47?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
     },
     {
       'name': 'Click & Grow Herb Garden Plant Pods (9-Pack)',
@@ -808,7 +808,7 @@ const _kShopProductImageOverrides = <String, String>{
       'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400&q=80&fit=crop',
   // ── SOIL & AMENDMENTS ────────────────────────────────────────────────────
   'FoxFarm Ocean Forest Potting Soil':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Worm-Castings-Comp.jpg?v=1762440335',
+      'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&q=80&fit=crop',
   'Espoma Tomato-Tone Fertilizer':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/1745345731_fertilizer_espoma_plant_tone_5_3_3_organic_4lb_bag_comp_ed1747a6-e555-4d09-835e-d961d8ffbac1.jpg?v=1762453402',
   'Coco Coir Brick - 5 Pack':
@@ -816,7 +816,7 @@ const _kShopProductImageOverrides = <String, String>{
   'Perlite - 8 Quart Bag':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/perlite-wm_1_1222x1222_0ec1fbb2-971b-46cc-b9b1-c419857199a5.jpg?v=1764633919',
   'Worm Castings - 15 lb Bag':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Worm-Castings-Comp.jpg?v=1762440335',
+      'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&q=80&fit=crop',
   'Espoma Herb and Vegetable Fertilizer':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/1740507920_fertilizer_espoma_garden_food_10_10_10_675lb_bag_wm_comp_1bbd3198-7fb7-45da-9b03-014f49de965b.jpg?v=1762453068',
   // ── POTS & CONTAINERS ────────────────────────────────────────────────────
@@ -832,18 +832,18 @@ const _kShopProductImageOverrides = <String, String>{
       'https://images.unsplash.com/photo-1665395131699-f904d110acf5?w=400&q=80&fit=crop',
   // ── PEST CONTROL ─────────────────────────────────────────────────────────
   'Neem Oil Spray - Organic':
-      'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1595231776925-fedc9047ef4a?w=400&q=80&fit=crop',
   'Yellow Sticky Trap Strips - 20 Pack':
-      'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1674365635962-c603b6ec772d?w=400&q=80&fit=crop',
   'Diatomaceous Earth - 4 lb':
-      'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400&q=80&fit=crop',
   'Copper Tape Slug Barrier - 30ft':
-      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
   // ── GROW LIGHTS ──────────────────────────────────────────────────────────
   'LED Grow Light Bar - Full Spectrum':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/Boost-MaxPro-Grow-Lights-Comp.jpg?v=1762450181',
   'Seedling Heat Mat with Thermostat':
-      'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
   '4-Tier Grow Light Stand':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/Boost-MaxPro-Grow-Lights-Comp.jpg?v=1762450181',
   'Outlet Timer for Grow Lights':
