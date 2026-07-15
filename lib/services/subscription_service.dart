@@ -73,11 +73,10 @@ class SubscriptionService {
   Future<bool> purchasePackage(Package package) async {
     if (!_initialized) return false;
     try {
-      final result = await Purchases.purchase(
-        PurchaseParams(package: package),
-      );
-      return result.customerInfo.entitlements.active
-          .containsKey(entitlementId);
+      // ignore: deprecated_member_use
+      await Purchases.purchasePackage(package);
+      final info = await Purchases.getCustomerInfo();
+      return info.entitlements.active.containsKey(entitlementId);
     } on PlatformException catch (e) {
       if (PurchasesErrorHelper.getErrorCode(e) ==
           PurchasesErrorCode.purchaseCancelledError) {
