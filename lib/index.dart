@@ -42,3 +42,6 @@ export '/final_app_pages/garden_goals_page/garden_goals_page_widget.dart'
     show GardenGoalsPageWidget;
 export '/final_app_pages/garden_tips_page/garden_tips_page_widget.dart'
     show GardenTipsPageWidget;
+
+export '/final_app_pages/paywall/paywall_widget.dart'
+    show PaywallWidget;
