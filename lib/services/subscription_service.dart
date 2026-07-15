@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 /// Central service for managing RevenueCat subscriptions.
@@ -14,9 +15,9 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 ///      - Create an Entitlement named "premium" containing both products.
 ///      - Create a default Offering that includes a monthly and annual Package.
 class SubscriptionService {
-  // ── Replace with your RevenueCat iOS Public SDK Key ──────────────────
+  // ── Replace with your RevenueCat iOS Public SDK Key ────────────────────
   static const String _iosApiKey = 'appl_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-  // ─────────────────────────────────────────────────────────────────────
+  // ────────────────────────────────────────────────────────────────────
 
   /// The RevenueCat entitlement identifier to check for premium access.
   static const String entitlementId = 'premium';
@@ -72,10 +73,16 @@ class SubscriptionService {
   Future<bool> purchasePackage(Package package) async {
     if (!_initialized) return false;
     try {
-      final info = await Purchases.purchasePackage(package);
-      return info.entitlements.active.containsKey(entitlementId);
-    } on PurchasesErrorCode catch (e) {
-      if (e == PurchasesErrorCode.purchaseCancelledError) return false;
+      final result = await Purchases.purchase(
+        PurchaseParams(package: package),
+      );
+      return result.customerInfo.entitlements.active
+          .containsKey(entitlementId);
+    } on PlatformException catch (e) {
+      if (PurchasesErrorHelper.getErrorCode(e) ==
+          PurchasesErrorCode.purchaseCancelledError) {
+        return false;
+      }
       debugPrint('SubscriptionService.purchasePackage error: $e');
       return false;
     } catch (e) {
