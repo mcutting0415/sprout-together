@@ -16,6 +16,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'settings_page2_model.dart';
 export 'settings_page2_model.dart';
+import '/services/subscription_service.dart';
+import '/final_app_pages/paywall/paywall_widget.dart';
 
 /// Create a Settings Page for my gardening app called SproutTogether.
 ///
@@ -136,11 +138,18 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
   late SettingsPage2Model _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isPremium = false;
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => SettingsPage2Model());
+    _checkSubscription();
+  }
+
+  Future<void> _checkSubscription() async {
+    final premium = await SubscriptionService.instance.isPremium();
+    if (mounted) setState(() => _isPremium = premium);
   }
 
   @override
@@ -239,7 +248,7 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                                           children: [
                                             Text('Current Plan',
                                                 style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 15.0)),
-                                            Text('Free Plan',
+                                            Text(_isPremium ? 'Premium Plan' : 'Free Plan',
                                                 style: GoogleFonts.poppins(
                                                     fontSize: 12.0,
                                                     color: FlutterFlowTheme.of(context).secondaryText)),
@@ -252,7 +261,7 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                                           color: FlutterFlowTheme.of(context).primary.withOpacity(0.12),
                                           borderRadius: BorderRadius.circular(20.0),
                                         ),
-                                        child: Text('FREE',
+                                        child: Text(_isPremium ? 'PREMIUM' : 'FREE',
                                             style: GoogleFonts.poppins(
                                                 fontSize: 11.0,
                                                 fontWeight: FontWeight.bold,
@@ -264,7 +273,11 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                                   InkWell(
                                     borderRadius: BorderRadius.circular(12.0),
                                     onTap: () {
-                                      // TODO: link to subscription management page or in-app paywall
+                                      Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PaywallWidget()),
+                  ).then((purchased) {
+                    if (purchased == true) _checkSubscription();
+                  });
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 4.0),
