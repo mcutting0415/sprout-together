@@ -101,9 +101,25 @@ workflows:
           codesign --verify --deep --strict "$APP_PATH" && echo "SIGNED OK"
           echo "=== Cert used to sign ==="
           codesign -dvvv "$APP_PATH" 2>&1 | grep -E "SHA1|CDHash|Authority|Identifier"
-          cd /tmp && rm -rf Payload && mkdir Payload
+          cd /tmp && rm -rf Payload SwiftSupport && mkdir Payload
           ditto Runner.xcarchive/Products/Applications/Runner.app Payload/Runner.app
-          ditto -c -k --keepParent Payload Runner.ipa
+          # Build SwiftSupport folder for apps with Swift frameworks (required by Apple)
+          TOOLCHAIN="$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos"
+          mkdir -p SwiftSupport
+          for dylib in $(find Payload/Runner.app/Frameworks -name "libswift*.dylib" 2>/dev/null); do
+            name=$(basename "$dylib")
+            if [ -f "$TOOLCHAIN/$name" ]; then
+              cp "$TOOLCHAIN/$name" SwiftSupport/
+              echo "SwiftSupport: added $name"
+            fi
+          done
+          if [ "$(ls -A SwiftSupport 2>/dev/null)" ]; then
+            echo "=== Creating IPA with SwiftSupport folder ==="
+            (cd /tmp && zip -qr Runner.ipa Payload SwiftSupport)
+          else
+            echo "=== No Swift dylibs found, creating IPA without SwiftSupport ==="
+            ditto -c -k --keepParent Payload Runner.ipa
+          fi
           echo "IPA size: $(wc -c < Runner.ipa) bytes"
           mkdir -p /Users/builder/clone/build/ios/ipa
           cp /tmp/Runner.ipa /Users/builder/clone/build/ios/ipa/
