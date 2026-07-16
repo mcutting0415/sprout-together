@@ -1,6 +1,6 @@
 import '/auth/supabase_auth/auth_util.dart';
-import '/final_app_pages/final_header/final_header_widget.dart';
 import '/index.dart';
+import '/components/header_widget.dart';
 import '/components/section_card_child2_widget.dart';
 import '/components/section_card_child3_widget.dart';
 import '/components/section_card_child4_widget.dart';
@@ -33,7 +33,7 @@ import '/final_app_pages/paywall/paywall_widget.dart';
 /// * Subtle shadows
 /// * Modern gardening aesthetic
 /// * Friendly and welcoming
-/// * Consistent with Plant Library, GarJen Builder, Companion Guide, and
+/// * Consistent with Plant Library, Garden Builder, Companion Guide, and
 /// Planner pages
 /// * Mobile-first design
 /// * Use my reusable SproutTogether header component at the top
@@ -181,10 +181,10 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 wrapWithModel(
-                  model: _model.finalHeaderModel,
+                  model: _model.headerModel,
                   updateCallback: () => safeSetState(() {}),
-                  child: FinalHeaderWidget(
-                    pageTitle: 'Settings',
+                  child: HeaderWidget(
+                    title: 'Settings',
                   ),
                 ),
                 Padding(
