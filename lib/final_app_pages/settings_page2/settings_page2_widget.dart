@@ -1,4 +1,6 @@
-import '/components/header_widget.dart';
+import '/auth/supabase_auth/auth_util.dart';
+import '/final_app_pages/final_header/final_header_widget.dart';
+import '/index.dart';
 import '/components/section_card_child2_widget.dart';
 import '/components/section_card_child3_widget.dart';
 import '/components/section_card_child4_widget.dart';
@@ -179,10 +181,10 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 wrapWithModel(
-                  model: _model.headerModel,
+                  model: _model.finalHeaderModel,
                   updateCallback: () => safeSetState(() {}),
-                  child: HeaderWidget(
-                    title: 'Settings',
+                  child: FinalHeaderWidget(
+                    pageTitle: 'Settings',
                   ),
                 ),
                 Padding(
@@ -376,6 +378,39 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                         child: SectionCardChild7Widget(),
                       ),
                     ].divide(SizedBox(height: 24.0)),
+                  ),
+                ),
+                                // ── Sign Out ───────────────────────────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 12.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        GoRouter.of(context).prepareAuthEvent();
+                        await authManager.signOut();
+                        GoRouter.of(context).clearRedirectLocation();
+                        if (context.mounted) {
+                          context.pushReplacementNamed(LoginPageWidget.routeName);
+                        }
+                      },
+                      icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                      label: Text(
+                        'Sign Out',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: FlutterFlowTheme.of(context).primary,
+                        padding: const EdgeInsets.symmetric(vertical: 14.0),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0)),
+                        elevation: 2,
+                      ),
+                    ),
                   ),
                 ),
                 // ── Delete Account ─────────────────────────────────────
