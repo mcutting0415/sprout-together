@@ -475,8 +475,15 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
           .order('is_featured', ascending: false)
           .order('display_order');
       final dbProducts = List<Map<String, dynamic>>.from(response as List);
-      // Merge DB products with curated partner products; DB products go first
-      final merged = [...dbProducts, ..._curatedProducts];
+      // Only show products from approved affiliate programs.
+      // Approved: Click & Grow (CJ), Amazon Associates.
+      const _kApprovedStores = {'Click & Grow', 'Amazon Garden', 'Amazon'};
+      final filteredDbProducts = dbProducts.where((p) {
+        final storeName = (p['store_name'] ?? '') as String;
+        return _kApprovedStores.any((s) => storeName.contains(s));
+      }).toList();
+      // Merge filtered DB products with curated partner products; DB first
+      final merged = [...filteredDbProducts, ..._curatedProducts];
       setState(() {
         _allProducts = merged;
         _loading = false;
