@@ -819,6 +819,58 @@ const _kShopProductImageOverrides = <String, String>{
       'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
   'Outlet Timer for Grow Lights':
       'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=400&q=80&fit=crop',
+
+  // ── SEEDS (DB-only overrides) ────────────────────────────────────────────
+  'Basil Seeds - Genovese':
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&fit=crop',
+  'Sweet Pepper Seed Mix':
+      'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&q=80&fit=crop',
+  'Cucumber Straight Eight Seeds':
+      'https://images.unsplash.com/photo-1604977042946-1eecc30f269e?w=400&q=80&fit=crop',
+  'Wildflower Seed Mix':
+      'https://images.unsplash.com/photo-1490750967868-88df5691cc8a?w=400&q=80&fit=crop',
+  'Marigold Seeds - French Mix':
+      'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
+  'Sunflower Seeds - Giant Russian':
+      'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400&q=80&fit=crop',
+  'Zucchini Seeds - Black Beauty':
+      'https://images.unsplash.com/photo-1596097635121-14b63b7a0c19?w=400&q=80&fit=crop',
+
+  // ── TOOLS (DB-only overrides) ────────────────────────────────────────────
+  'Ergonomic Trowel Set':
+      'https://images.unsplash.com/photo-1665395131262-c2df665c2cbe?w=400&q=80&fit=crop',
+  'Bypass Pruner - Felco F2':
+      'https://images.unsplash.com/photo-1677941731347-0369249f7aa8?w=400&q=80&fit=crop',
+  'Garden Hose with Nozzle':
+      'https://images.unsplash.com/photo-1680124744736-859f16257ef0?w=400&q=80&fit=crop',
+
+  // ── SOIL & AMENDMENTS (DB-only overrides) ────────────────────────────────
+  'FoxFarm Ocean Forest Potting Soil':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/Worm-Castings-Comp.jpg?v=1762440335',
+
+  // ── POTS & CONTAINERS (DB-only overrides) ────────────────────────────────
+  '15-Gallon Fabric Grow Bag Set of 5':
+      'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
+  'Terracotta Pot Set - 3 Sizes':
+      'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80&fit=crop',
+
+  // ── PEST CONTROL (DB-only overrides) ─────────────────────────────────────
+  'Neem Oil Spray - Organic':
+      'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400&q=80&fit=crop',
+  'Yellow Sticky Trap Strips - 20 Pack':
+      'https://images.unsplash.com/photo-1674365635962-c603b6ec772d?w=400&q=80&fit=crop',
+  'Diatomaceous Earth - 4 lb':
+      'https://images.unsplash.com/photo-1595231776925-fedc9047ef4a?w=400&q=80&fit=crop',
+  'Copper Tape Slug Barrier - 30ft':
+      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
+
+  // ── OUTDOOR LIGHTING (DB-only overrides) ─────────────────────────────────
+  'Solar Garden Path Lights - Set of 8':
+      'https://images.unsplash.com/photo-1611095973763-414019e72400?w=400&q=80&fit=crop',
+  'Solar Spotlights for Garden Beds':
+      'https://images.unsplash.com/photo-1498940757830-82f7813bf178?w=400&q=80&fit=crop',
+  'Outdoor String Lights - 48ft Edison':
+      'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=400&q=80&fit=crop',
 };
 
 // Reliable Unsplash fallback images per category.
