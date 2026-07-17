@@ -41,31 +41,31 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
     'Outdoor Lighting',
   ];
 
-  // ââ Partner stores ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Partner stores ──────────────────────────────────────────────────────────
   static const List<Map<String, dynamic>> _partnerStores = [
     {
       'name': 'Click & Grow',
-      'tagline': 'Smart indoor gardens â herbs, veggies & fruits year-round',
-      'logo_emoji': 'ð¿',
+      'tagline': 'Smart indoor gardens — herbs, veggies & fruits year-round',
+      'logo_emoji': '🌿',
       'color': 0xFF2E7D52,
       'url': 'https://www.anrdoezrs.net/click-8012865-4297609',
     },
     {
       'name': 'Amazon Garden',
-      'tagline': 'Millions of garden products â tools, lights, soil & more',
-      'logo_emoji': 'ð¦',
+      'tagline': 'Millions of garden products — tools, lights, soil & more',
+      'logo_emoji': '📦',
       'color': 0xFFFF9900,
       'url': 'https://www.amazon.com/gardening?tag=sprouttogether-20',
     },
   ];
 
-  // ââ Curated products (hardcoded) âââââââââââââââââââââââââââââââââââââââââ
+  // ── Curated products (hardcoded) ─────────────────────────────────────────
   // These show in the grid alongside any DB products.
   // Replace affiliate_url values with your tracked links.
   static const List<Map<String, dynamic>> _curatedProducts = [
-    // ââ SMART GARDENS (Click & Grow â CJ affiliate, Active) âââââââââââââââââââ
+    // ── SMART GARDENS (Click & Grow — CJ affiliate, Active) ───────────────────
     {
-      'name': 'Smart Garden 3 â Countertop Indoor Garden',
+      'name': 'Smart Garden 3 — Countertop Indoor Garden',
       'category': 'Smart Gardens',
       'store_name': 'Click & Grow',
       'price_estimate': r'$49.99',
@@ -74,31 +74,31 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'image_url': 'https://images.unsplash.com/photo-1585501502957-37fca56e1e47?w=400&q=80&fit=crop',
     },
     {
-      'name': 'Smart Garden 9 â Best-Selling Indoor Garden',
+      'name': 'Smart Garden 9 — Best-Selling Indoor Garden',
       'category': 'Smart Gardens',
       'store_name': 'Click & Grow',
       'price_estimate': r'$129.95',
       'is_featured': true,
       'affiliate_url': 'https://www.anrdoezrs.net/click-8012865-4297609?url=https%3A%2F%2Fwww.clickandgrow.com%2Fproducts%2Fthe-smart-garden-9',
-      'image_url': 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1682629088818-1ec55d0cf45b?w=400&q=80&fit=crop',
     },
     {
-      'name': 'Smart Garden 9 PRO â App-Controlled Indoor Garden',
+      'name': 'Smart Garden 9 PRO — App-Controlled Indoor Garden',
       'category': 'Smart Gardens',
       'store_name': 'Click & Grow',
       'price_estimate': r'$229.95',
       'is_featured': false,
       'affiliate_url': 'https://www.anrdoezrs.net/click-8012865-4297609?url=https%3A%2F%2Fwww.clickandgrow.com%2Fproducts%2Fthe-smart-garden-9-pro',
-      'image_url': 'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1583753075968-1236ccb83c66?w=400&q=80&fit=crop',
     },
     {
-      'name': 'Smart Garden 27 â Large Indoor Home Garden',
+      'name': 'Smart Garden 27 — Large Indoor Home Garden',
       'category': 'Smart Gardens',
       'store_name': 'Click & Grow',
       'price_estimate': r'$299.95',
       'is_featured': false,
       'affiliate_url': 'https://www.anrdoezrs.net/click-8012865-4297609?url=https%3A%2F%2Fwww.clickandgrow.com%2Fproducts%2Fsmart-garden-27-home-garden',
-      'image_url': 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1682629088776-3fa75a03bb86?w=400&q=80&fit=crop',
     },
     {
       'name': 'Click & Grow Herb Garden Plant Pods (9-Pack)',
@@ -118,12 +118,12 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'affiliate_url': 'https://www.anrdoezrs.net/click-8012865-4297609?url=https%3A%2F%2Fwww.clickandgrow.com%2Fcollections%2Fplant-pods',
       'image_url': 'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
     },
-    // ââ SEEDS (Amazon Associates) âââââââââââââââââââââââââââââââââââââââââââ
+    // ── SEEDS (Amazon Associates) ───────────────────────────────────────────
     {
       'name': 'Heirloom Vegetable Seed Collection (35 varieties)',
       'category': 'Seeds',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$18â$28',
+      'price_estimate': r'$18–$28',
       'is_featured': true,
       'affiliate_url': 'https://www.amazon.com/s?k=heirloom+vegetable+seeds+collection&tag=sprouttogether-20',
       'image_url': 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
@@ -132,16 +132,16 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Organic Herb Seeds Variety Pack (15 types)',
       'category': 'Seeds',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$12â$18',
+      'price_estimate': r'$12–$18',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=organic+herb+seeds+variety+pack&tag=sprouttogether-20',
-      'image_url': 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1726994804363-5c7ce2255254?w=400&q=80&fit=crop',
     },
     {
       'name': 'Microgreens Seed Growing Kit',
       'category': 'Seeds',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$14â$22',
+      'price_estimate': r'$14–$22',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=microgreens+seeds+growing+kit&tag=sprouttogether-20',
       'image_url': 'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
@@ -150,26 +150,26 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Tomato Seed Variety Pack (10 types)',
       'category': 'Seeds',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$10â$16',
+      'price_estimate': r'$10–$16',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=tomato+seeds+variety+pack&tag=sprouttogether-20',
-      'image_url': 'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1563760836797-bf5d5f9d2243?w=400&q=80&fit=crop',
     },
     {
       'name': 'Pepper Seed Assortment (Sweet & Hot)',
       'category': 'Seeds',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$8â$14',
+      'price_estimate': r'$8–$14',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=pepper+seeds+assortment+sweet+hot&tag=sprouttogether-20',
       'image_url': 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&q=80&fit=crop',
     },
-    // ââ TOOLS (Amazon) ââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── TOOLS (Amazon) ──────────────────────────────────────────────────
     {
       'name': 'Soil Knife (Hori Hori) with Sheath',
       'category': 'Tools',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$22â$35',
+      'price_estimate': r'$22–$35',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=hori+hori+soil+knife&tag=sprouttogether-20',
       // garden fork pushed into rich soil
@@ -179,7 +179,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Heavy-Duty Garden Pruning Shears',
       'category': 'Tools',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$18â$32',
+      'price_estimate': r'$18–$32',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=garden+pruning+shears&tag=sprouttogether-20',
       // pruning shears / secateurs
@@ -189,18 +189,18 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Soil pH & Moisture Meter',
       'category': 'Tools',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$12â$20',
+      'price_estimate': r'$12–$20',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=soil+pH+moisture+meter&tag=sprouttogether-20',
       // hands working in dark rich soil
       'image_url': 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
     },
-    // ââ SOIL & AMENDMENTS (Amazon) ââââââââââââââââââââââââââââââââââââââ
+    // ── SOIL & AMENDMENTS (Amazon) ──────────────────────────────────────
     {
       'name': 'Perlite for Drainage (8 qt)',
       'category': 'Soil & Amendments',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$14â$18',
+      'price_estimate': r'$14–$18',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=horticultural+perlite&tag=sprouttogether-20',
       'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/perlite-wm_1_1222x1222_0ec1fbb2-971b-46cc-b9b1-c419857199a5.jpg?v=1764633919',
@@ -209,27 +209,27 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Raised Bed Soil Blend (1.5 cu ft)',
       'category': 'Soil & Amendments',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$17â$24',
+      'price_estimate': r'$17–$24',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=raised+bed+soil&tag=sprouttogether-20',
-      // seedlings in a raised garden bed â distinct from dark soil shot
-      'image_url': 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
+      // seedlings in a raised garden bed — distinct from dark soil shot
+      'image_url': 'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=400&q=80&fit=crop',
     },
     {
       'name': 'Coco Coir Brick (10 lbs compressed)',
       'category': 'Soil & Amendments',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$18â$28',
+      'price_estimate': r'$18–$28',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=coco+coir+brick&tag=sprouttogether-20',
       'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/Collage_Minute_Soil_2_50be3d92-ca63-4cdf-bbed-d3cf8fca2acd.jpg?v=1776821374',
     },
-    // ââ FERTILIZERS (Amazon) ââââââââââââââââââââââââââââââââââââââââââââ
+    // ── FERTILIZERS (Amazon) ────────────────────────────────────────────
     {
       'name': 'Tomato & Vegetable Fertilizer (4 lbs)',
       'category': 'Fertilizers',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$15â$22',
+      'price_estimate': r'$15–$22',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=tomato+vegetable+fertilizer&tag=sprouttogether-20',
       'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/1745345731_fertilizer_espoma_plant_tone_5_3_3_organic_4lb_bag_comp_ed1747a6-e555-4d09-835e-d961d8ffbac1.jpg?v=1762453402',
@@ -238,7 +238,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Slow-Release Granular Fertilizer (5 lbs)',
       'category': 'Fertilizers',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$18â$26',
+      'price_estimate': r'$18–$26',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=slow+release+garden+fertilizer&tag=sprouttogether-20',
       'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/1740507920_fertilizer_espoma_garden_food_10_10_10_675lb_bag_wm_comp_1bbd3198-7fb7-45da-9b03-014f49de965b.jpg?v=1762453068',
@@ -247,38 +247,38 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Mycorrhizae Root Builder (4 oz)',
       'category': 'Fertilizers',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$16â$24',
+      'price_estimate': r'$16–$24',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=mycorrhizae+root+stimulator&tag=sprouttogether-20',
       'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/1686148778_CopyofTL-WM-Black-2023-06-07T081508.924.jpg?v=1762449629',
     },
-    // ââ POTS & CONTAINERS (Amazon) ââââââââââââââââââââââââââââââââââââââ
+    // ── POTS & CONTAINERS (Amazon) ──────────────────────────────────────
     {
-      'name': 'Fabric Grow Bags â 5 Gallon (5-pack)',
+      'name': 'Fabric Grow Bags — 5 Gallon (5-pack)',
       'category': 'Pots & Containers',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$15â$22',
+      'price_estimate': r'$15–$22',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=fabric+grow+bags+5+gallon&tag=sprouttogether-20',
-      // bean vines growing â plant-in-bag / container context
+      // bean vines growing — plant-in-bag / container context
       'image_url': 'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
     },
     {
-      'name': 'Fabric Grow Bags â 10 Gallon (5-pack)',
+      'name': 'Fabric Grow Bags — 10 Gallon (5-pack)',
       'category': 'Pots & Containers',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$18â$26',
+      'price_estimate': r'$18–$26',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=fabric+grow+bags+10+gallon&tag=sprouttogether-20',
-      // tomato plant growing â larger container growing context
-      'image_url': 'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
+      // tomato plant growing — larger container growing context
+      'image_url': 'https://images.unsplash.com/photo-1783345700933-6ae766a8f83c?w=400&q=80&fit=crop',
     },
-    // ââ WATERING (Amazon) âââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── WATERING (Amazon) ───────────────────────────────────────────────
     {
       'name': 'Adjustable Soaker Hose (25 ft)',
       'category': 'Watering',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$18â$28',
+      'price_estimate': r'$18–$28',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=soaker+hose+garden&tag=sprouttogether-20',
       'image_url': 'https://images.unsplash.com/photo-1468971050039-be99497410af?w=400&q=80&fit=crop',
@@ -287,7 +287,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Hose Wand with Adjustable Head',
       'category': 'Watering',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$20â$35',
+      'price_estimate': r'$20–$35',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=garden+hose+wand&tag=sprouttogether-20',
       // garden hose / spray nozzle
@@ -297,89 +297,89 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Automatic Drip Watering Spikes (12-pack)',
       'category': 'Watering',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$14â$20',
+      'price_estimate': r'$14–$20',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=automatic+plant+watering+spikes&tag=sprouttogether-20',
-      // plants with drip/moisture â distinct from drip irrigation kit
+      // plants with drip/moisture — distinct from drip irrigation kit
       'image_url': 'https://images.unsplash.com/photo-1661963694689-a800cae4e413?w=400&q=80&fit=crop',
     },
-    // ââ TRELLISES & SUPPORTS (Amazon) âââââââââââââââââââââââââââââââââââ
+    // ── TRELLISES & SUPPORTS (Amazon) ───────────────────────────────────
     {
       'name': 'Heavy-Duty Bamboo Stakes (4 ft, 25-pack)',
       'category': 'Trellises & Supports',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$12â$18',
+      'price_estimate': r'$12–$18',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=bamboo+garden+stakes&tag=sprouttogether-20',
-      // tall plants staked in garden â bamboo stakes context
+      // tall plants staked in garden — bamboo stakes context
       'image_url': 'https://images.unsplash.com/photo-1629978237678-3e6a2004958f?w=400&q=80&fit=crop',
     },
     {
-      'name': 'Cucumber & Bean Trellis Netting (5Ã15 ft)',
+      'name': 'Cucumber & Bean Trellis Netting (5×15 ft)',
       'category': 'Trellises & Supports',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$10â$16',
+      'price_estimate': r'$10–$16',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=garden+trellis+netting&tag=sprouttogether-20',
-      // passionflower / climbing vine â distinct from A-frame trellis shot
+      // passionflower / climbing vine — distinct from A-frame trellis shot
       'image_url': 'https://images.unsplash.com/photo-1628341423248-4b8c5c51a3cd?w=400&q=80&fit=crop',
     },
     {
       'name': 'Plant Clips & Twist Ties Set (100-pc)',
       'category': 'Trellises & Supports',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$8â$14',
+      'price_estimate': r'$8–$14',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=garden+plant+clips+ties&tag=sprouttogether-20',
-      // bean vine climbing â plant-clip / tie context, distinct from tomato cage shot
+      // bean vine climbing — plant-clip / tie context, distinct from tomato cage shot
       'image_url': 'https://images.unsplash.com/photo-1609473295863-2d9299af71d4?w=400&q=80&fit=crop',
     },
-    // ââ PEST CONTROL (Amazon) âââââââââââââââââââââââââââââââââââââââââââ
+    // ── PEST CONTROL (Amazon) ───────────────────────────────────────────
     {
-      'name': 'Neem Oil Spray â Organic (32 oz)',
+      'name': 'Neem Oil Spray — Organic (32 oz)',
       'category': 'Pest Control',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$14â$20',
+      'price_estimate': r'$14–$20',
       'is_featured': true,
       'affiliate_url': 'https://www.amazon.com/s?k=neem+oil+garden+spray&tag=sprouttogether-20',
-      'image_url': 'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1564505676257-57af8f7e43ab?w=400&q=80&fit=crop',
     },
     {
       'name': 'Copper Slug & Snail Barrier Tape (16 ft)',
       'category': 'Pest Control',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$10â$16',
+      'price_estimate': r'$10–$16',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=copper+slug+snail+barrier+tape&tag=sprouttogether-20',
-      // garden tools on wood â barrier/copper tape product context
+      // garden tools on wood — barrier/copper tape product context
       'image_url': 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80&fit=crop',
     },
     {
       'name': 'Yellow Sticky Insect Traps (24-pack)',
       'category': 'Pest Control',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$8â$14',
+      'price_estimate': r'$8–$14',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=yellow+sticky+traps+garden&tag=sprouttogether-20',
-      // marigold â companion planting / natural pest deterrent context
-      'image_url': 'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
+      // marigold — companion planting / natural pest deterrent context
+      'image_url': 'https://images.unsplash.com/photo-1569358731315-df9426c49e04?w=400&q=80&fit=crop',
     },
     {
       'name': 'Diatomaceous Earth (4 lbs food grade)',
       'category': 'Pest Control',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$12â$18',
+      'price_estimate': r'$12–$18',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=food+grade+diatomaceous+earth&tag=sprouttogether-20',
-      // dark rich soil / earth tones â powder/amendment product context
-      'image_url': 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
+      // dark rich soil / earth tones — powder/amendment product context
+      'image_url': 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=400&q=80&fit=crop',
     },
-    // ââ GROW LIGHTS (Amazon) ââââââââââââââââââââââââââââââââââââââââââââ
+    // ── GROW LIGHTS (Amazon) ────────────────────────────────────────────
     {
-      'name': 'LED Grow Light Bar â Full Spectrum (24 in)',
+      'name': 'LED Grow Light Bar — Full Spectrum (24 in)',
       'category': 'Grow Lights',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$28â$45',
+      'price_estimate': r'$28–$45',
       'is_featured': true,
       'affiliate_url': 'https://www.amazon.com/s?k=led+grow+light+bar+full+spectrum&tag=sprouttogether-20',
       'image_url': 'https://cdn.shopify.com/s/files/1/2016/2681/files/Boost-MaxPro-Grow-Lights-Comp.jpg?v=1762450181',
@@ -388,28 +388,28 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Clip-On Grow Light for Windowsill',
       'category': 'Grow Lights',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$18â$30',
+      'price_estimate': r'$18–$30',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=clip+on+grow+light+plant&tag=sprouttogether-20',
-      // small herb plants on a windowsill â windowsill context
-      'image_url': 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
+      // small herb plants on a windowsill — windowsill context
+      'image_url': 'https://images.unsplash.com/photo-1660603135468-6e3be1a106c0?w=400&q=80&fit=crop',
     },
     {
       'name': 'Full-Spectrum LED Panel 45W',
       'category': 'Grow Lights',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$35â$55',
+      'price_estimate': r'$35–$5%',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=45w+led+grow+light+panel&tag=sprouttogether-20',
-      // seedlings in raised tray â panel grow light context
-      'image_url': 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
+      // seedlings in raised tray — panel grow light context
+      'image_url': 'https://images.unsplash.com/photo-1586298307213-fb3bbecaef0e?w=400&q=80&fit=crop',
     },
-    // ââ OUTDOOR LIGHTING (Amazon) âââââââââââââââââââââââââââââââââââââââ
+    // ── OUTDOOR LIGHTING (Amazon) ───────────────────────────────────────
     {
       'name': 'Solar Pathway Stake Lights (8-pack)',
       'category': 'Outdoor Lighting',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$22â$36',
+      'price_estimate': r'$22–$36',
       'is_featured': true,
       'affiliate_url': 'https://www.amazon.com/s?k=solar+pathway+garden+lights&tag=sprouttogether-20',
       'image_url': 'https://images.unsplash.com/photo-1611095973763-414019e72400?w=400&q=80&fit=crop',
@@ -418,7 +418,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Waterproof LED Garden Spotlights (2-pack)',
       'category': 'Outdoor Lighting',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$28â$45',
+      'price_estimate': r'$28–$45',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=waterproof+led+garden+spotlights&tag=sprouttogether-20',
       'image_url': 'https://images.unsplash.com/photo-1498940757830-82f7813bf178?w=400&q=80&fit=crop',
@@ -427,30 +427,30 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'name': 'Solar String Fairy Lights (33 ft)',
       'category': 'Outdoor Lighting',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$16â$25',
+      'price_estimate': r'$16–$25',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=solar+string+fairy+lights+outdoor&tag=sprouttogether-20',
-      // passionflower with warm bokeh â fairy lights ambiance
-      'image_url': 'https://images.unsplash.com/photo-1628341423248-4b8c5c51a3cd?w=400&q=80&fit=crop',
+      // passionflower with warm bokeh — fairy lights ambiance
+      'image_url': 'https://images.unsplash.com/photo-1589830517302-44c51f875686?w=400&q=80&fit=crop',
     },
     {
       'name': 'Motion-Activated Garden Floodlight',
       'category': 'Outdoor Lighting',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$30â$50',
+      'price_estimate': r'$30–$50',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=motion+sensor+outdoor+floodlight&tag=sprouttogether-20',
       // outdoor lights / floodlight on wall
-      'image_url': 'https://images.unsplash.com/photo-1498940757830-82f7813bf178?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1621886943381-cb97cc18b17a?w=400&q=80&fit=crop',
     },
     {
       'name': 'Mason Jar Solar Lanterns (4-pack)',
       'category': 'Outdoor Lighting',
       'store_name': 'Amazon Garden',
-      'price_estimate': r'$20â$32',
+      'price_estimate': r'$20–$32',
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=mason+jar+solar+lanterns+outdoor&tag=sprouttogether-20',
-      // peony / warm romantic garden flowers â lantern ambiance
+      // peony / warm romantic garden flowers — lantern ambiance
       'image_url': 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=400&q=80&fit=crop',
     },
   ];
@@ -532,7 +532,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
               updateCallback: () => safeSetState(() {}),
               child: const FinalHeaderWidget(pageTitle: 'Garden Shop'),
             ),
-            // ââ Partner Stores banner ââââââââââââââââââââââââââââââââââââ
+            // ── Partner Stores banner ────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(16.0, 12.0, 0.0, 4.0),
               child: Text(
@@ -613,7 +613,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
                                 ),
                                 const SizedBox(height: 4.0),
                                 Text(
-                                  'Shop now â',
+                                  'Shop now →',
                                   style: GoogleFonts.poppins(
                                     fontSize: 10.0,
                                     fontWeight: FontWeight.w600,
@@ -625,8 +625,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
                           ),
                         ],
                       ),
-                    ),
-                  );
+                    );
                 },
               ),
             ),
@@ -762,67 +761,19 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
   }
 }
 
-/// Per-product image overrides â checked before the Supabase image_url.
-/// Keys match the exact Supabase shop_products.name value.
-///
-/// Only products needing an override are listed here â correct Supabase images
-/// fall through automatically to the isTrustedUrl check.
+/// Per-product image overrides — checked before the DB image_url.
+/// Keys are exact product names matching the Supabase `name` column.
+/// All URLs are from trusted hosts (Unsplash or Shopify CDN).
 const _kShopProductImageOverrides = <String, String>{
-  // ââ SEEDS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── SEEDS ────────────────────────────────────────────────────────────────
   'Heirloom Tomato Seed Collection':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/best-selling-tomatoes-collection-Comp.jpg?v=1756309253',
+  'Basil Seeds - Genovese':
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&fit=crop',
   'Salad Greens Mix':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/lettuce-salad-leaf-blend-mix-com-wm_1222x1222_3570a053-1fa4-4e2b-9828-fc381d6c3376.jpg?v=1764633742',
   'Herb Garden Starter Collection':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/Organic_Herb_Collection_8_Pack_Collage_Comp.jpg?v=1778194453',
-  'Dragon Tongue Bean Seeds':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/dragons-tongue-beans-wm_700_1222x1222_2396e638-12b9-4e6a-8554-34123c4a7bef.jpg?v=1764633795',
-  'Rainbow Carrot Seeds':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Carrot-Seeds-Rainbow-Blend-Organic-comp.jpg?v=1762440662',
-
-  // ââ TOOLS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-  'DeWit Hand Weeder':
-      'https://images.unsplash.com/photo-1665395131262-c2df665c2cbe?w=400&q=80&fit=crop',
-  'Hori Hori Garden Knife':
-      'https://images.unsplash.com/photo-1677941731347-0369249f7aa8?w=400&q=80&fit=crop',
-  'Radius Garden Kneeler':
-      'https://images.unsplash.com/photo-1665395131699-f904d110acf5?w=400&q=80&fit=crop',
-  'Tomato Cage Set of 3':
-      'https://images.unsplash.com/photo-1535222830855-fd60aca7e065?w=400&q=80&fit=crop',
-
-  // ââ SOIL & AMENDMENTS ââââââââââââââââââââââââââââââââââââââââââââââââââââ
-  'Coco Coir Brick - 5 Pack':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Collage_Minute_Soil_2_50be3d92-ca63-4cdf-bbed-d3cf8fca2acd.jpg?v=1776821374',
-  'Perlite - 8 Quart Bag':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/perlite-wm_1_1222x1222_0ec1fbb2-971b-46cc-b9b1-c419857199a5.jpg?v=1764633919',
-  'Worm Castings - 15 lb Bag':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Worm-Castings-Comp.jpg?v=1762440335',
-  'Espoma Tomato-Tone Fertilizer':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/1745345731_fertilizer_espoma_plant_tone_5_3_3_organic_4lb_bag_comp_ed1747a6-e555-4d09-835e-d961d8ffbac1.jpg?v=1762453402',
-  'Espoma Herb and Vegetable Fertilizer':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/1740507920_fertilizer_espoma_garden_food_10_10_10_675lb_bag_wm_comp_1bbd3198-7fb7-45da-9b03-014f49de965b.jpg?v=1762453068',
-
-  // ââ POTS & CONTAINERS ââââââââââââââââââââââââââââââââââââââââââââââââââââ
-  'Hanging Basket with Coconut Liner':
-      'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
-  'Self-Watering Planter Box':
-      'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
-  'Raised Garden Bed - 4x4 Cedar':
-      'https://images.unsplash.com/photo-1535222830855-fd60aca7e065?w=400&q=80&fit=crop',
-
-  // ââ GROW LIGHTS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-  'LED Grow Light Bar - Full Spectrum':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Boost-MaxPro-Grow-Lights-Comp.jpg?v=1762450181',
-  '4-Tier Grow Light Stand':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Boost-MaxPro-Grow-Lights-Comp.jpg?v=1762450181',
-  'Seedling Heat Mat with Thermostat':
-      'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
-  'Outlet Timer for Grow Lights':
-      'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=400&q=80&fit=crop',
-
-  // ââ SEEDS (DB-only overrides) ââââââââââââââââââââââââââââââââââââââââââââ
-  'Basil Seeds - Genovese':
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&fit=crop',
   'Sweet Pepper Seed Mix':
       'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&q=80&fit=crop',
   'Cucumber Straight Eight Seeds':
@@ -835,36 +786,68 @@ const _kShopProductImageOverrides = <String, String>{
       'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400&q=80&fit=crop',
   'Zucchini Seeds - Black Beauty':
       'https://images.unsplash.com/photo-1596097635121-14b63b7a0c19?w=400&q=80&fit=crop',
-
-  // ââ TOOLS (DB-only overrides) ââââââââââââââââââââââââââââââââââââââââââââ
+  'Dragon Tongue Bean Seeds':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/dragons-tongue-beans-wm_700_1222x1222_2396e638-12b9-4e6a-8554-34123c4a7bef.jpg?v=1764633795',
+  'Rainbow Carrot Seeds':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/Carrot-Seeds-Rainbow-Blend-Organic-comp.jpg?v=1762440662',
+  // ── TOOLS ────────────────────────────────────────────────────────────────
   'Ergonomic Trowel Set':
       'https://images.unsplash.com/photo-1665395131262-c2df665c2cbe?w=400&q=80&fit=crop',
   'Bypass Pruner - Felco F2':
       'https://images.unsplash.com/photo-1677941731347-0369249f7aa8?w=400&q=80&fit=crop',
   'Garden Hose with Nozzle':
       'https://images.unsplash.com/photo-1680124744736-859f16257ef0?w=400&q=80&fit=crop',
-
-  // ââ SOIL & AMENDMENTS (DB-only overrides) ââââââââââââââââââââââââââââââââ
+  'DeWit Hand Weeder':
+      'https://images.unsplash.com/photo-1665395131699-f904d110acf5?w=400&q=80&fit=crop',
+  'Hori Hori Garden Knife':
+      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80&fit=crop',
+  'Radius Garden Kneeler':
+      'https://images.unsplash.com/photo-1665395131699-f904d110acf5?w=400&q=80&fit=crop',
+  'Tomato Cage Set of 3':
+      'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400&q=80&fit=crop',
+  // ── SOIL & AMENDMENTS ────────────────────────────────────────────────────
   'FoxFarm Ocean Forest Potting Soil':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/Worm-Castings-Comp.jpg?v=1762440335',
-
-  // ââ POTS & CONTAINERS (DB-only overrides) ââââââââââââââââââââââââââââââââ
+  'Espoma Tomato-Tone Fertilizer':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/1745345731_fertilizer_espoma_plant_tone_5_3_3_organic_4lb_bag_comp_ed1747a6-e555-4d09-835e-d961d8ffbac1.jpg?v=1762453402',
+  'Coco Coir Brick - 5 Pack':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/Collage_Minute_Soil_2_50be3d92-ca63-4cdf-bbed-d3cf8fca2acd.jpg?v=1776821374',
+  'Perlite - 8 Quart Bag':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/perlite-wm_1_1222x1222_0ec1fbb2-971b-46cc-b9b1-c419857199a5.jpg?v=1764633919',
+  'Worm Castings - 15 lb Bag':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/Worm-Castings-Comp.jpg?v=1762440335',
+  'Espoma Herb and Vegetable Fertilizer':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/1740507920_fertilizer_espoma_garden_food_10_10_10_675lb_bag_wm_comp_1bbd3198-7fb7-45da-9b03-014f49de965b.jpg?v=1762453068',
+  // ── POTS & CONTAINERS ────────────────────────────────────────────────────
   '15-Gallon Fabric Grow Bag Set of 5':
       'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
   'Terracotta Pot Set - 3 Sizes':
       'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80&fit=crop',
-
-  // ââ PEST CONTROL (DB-only overrides) âââââââââââââââââââââââââââââââââââââ
+  'Hanging Basket with Coconut Liner':
+      'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80&fit=crop',
+  'Self-Watering Planter Box':
+      'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
+  'Raised Garden Bed - 4x4 Cedar':
+      'https://images.unsplash.com/photo-1665395131699-f904d110acf5?w=400&q=80&fit=crop',
+  // ── PEST CONTROL ─────────────────────────────────────────────────────────
   'Neem Oil Spray - Organic':
-      'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
   'Yellow Sticky Trap Strips - 20 Pack':
-      'https://images.unsplash.com/photo-1674365635962-c603b6ec772d?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
   'Diatomaceous Earth - 4 lb':
-      'https://images.unsplash.com/photo-1595231776925-fedc9047ef4a?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
   'Copper Tape Slug Barrier - 30ft':
-      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
-
-  // ââ OUTDOOR LIGHTING (DB-only overrides) âââââââââââââââââââââââââââââââââ
+      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80&fit=crop',
+  // ── GROW LIGHTS ──────────────────────────────────────────────────────────
+  'LED Grow Light Bar - Full Spectrum':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/Boost-MaxPro-Grow-Lights-Comp.jpg?v=1762450181',
+  'Seedling Heat Mat with Thermostat':
+      'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=400&q=80&fit=crop',
+  '4-Tier Grow Light Stand':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/Boost-MaxPro-Grow-Lights-Comp.jpg?v=1762450181',
+  'Outlet Timer for Grow Lights':
+      'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=400&q=80&fit=crop',
+  // ── OUTDOOR LIGHTING ─────────────────────────────────────────────────────
   'Solar Garden Path Lights - Set of 8':
       'https://images.unsplash.com/photo-1611095973763-414019e72400?w=400&q=80&fit=crop',
   'Solar Spotlights for Garden Beds':
@@ -897,7 +880,7 @@ const _kShopCategoryFallbacks = <String, String>{
   // Bean vines climbing a support
   'Trellises & Supports':
       'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
-  // Marigolds â natural pest deterrent companion plant
+  // Marigolds — natural pest deterrent companion plant
   'Pest Control':
       'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
   // LED grow lights over seedling trays
@@ -918,14 +901,14 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
       ?? 'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop';
 
   // Map categories to emojis for the last-resort placeholder
-  final emoji = category == 'Seeds' ? 'ð±'
-      : category == 'Tools' ? 'ð§'
-      : category == 'Soil & Amendments' ? 'ðª±'
-      : category == 'Pots & Containers' ? 'ðª´'
-      : category == 'Pest Control' ? 'ð'
-      : category == 'Grow Lights' ? 'ð¡'
-      : category == 'Outdoor Lighting' ? 'ð'
-      : 'ðï¸';
+  final emoji = category == 'Seeds' ? '🌱'
+      : category == 'Tools' ? '🔧'
+      : category == 'Soil & Amendments' ? '🪱'
+      : category == 'Pots & Containers' ? '🪴'
+      : category == 'Pest Control' ? '🐛'
+      : category == 'Grow Lights' ? '💡'
+      : category == 'Outdoor Lighting' ? '🔆'
+      : '🛍️';
 
   Widget emojiPlaceholder() => Container(
     height: 120.0,
@@ -959,7 +942,7 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
     ),
   );
 
-  // 1. Check hardcoded per-product overrides first â guaranteed correct image.
+  // 1. Check hardcoded per-product overrides first — guaranteed correct image.
   final overrideUrl = _kShopProductImageOverrides[productName];
   if (overrideUrl != null && overrideUrl.isNotEmpty) {
     return CachedNetworkImage(
@@ -1004,7 +987,7 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
       ),
     );
   } else {
-    // Untrusted or empty URL â go straight to the category fallback
+    // Untrusted or empty URL — go straight to the category fallback
     return CachedNetworkImage(
       imageUrl: categoryFallback,
       height: 120.0,
@@ -1078,7 +1061,7 @@ class _ProductCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Text(
-                        'â Top Pick',
+                        '★ Top Pick',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10.0,
@@ -1157,7 +1140,7 @@ class _ProductCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Text(
-                            'Shop â',
+                            'Shop →',
                             style: TextStyle(
                               color: FlutterFlowTheme.of(context).primary,
                               fontSize: 11.0,
