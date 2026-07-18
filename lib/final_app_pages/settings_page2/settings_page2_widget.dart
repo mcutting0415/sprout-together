@@ -1,6 +1,6 @@
 import '/auth/supabase_auth/auth_util.dart';
 import '/index.dart';
-import '/components/header_widget.dart';
+import '/final_app_pages/final_header/final_header_widget.dart';
 import '/components/section_card_child2_widget.dart';
 import '/components/section_card_child3_widget.dart';
 import '/components/section_card_child4_widget.dart';
@@ -181,10 +181,10 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 wrapWithModel(
-                  model: _model.headerModel,
+                  model: _model.finalHeaderModel,
                   updateCallback: () => safeSetState(() {}),
-                  child: HeaderWidget(
-                    title: 'Settings',
+                  child: FinalHeaderWidget(
+                    pageTitle: 'Settings',
                   ),
                 ),
                 Padding(
