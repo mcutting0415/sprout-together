@@ -763,10 +763,35 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
 }
 
 /// Per-product image overrides — checked before the DB image_url.
-/// Keys are exact product names matching the Supabase `name` column.
+/// Keys match exact product names for BOTH Supabase DB rows AND curated products.
 /// All URLs are from trusted hosts (Unsplash or Shopify CDN).
 const _kShopProductImageOverrides = <String, String>{
+  // ── SMART GARDENS ────────────────────────────────────────────────────────
+  'Smart Garden 3 — Countertop Indoor Garden':
+      'https://images.unsplash.com/photo-1779317179346-c96397cea93d?w=400&q=80&fit=crop',
+  'Smart Garden 9 — Best-Selling Indoor Garden':
+      'https://images.unsplash.com/photo-1779457524854-208563209eea?w=400&q=80&fit=crop',
+  'Smart Garden 9 PRO — App-Controlled Indoor Garden':
+      'https://images.unsplash.com/photo-1723902500453-80bcbb440a24?w=400&q=80&fit=crop',
+  'Smart Garden 27 — Large Indoor Home Garden':
+      'https://images.unsplash.com/photo-1771794980860-38f3291807e6?w=400&q=80&fit=crop',
+  'Click & Grow Herb Garden Plant Pods (9-Pack)':
+      'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
+  'Click & Grow Tomato Plant Pods (3-Pack)':
+      'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
   // ── SEEDS ────────────────────────────────────────────────────────────────
+  // curated product names
+  'Heirloom Vegetable Seed Collection (35 varieties)':
+      'https://images.unsplash.com/photo-1525183363149-fe2044bbbe23?w=400&q=80&fit=crop',
+  'Organic Herb Seeds Variety Pack (15 types)':
+      'https://images.unsplash.com/photo-1622383564921-7efafd1f5ebe?w=400&q=80&fit=crop',
+  'Microgreens Seed Growing Kit':
+      'https://images.unsplash.com/photo-1739633833966-bcdb08751925?w=400&q=80&fit=crop',
+  'Tomato Seed Variety Pack (10 types)':
+      'https://images.unsplash.com/photo-1687717425672-933b1837b911?w=400&q=80&fit=crop',
+  'Pepper Seed Assortment (Sweet & Hot)':
+      'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&q=80&fit=crop',
+  // DB product names
   'Heirloom Tomato Seed Collection':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/best-selling-tomatoes-collection-Comp.jpg?v=1756309253',
   'Basil Seeds - Genovese':
@@ -778,11 +803,11 @@ const _kShopProductImageOverrides = <String, String>{
   'Sweet Pepper Seed Mix':
       'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&q=80&fit=crop',
   'Cucumber Straight Eight Seeds':
-      'https://images.unsplash.com/photo-1604977042946-1eecc30f269e?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1687717425672-933b1837b911?w=400&q=80&fit=crop',
   'Wildflower Seed Mix':
-      'https://images.unsplash.com/photo-1490750967868-88df5691cc8a?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1759693233180-866a8577603f?w=400&q=80&fit=crop',
   'Marigold Seeds - French Mix':
-      'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1569358731315-df9426c49e04?w=400&q=80&fit=crop',
   'Sunflower Seeds - Giant Russian':
       'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400&q=80&fit=crop',
   'Zucchini Seeds - Black Beauty':
@@ -792,23 +817,39 @@ const _kShopProductImageOverrides = <String, String>{
   'Rainbow Carrot Seeds':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/Carrot-Seeds-Rainbow-Blend-Organic-comp.jpg?v=1762440662',
   // ── TOOLS ────────────────────────────────────────────────────────────────
+  // curated product names
+  'Soil Knife (Hori Hori) with Sheath':
+      'https://images.unsplash.com/photo-1783401726852-02ddd3a27724?w=400&q=80&fit=crop',
+  'Heavy-Duty Garden Pruning Shears':
+      'https://images.unsplash.com/photo-1774647001686-314f877fb9c5?w=400&q=80&fit=crop',
+  'Soil pH & Moisture Meter':
+      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
+  // DB product names
   'Ergonomic Trowel Set':
-      'https://images.unsplash.com/photo-1665395131262-c2df665c2cbe?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1579197586491-aed481d3a945?w=400&q=80&fit=crop',
   'Bypass Pruner - Felco F2':
-      'https://images.unsplash.com/photo-1677941731347-0369249f7aa8?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1774647001686-314f877fb9c5?w=400&q=80&fit=crop',
   'Garden Hose with Nozzle':
       'https://images.unsplash.com/photo-1680124744736-859f16257ef0?w=400&q=80&fit=crop',
   'DeWit Hand Weeder':
-      'https://images.unsplash.com/photo-1665395131699-f904d110acf5?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1781521215146-5aa55e800b0d?w=400&q=80&fit=crop',
   'Hori Hori Garden Knife':
-      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1783401726852-02ddd3a27724?w=400&q=80&fit=crop',
   'Radius Garden Kneeler':
-      'https://images.unsplash.com/photo-1665395131699-f904d110acf5?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1773047125567-90734551ac71?w=400&q=80&fit=crop',
   'Tomato Cage Set of 3':
-      'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1629978237678-3e6a2004958f?w=400&q=80&fit=crop',
   // ── SOIL & AMENDMENTS ────────────────────────────────────────────────────
+  // curated product names
+  'Perlite for Drainage (8 qt)':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/perlite-wm_1_1222x1222_0ec1fbb2-971b-46cc-b9b1-c419857199a5.jpg?v=1764633919',
+  'Raised Bed Soil Blend (1.5 cu ft)':
+      'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=400&q=80&fit=crop',
+  'Coco Coir Brick (10 lbs compressed)':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/Collage_Minute_Soil_2_50be3d92-ca63-4cdf-bbed-d3cf8fca2acd.jpg?v=1776821374',
+  // DB product names
   'FoxFarm Ocean Forest Potting Soil':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Worm-Castings-Comp.jpg?v=1762440335',
+      'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=400&q=80&fit=crop',
   'Espoma Tomato-Tone Fertilizer':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/1745345731_fertilizer_espoma_plant_tone_5_3_3_organic_4lb_bag_comp_ed1747a6-e555-4d09-835e-d961d8ffbac1.jpg?v=1762453402',
   'Coco Coir Brick - 5 Pack':
@@ -819,44 +860,92 @@ const _kShopProductImageOverrides = <String, String>{
       'https://cdn.shopify.com/s/files/1/2016/2681/files/Worm-Castings-Comp.jpg?v=1762440335',
   'Espoma Herb and Vegetable Fertilizer':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/1740507920_fertilizer_espoma_garden_food_10_10_10_675lb_bag_wm_comp_1bbd3198-7fb7-45da-9b03-014f49de965b.jpg?v=1762453068',
+  // ── FERTILIZERS ──────────────────────────────────────────────────────────
+  'Tomato & Vegetable Fertilizer (4 lbs)':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/1745345731_fertilizer_espoma_plant_tone_5_3_3_organic_4lb_bag_comp_ed1747a6-e555-4d09-835e-d961d8ffbac1.jpg?v=1762453402',
+  'Slow-Release Granular Fertilizer (5 lbs)':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/1740507920_fertilizer_espoma_garden_food_10_10_10_675lb_bag_wm_comp_1bbd3198-7fb7-45da-9b03-014f49de965b.jpg?v=1762453068',
+  'Mycorrhizae Root Builder (4 oz)':
+      'https://cdn.shopify.com/s/files/1/2016/2681/files/1686148778_CopyofTL-WM-Black-2023-06-07T081508.924.jpg?v=1762449629',
   // ── POTS & CONTAINERS ────────────────────────────────────────────────────
+  'Fabric Grow Bags — 5 Gallon (5-pack)':
+      'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
+  'Fabric Grow Bags — 10 Gallon (5-pack)':
+      'https://images.unsplash.com/photo-1783345700933-6ae766a8f83c?w=400&q=80&fit=crop',
   '15-Gallon Fabric Grow Bag Set of 5':
       'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
   'Terracotta Pot Set - 3 Sizes':
       'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80&fit=crop',
   'Hanging Basket with Coconut Liner':
-      'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1589830517302-44c51f875686?w=400&q=80&fit=crop',
   'Self-Watering Planter Box':
-      'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=400&q=80&fit=crop',
   'Raised Garden Bed - 4x4 Cedar':
-      'https://images.unsplash.com/photo-1665395131699-f904d110acf5?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=400&q=80&fit=crop',
+  // ── WATERING ─────────────────────────────────────────────────────────────
+  'Adjustable Soaker Hose (25 ft)':
+      'https://images.unsplash.com/photo-1468971050039-be99497410af?w=400&q=80&fit=crop',
+  'Hose Wand with Adjustable Head':
+      'https://images.unsplash.com/photo-1680124744736-859f16257ef0?w=400&q=80&fit=crop',
+  'Automatic Drip Watering Spikes (12-pack)':
+      'https://images.unsplash.com/photo-1661963694689-a800cae4e413?w=400&q=80&fit=crop',
+  // ── TRELLISES & SUPPORTS ─────────────────────────────────────────────────
+  'Heavy-Duty Bamboo Stakes (4 ft, 25-pack)':
+      'https://images.unsplash.com/photo-1629978237678-3e6a2004958f?w=400&q=80&fit=crop',
+  'Cucumber & Bean Trellis Netting (5×15 ft)':
+      'https://images.unsplash.com/photo-1628341423248-4b8c5c51a3cd?w=400&q=80&fit=crop',
+  'Plant Clips & Twist Ties Set (100-pc)':
+      'https://images.unsplash.com/photo-1609473295863-2d9299af71d4?w=400&q=80&fit=crop',
   // ── PEST CONTROL ─────────────────────────────────────────────────────────
+  'Neem Oil Spray — Organic (32 oz)':
+      'https://images.unsplash.com/photo-1564505676257-57af8f7e43ab?w=400&q=80&fit=crop',
+  'Copper Slug & Snail Barrier Tape (16 ft)':
+      'https://images.unsplash.com/photo-1739633833966-bcdb08751925?w=400&q=80&fit=crop',
+  'Yellow Sticky Insect Traps (24-pack)':
+      'https://images.unsplash.com/photo-1569358731315-df9426c49e04?w=400&q=80&fit=crop',
+  'Diatomaceous Earth (4 lbs food grade)':
+      'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=400&q=80&fit=crop',
   'Neem Oil Spray - Organic':
-      'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1564505676257-57af8f7e43ab?w=400&q=80&fit=crop',
   'Yellow Sticky Trap Strips - 20 Pack':
-      'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1569358731315-df9426c49e04?w=400&q=80&fit=crop',
   'Diatomaceous Earth - 4 lb':
-      'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=400&q=80&fit=crop',
   'Copper Tape Slug Barrier - 30ft':
-      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1739633833966-bcdb08751925?w=400&q=80&fit=crop',
   // ── GROW LIGHTS ──────────────────────────────────────────────────────────
+  'LED Grow Light Bar — Full Spectrum (24 in)':
+      'https://images.unsplash.com/photo-1783759935182-6317f3988b0f?w=400&q=80&fit=crop',
+  'Clip-On Grow Light for Windowsill':
+      'https://images.unsplash.com/photo-1783759935144-f50d438e88d6?w=400&q=80&fit=crop',
+  'Full-Spectrum LED Panel 45W':
+      'https://images.unsplash.com/photo-1620746576696-27c4c9712755?w=400&q=80&fit=crop',
   'LED Grow Light Bar - Full Spectrum':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Boost-MaxPro-Grow-Lights-Comp.jpg?v=1762450181',
+      'https://images.unsplash.com/photo-1783759935182-6317f3988b0f?w=400&q=80&fit=crop',
   'Seedling Heat Mat with Thermostat':
-      'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1783759935144-f50d438e88d6?w=400&q=80&fit=crop',
   '4-Tier Grow Light Stand':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Boost-MaxPro-Grow-Lights-Comp.jpg?v=1762450181',
+      'https://images.unsplash.com/photo-1620746576696-27c4c9712755?w=400&q=80&fit=crop',
   'Outlet Timer for Grow Lights':
-      'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1619811647569-9bd357bacae5?w=400&q=80&fit=crop',
   // ── OUTDOOR LIGHTING ─────────────────────────────────────────────────────
+  'Solar Pathway Stake Lights (8-pack)':
+      'https://images.unsplash.com/photo-1611095973763-414019e72400?w=400&q=80&fit=crop',
+  'Waterproof LED Garden Spotlights (2-pack)':
+      'https://images.unsplash.com/photo-1498940757830-82f7813bf178?w=400&q=80&fit=crop',
+  'Solar String Fairy Lights (33 ft)':
+      'https://images.unsplash.com/photo-1589830517302-44c51f875686?w=400&q=80&fit=crop',
+  'Motion-Activated Garden Floodlight':
+      'https://images.unsplash.com/photo-1621886943381-cb97cc18b17a?w=400&q=80&fit=crop',
+  'Mason Jar Solar Lanterns (4-pack)':
+      'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=400&q=80&fit=crop',
   'Solar Garden Path Lights - Set of 8':
       'https://images.unsplash.com/photo-1611095973763-414019e72400?w=400&q=80&fit=crop',
   'Solar Spotlights for Garden Beds':
       'https://images.unsplash.com/photo-1498940757830-82f7813bf178?w=400&q=80&fit=crop',
   'Outdoor String Lights - 48ft Edison':
-      'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=400&q=80&fit=crop',
-};
-
+      'https://images.unsplash.com/photo-1589830517302-44c51f875686?w=400&q=80&fit=crop',
+}
 // Reliable Unsplash fallback images per category.
 // These are the same Unsplash photos used in the plant-library fallback map,
 // so we know they load. Chosen to be thematically relevant to each category.
