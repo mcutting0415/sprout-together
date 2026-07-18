@@ -625,7 +625,8 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
                           ),
                         ],
                       ),
-                    );
+                    ),
+                  );
                 },
               ),
             ),
