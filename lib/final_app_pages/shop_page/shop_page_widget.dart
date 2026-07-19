@@ -183,7 +183,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=garden+pruning+shears&tag=sprouttogether-20',
       // pruning shears / secateurs
-      'image_url': 'https://images.unsplash.com/photo-1677941731347-0369249f7aa8?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1622994891903-11358b2f814a?w=400&q=80&fit=crop',
     },
     {
       'name': 'Soil pH & Moisture Meter',
@@ -301,7 +301,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=automatic+plant+watering+spikes&tag=sprouttogether-20',
       // plants with drip/moisture — distinct from drip irrigation kit
-      'image_url': 'https://images.unsplash.com/photo-1661963694689-a800cae4e413?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1774264036185-d86cce86dcd1?w=400&q=80&fit=crop',
     },
     // ── TRELLISES & SUPPORTS (Amazon) ───────────────────────────────────
     {
@@ -431,7 +431,7 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
       'is_featured': false,
       'affiliate_url': 'https://www.amazon.com/s?k=solar+string+fairy+lights+outdoor&tag=sprouttogether-20',
       // passionflower with warm bokeh — fairy lights ambiance
-      'image_url': 'https://images.unsplash.com/photo-1589830517302-44c51f875686?w=400&q=80&fit=crop',
+      'image_url': 'https://images.unsplash.com/photo-1485902409384-e367af5b5c92?w=400&q=80&fit=crop',
     },
     {
       'name': 'Motion-Activated Garden Floodlight',
@@ -475,8 +475,21 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
           .order('is_featured', ascending: false)
           .order('display_order');
       final dbProducts = List<Map<String, dynamic>>.from(response as List);
-      // Merge DB products with curated partner products; DB products go first
-      final merged = [...dbProducts, ..._curatedProducts];
+      // Merge DB first, then curated; skip duplicates by first-4-word key
+      final seenNames = <String>{};
+      final merged = <Map<String, dynamic>>[];
+      for (final p in [...dbProducts, ..._curatedProducts]) {
+        final rawName = (p['name'] as String? ?? '');
+        final norm = rawName
+            .toLowerCase()
+            .replaceAll(RegExp(r'[^a-z0-9 ]'), ' ')
+            .trim()
+            .split(RegExp(r' +'))
+            .where((w) => w.isNotEmpty)
+            .take(4)
+            .join(' ');
+        if (norm.isEmpty || seenNames.add(norm)) merged.add(p);
+      }
       setState(() {
         _allProducts = merged;
         _loading = false;
@@ -788,7 +801,7 @@ const _kShopProductImageOverrides = <String, String>{
   'Microgreens Seed Growing Kit':
       'https://images.unsplash.com/photo-1739633833966-bcdb08751925?w=400&q=80&fit=crop',
   'Tomato Seed Variety Pack (10 types)':
-      'https://images.unsplash.com/photo-1687717425672-933b1837b911?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1518568403628-df55701ade9e?w=400&q=80&fit=crop',
   'Pepper Seed Assortment (Sweet & Hot)':
       'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&q=80&fit=crop',
   // DB product names
@@ -803,7 +816,7 @@ const _kShopProductImageOverrides = <String, String>{
   'Sweet Pepper Seed Mix':
       'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&q=80&fit=crop',
   'Cucumber Straight Eight Seeds':
-      'https://images.unsplash.com/photo-1687717425672-933b1837b911?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1518568403628-df55701ade9e?w=400&q=80&fit=crop',
   'Wildflower Seed Mix':
       'https://images.unsplash.com/photo-1759693233180-866a8577603f?w=400&q=80&fit=crop',
   'Marigold Seeds - French Mix':
@@ -811,7 +824,7 @@ const _kShopProductImageOverrides = <String, String>{
   'Sunflower Seeds - Giant Russian':
       'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400&q=80&fit=crop',
   'Zucchini Seeds - Black Beauty':
-      'https://images.unsplash.com/photo-1596097635121-14b63b7a0c19?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1719488118271-07064063e0fe?w=400&q=80&fit=crop',
   'Dragon Tongue Bean Seeds':
       'https://cdn.shopify.com/s/files/1/2016/2681/files/dragons-tongue-beans-wm_700_1222x1222_2396e638-12b9-4e6a-8554-34123c4a7bef.jpg?v=1764633795',
   'Rainbow Carrot Seeds':
@@ -830,7 +843,7 @@ const _kShopProductImageOverrides = <String, String>{
   'Bypass Pruner - Felco F2':
       'https://images.unsplash.com/photo-1774647001686-314f877fb9c5?w=400&q=80&fit=crop',
   'Garden Hose with Nozzle':
-      'https://images.unsplash.com/photo-1680124744736-859f16257ef0?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1697293585549-6eb147d2a8f4?w=400&q=80&fit=crop',
   'DeWit Hand Weeder':
       'https://images.unsplash.com/photo-1781521215146-5aa55e800b0d?w=400&q=80&fit=crop',
   'Hori Hori Garden Knife':
@@ -838,7 +851,7 @@ const _kShopProductImageOverrides = <String, String>{
   'Radius Garden Kneeler':
       'https://images.unsplash.com/photo-1773047125567-90734551ac71?w=400&q=80&fit=crop',
   'Tomato Cage Set of 3':
-      'https://images.unsplash.com/photo-1629978237678-3e6a2004958f?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1631217615640-bb244f2cf90c?w=400&q=80&fit=crop',
   // ── SOIL & AMENDMENTS ────────────────────────────────────────────────────
   // curated product names
   'Perlite for Drainage (8 qt)':
@@ -877,18 +890,18 @@ const _kShopProductImageOverrides = <String, String>{
   'Terracotta Pot Set - 3 Sizes':
       'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80&fit=crop',
   'Hanging Basket with Coconut Liner':
-      'https://images.unsplash.com/photo-1589830517302-44c51f875686?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1485902409384-e367af5b5c92?w=400&q=80&fit=crop',
   'Self-Watering Planter Box':
-      'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1765961352854-eead66432a8c?w=400&q=80&fit=crop',
   'Raised Garden Bed - 4x4 Cedar':
       'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=400&q=80&fit=crop',
   // ── WATERING ─────────────────────────────────────────────────────────────
   'Adjustable Soaker Hose (25 ft)':
       'https://images.unsplash.com/photo-1468971050039-be99497410af?w=400&q=80&fit=crop',
   'Hose Wand with Adjustable Head':
-      'https://images.unsplash.com/photo-1680124744736-859f16257ef0?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1684867430779-e66e779a19b7?w=400&q=80&fit=crop',
   'Automatic Drip Watering Spikes (12-pack)':
-      'https://images.unsplash.com/photo-1661963694689-a800cae4e413?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1774264036185-d86cce86dcd1?w=400&q=80&fit=crop',
   // ── TRELLISES & SUPPORTS ─────────────────────────────────────────────────
   'Heavy-Duty Bamboo Stakes (4 ft, 25-pack)':
       'https://images.unsplash.com/photo-1629978237678-3e6a2004958f?w=400&q=80&fit=crop',
@@ -934,7 +947,7 @@ const _kShopProductImageOverrides = <String, String>{
   'Waterproof LED Garden Spotlights (2-pack)':
       'https://images.unsplash.com/photo-1498940757830-82f7813bf178?w=400&q=80&fit=crop',
   'Solar String Fairy Lights (33 ft)':
-      'https://images.unsplash.com/photo-1589830517302-44c51f875686?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1485902409384-e367af5b5c92?w=400&q=80&fit=crop',
   'Motion-Activated Garden Floodlight':
       'https://images.unsplash.com/photo-1621886943381-cb97cc18b17a?w=400&q=80&fit=crop',
   'Mason Jar Solar Lanterns (4-pack)':
@@ -944,7 +957,7 @@ const _kShopProductImageOverrides = <String, String>{
   'Solar Spotlights for Garden Beds':
       'https://images.unsplash.com/photo-1498940757830-82f7813bf178?w=400&q=80&fit=crop',
   'Outdoor String Lights - 48ft Edison':
-      'https://images.unsplash.com/photo-1589830517302-44c51f875686?w=400&q=80&fit=crop',
+      'https://images.unsplash.com/photo-1485902409384-e367af5b5c92?w=400&q=80&fit=crop',
 };
 // Reliable Unsplash fallback images per category.
 // These are the same Unsplash photos used in the plant-library fallback map,
