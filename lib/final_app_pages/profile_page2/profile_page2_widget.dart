@@ -1058,6 +1058,101 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                         );
                       },
                     ),
+                    FutureBuilder<bool>(
+                      future: SubscriptionService.instance.isPremium(),
+                      builder: (context, snap) {
+                        final isPro = snap.data ?? false;
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: isPro
+                                ? const Color(0x206F8F72)
+                                : FlutterFlowTheme.of(context).alternate,
+                            borderRadius: BorderRadius.circular(20.0),
+                            border: Border.all(
+                              color: isPro
+                                  ? FlutterFlowTheme.of(context).primary
+                                  : FlutterFlowTheme.of(context).primaryText,
+                              width: isPro ? 1.5 : 1.0,
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                isPro ? Icons.eco_rounded : Icons.spa_outlined,
+                                color: isPro
+                                    ? FlutterFlowTheme.of(context).primary
+                                    : FlutterFlowTheme.of(context).secondaryText,
+                                size: 24.0,
+                              ),
+                              const SizedBox(width: 14.0),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      isPro ? 'SproutTogether Pro' : 'Free Plan',
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15.0,
+                                        color: isPro
+                                            ? FlutterFlowTheme.of(context).primary
+                                            : FlutterFlowTheme.of(context).primaryText,
+                                      ),
+                                    ),
+                                    Text(
+                                      isPro
+                                          ? 'All features unlocked'
+                                          : 'Upgrade for unlimited gardens & more',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12.0,
+                                        color: FlutterFlowTheme.of(context).secondaryText,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (!isPro)
+                                GestureDetector(
+                                  onTap: () => context.pushNamed('Paywall'),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context).primary,
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    child: Text(
+                                      'Upgrade',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+                                  decoration: BoxDecoration(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: Text(
+                                    'Active',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: 11.0,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                     Container(
                       decoration: BoxDecoration(
                         color: Color(0x506F8F72),
@@ -1214,36 +1309,6 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                     ),
                   ),
                 ],
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 32.0),
-                child: FFButtonWidget(
-                  onPressed: () async {
-                    await SubscriptionService.instance.logoutUser();
-                    await authManager.signOut();
-                    context.goNamedAuth('LoginPage', context.mounted);
-                  },
-                  text: 'Log Out',
-                  icon: const Icon(Icons.logout_rounded, size: 18.0),
-                  options: FFButtonOptions(
-                    width: double.infinity,
-                    height: 40.0,
-                    padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                    iconPadding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                    iconColor: const Color(0xFFD4685F),
-                    color: const Color(0xFFD4685F).withOpacity(0.1),
-                    textStyle: GoogleFonts.poppins(
-                      color: const Color(0xFFD4685F),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15.0,
-                    ),
-                    elevation: 0.0,
-                    borderSide: BorderSide(
-                      color: const Color(0xFFD4685F).withOpacity(0.4),
-                    ),
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
               ),
             ],
           ),
