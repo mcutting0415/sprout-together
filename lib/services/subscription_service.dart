@@ -38,6 +38,10 @@ class SubscriptionService {
 
     if (Platform.isIOS || Platform.isMacOS) {
       await Purchases.configure(PurchasesConfiguration(_iosApiKey));
+      Purchases.addCustomerInfoUpdateListener((info) {
+        // Subscription status changed in background (renewal, expiry, cancellation)
+        debugPrint('[SubscriptionService] CustomerInfo updated: ${info.entitlements.active.keys}');
+      });
     } else {
       // Android key can be added here when targeting Google Play
       return;
@@ -100,6 +104,26 @@ class SubscriptionService {
     } catch (e) {
       debugPrint('SubscriptionService.restorePurchases error: $e');
       return false;
+    }
+  }
+
+  /// Links the RevenueCat anonymous identity to the authenticated Supabase user.
+  Future<void> loginUser(String userId) async {
+    try {
+      await Purchases.logIn(userId);
+      debugPrint('[SubscriptionService] Logged in user: $userId');
+    } catch (e) {
+      debugPrint('[SubscriptionService] Error logging in user: $e');
+    }
+  }
+
+  /// Resets RevenueCat identity on Supabase sign-out.
+  Future<void> logoutUser() async {
+    try {
+      await Purchases.logOut();
+      debugPrint('[SubscriptionService] Logged out RevenueCat user');
+    } catch (e) {
+      debugPrint('[SubscriptionService] Error logging out user: $e');
     }
   }
 }
