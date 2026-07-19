@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'profile_page2_model.dart';
+import '/services/subscription_service.dart';
 export 'profile_page2_model.dart';
 
 class ProfilePage2Widget extends StatefulWidget {
@@ -1218,6 +1219,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                 padding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 32.0),
                 child: FFButtonWidget(
                   onPressed: () async {
+                    await SubscriptionService.instance.logoutUser();
                     await authManager.signOut();
                     context.goNamedAuth('LoginPage', context.mounted);
                   },
