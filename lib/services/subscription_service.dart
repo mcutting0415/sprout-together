@@ -20,7 +20,7 @@ class SubscriptionService {
   // ────────────────────────────────────────────────────────────────────
 
   /// The RevenueCat entitlement identifier to check for premium access.
-  static const String entitlementId = 'premium';
+  static const String entitlementId = 'SproutTogether Pro';
 
   static SubscriptionService? _instance;
   static SubscriptionService get instance =>
