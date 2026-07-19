@@ -945,7 +945,7 @@ const _kShopProductImageOverrides = <String, String>{
       'https://images.unsplash.com/photo-1498940757830-82f7813bf178?w=400&q=80&fit=crop',
   'Outdoor String Lights - 48ft Edison':
       'https://images.unsplash.com/photo-1589830517302-44c51f875686?w=400&q=80&fit=crop',
-}
+};
 // Reliable Unsplash fallback images per category.
 // These are the same Unsplash photos used in the plant-library fallback map,
 // so we know they load. Chosen to be thematically relevant to each category.
