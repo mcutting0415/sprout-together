@@ -17,6 +17,8 @@ import 'package:provider/provider.dart';
 import 'planner_overview_page_model.dart';
 export 'planner_overview_page_model.dart';
 import '/services/notification_service.dart';
+import '/final_app_pages/paywall/paywall_widget.dart';
+import '/services/subscription_service.dart';
 
 class PlannerOverviewPageWidget extends StatefulWidget {
   const PlannerOverviewPageWidget({super.key});
@@ -834,6 +836,18 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           size: 15.0,
                         ),
                         onPressed: () async {
+                          final isPremium = await SubscriptionService.instance.isPremium();
+                          if (!isPremium) {
+                            final gardens = await GardensTable().queryRows(
+                              queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+                            );
+                            if (gardens.length >= 1) {
+                              if (context.mounted) {
+                                context.pushNamed(PaywallWidget.routeName);
+                              }
+                              return;
+                            }
+                          }
                           context.pushNamed(CreateGardenPageWidget.routeName);
                         },
                       ),
