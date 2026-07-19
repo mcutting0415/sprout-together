@@ -16,7 +16,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 ///      - Create a default Offering that includes a monthly and annual Package.
 class SubscriptionService {
   // ── Replace with your RevenueCat iOS Public SDK Key ────────────────────
-  static const String _iosApiKey = 'appl_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+  static const String _iosApiKey = 'appl_vIKJsNFleJMSDrVpsrtQfinKQDy';
   // ────────────────────────────────────────────────────────────────────
 
   /// The RevenueCat entitlement identifier to check for premium access.
