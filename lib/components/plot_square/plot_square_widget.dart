@@ -94,7 +94,7 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
   Future<void> _showPlantPicker() async {
         // Feature gate: free users limited to 5 plants per garden
     if (widget.isEmpty) {
-      final isPremium = await SubscriptionService.instance.isPremium();
+      final isPremium = SubscriptionService.instance.isPro;
       if (!isPremium) {
         final plots = await GardenPlotsTable().queryRows(
           queryFn: (q) => q.eqOrNull('garden_id', widget.gardenID),

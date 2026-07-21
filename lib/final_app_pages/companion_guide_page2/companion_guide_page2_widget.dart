@@ -58,7 +58,7 @@ class _CompanionGuidePage2WidgetState
     _loadPlants();
     // Feature gate: companion guide requires premium
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final isPremium = await SubscriptionService.instance.isPremium();
+      final isPremium = SubscriptionService.instance.isPro;
       if (!isPremium && mounted) {
         final subscribed = await Navigator.of(context).pushNamed(
           PaywallWidget.routeName,

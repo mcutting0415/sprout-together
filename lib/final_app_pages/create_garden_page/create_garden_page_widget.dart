@@ -15,6 +15,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'create_garden_page_model.dart';
 export 'create_garden_page_model.dart';
+import '/services/subscription_service.dart';
+import '/final_app_pages/paywall/paywall_widget.dart';
 
 /// Create an alternative version of my Create Garden page for SproutTogether.
 ///
@@ -1538,6 +1540,23 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                           );
                           return;
                         }
+                        // ── Pro gate: free users limited to 1 garden ──────
+                        if (!SubscriptionService.instance.isPro) {
+                          final existing = await GardensTable().queryRows(
+                            queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+                          );
+                          if (existing.length >= 1) {
+                            if (!context.mounted) return;
+                            await showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (_) => const PaywallWidget(),
+                            );
+                            return;
+                          }
+                        }
+                        // ─────────────────────────────────────────────────
                         try {
                         _model.newGarden = await GardensTable().insert({
                           'garden_name': _model.textController1.text,

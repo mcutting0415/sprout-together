@@ -5,6 +5,7 @@ import '/services/subscription_service.dart';
 import '/final_app_pages/paywall/paywall_widget.dart';
 import '/final_app_pages/seed_inventory_page/seed_inventory_page_widget.dart';
 import '/final_app_pages/seed_starting_guide/seed_starting_guide_widget.dart';
+import '/final_app_pages/indoor_growing/indoor_growing_widget.dart';
 import '/components/section_card_child2_widget.dart';
 import '/components/section_card_child3_widget.dart';
 import '/components/section_card_child4_widget.dart';
@@ -142,18 +143,13 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
   late SettingsPage2Model _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  bool _isPremium = false;
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => SettingsPage2Model());
-    _checkSubscription();
-  }
-
-  Future<void> _checkSubscription() async {
-    final premium = await SubscriptionService.instance.isPremium();
-    if (mounted) setState(() => _isPremium = premium);
+    // Subscription status is read reactively via SubscriptionService.instance.isPro
+    // inside a ListenableBuilder — no manual polling needed.
   }
 
   @override
@@ -225,7 +221,6 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                                       ),
                                 ),
                               ),
-<<<<<<< HEAD
                               Material(
                                 color: Colors.transparent,
                                 elevation: 10.0,
@@ -240,63 +235,6 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                                   child: Column(
                                     children: [
                                       Row(
-=======
-                              padding: const EdgeInsets.all(20.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 40.0, height: 40.0,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0x1A6F8F72),
-                                          borderRadius: BorderRadius.circular(12.0),
-                                        ),
-                                        child: Icon(Icons.workspace_premium_rounded,
-                                            color: FlutterFlowTheme.of(context).primary, size: 20.0),
-                                      ),
-                                      const SizedBox(width: 16.0),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Current Plan',
-                                                style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 15.0)),
-                                            Text(_isPremium ? 'Premium Plan' : 'Free Plan',
-                                                style: GoogleFonts.poppins(
-                                                    fontSize: 12.0,
-                                                    color: FlutterFlowTheme.of(context).secondaryText)),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-                                        decoration: BoxDecoration(
-                                          color: FlutterFlowTheme.of(context).primary.withOpacity(0.12),
-                                          borderRadius: BorderRadius.circular(20.0),
-                                        ),
-                                        child: Text(_isPremium ? 'PREMIUM' : 'FREE',
-                                            style: GoogleFonts.poppins(
-                                                fontSize: 11.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: FlutterFlowTheme.of(context).primary)),
-                                      ),
-                                    ],
-                                  ),
-                                  Divider(height: 24.0, color: FlutterFlowTheme.of(context).alternate),
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PaywallWidget()),
-                  ).then((purchased) {
-                    if (purchased == true) _checkSubscription();
-                  });
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                      child: Row(
->>>>>>> 7515dc7ca32fe6b8f2fa1a4d979590646dab74c5
                                         children: [
                                           Container(
                                             width: 40.0, height: 40.0,
@@ -497,84 +435,159 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                                 border: Border.all(color: FlutterFlowTheme.of(context).alternate),
                               ),
                               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-                              child: Column(
-                                children: [
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    onTap: () => context.pushNamed(SeedInventoryPageWidget.routeName),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            width: 40.0, height: 40.0,
-                                            decoration: BoxDecoration(
-                                              color: const Color(0x1A6F8F72),
-                                              borderRadius: BorderRadius.circular(12.0),
-                                            ),
-                                            child: Icon(Icons.inventory_2_rounded,
-                                                color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                              child: ListenableBuilder(
+                                listenable: SubscriptionService.instance,
+                                builder: (context, _) {
+                                  final isPro = SubscriptionService.instance.isPro;
+                                  void openPaywall() => showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (_) => const PaywallWidget(),
+                                      );
+                                  Widget proBadge() => Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFFFD700),
+                                          borderRadius: BorderRadius.circular(8.0),
+                                        ),
+                                        child: Text('PRO',
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 10.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: const Color(0xFF7A5C00))),
+                                      );
+                                  return Column(
+                                    children: [
+                                      // Seed Inventory
+                                      InkWell(
+                                        borderRadius: BorderRadius.circular(12.0),
+                                        onTap: isPro
+                                            ? () => context.pushNamed(SeedInventoryPageWidget.routeName)
+                                            : openPaywall,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 40.0, height: 40.0,
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0x1A6F8F72),
+                                                  borderRadius: BorderRadius.circular(12.0),
+                                                ),
+                                                child: Icon(Icons.inventory_2_rounded,
+                                                    color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                                              ),
+                                              const SizedBox(width: 16.0),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(children: [
+                                                      Text('Seed Inventory',
+                                                          style: GoogleFonts.poppins(
+                                                              fontWeight: FontWeight.w600, fontSize: 15.0)),
+                                                      if (!isPro) ...[const SizedBox(width: 8), proBadge()],
+                                                    ]),
+                                                    Text('Track your seed collection',
+                                                        style: GoogleFonts.poppins(
+                                                            fontSize: 12.0,
+                                                            color: FlutterFlowTheme.of(context).secondaryText)),
+                                                  ],
+                                                ),
+                                              ),
+                                              Icon(isPro ? Icons.chevron_right_rounded : Icons.lock_outline_rounded,
+                                                  color: FlutterFlowTheme.of(context).secondaryText, size: 20.0),
+                                            ],
                                           ),
-                                          const SizedBox(width: 16.0),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text('Seed Inventory',
-                                                    style: GoogleFonts.poppins(
-                                                        fontWeight: FontWeight.w600, fontSize: 15.0)),
-                                                Text('Track your seed collection',
-                                                    style: GoogleFonts.poppins(
-                                                        fontSize: 12.0,
-                                                        color: FlutterFlowTheme.of(context).secondaryText)),
-                                              ],
-                                            ),
-                                          ),
-                                          Icon(Icons.chevron_right_rounded,
-                                              color: FlutterFlowTheme.of(context).secondaryText, size: 20.0),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Divider(height: 1, color: FlutterFlowTheme.of(context).alternate),
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    onTap: () => context.pushNamed(SeedStartingGuideWidget.routeName),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            width: 40.0, height: 40.0,
-                                            decoration: BoxDecoration(
-                                              color: const Color(0x1A6F8F72),
-                                              borderRadius: BorderRadius.circular(12.0),
-                                            ),
-                                            child: Icon(Icons.calendar_today_rounded,
-                                                color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                                      Divider(height: 1, color: FlutterFlowTheme.of(context).alternate),
+                                      // Seed Starting Guide
+                                      InkWell(
+                                        borderRadius: BorderRadius.circular(12.0),
+                                        onTap: isPro
+                                            ? () => context.pushNamed(SeedStartingGuideWidget.routeName)
+                                            : openPaywall,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 40.0, height: 40.0,
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0x1A6F8F72),
+                                                  borderRadius: BorderRadius.circular(12.0),
+                                                ),
+                                                child: Icon(Icons.calendar_today_rounded,
+                                                    color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                                              ),
+                                              const SizedBox(width: 16.0),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(children: [
+                                                      Text('Seed Starting Guide',
+                                                          style: GoogleFonts.poppins(
+                                                              fontWeight: FontWeight.w600, fontSize: 15.0)),
+                                                      if (!isPro) ...[const SizedBox(width: 8), proBadge()],
+                                                    ]),
+                                                    Text('Frost-date planting schedule',
+                                                        style: GoogleFonts.poppins(
+                                                            fontSize: 12.0,
+                                                            color: FlutterFlowTheme.of(context).secondaryText)),
+                                                  ],
+                                                ),
+                                              ),
+                                              Icon(isPro ? Icons.chevron_right_rounded : Icons.lock_outline_rounded,
+                                                  color: FlutterFlowTheme.of(context).secondaryText, size: 20.0),
+                                            ],
                                           ),
-                                          const SizedBox(width: 16.0),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text('Seed Starting Guide',
-                                                    style: GoogleFonts.poppins(
-                                                        fontWeight: FontWeight.w600, fontSize: 15.0)),
-                                                Text('Frost-date planting schedule',
-                                                    style: GoogleFonts.poppins(
-                                                        fontSize: 12.0,
-                                                        color: FlutterFlowTheme.of(context).secondaryText)),
-                                              ],
-                                            ),
-                                          ),
-                                          Icon(Icons.chevron_right_rounded,
-                                              color: FlutterFlowTheme.of(context).secondaryText, size: 20.0),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ],
+                                      Divider(height: 1, color: FlutterFlowTheme.of(context).alternate),
+                                      // Indoor Growing — free feature
+                                      InkWell(
+                                        borderRadius: BorderRadius.circular(12.0),
+                                        onTap: () => context.pushNamed(IndoorGrowingWidget.routeName),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 40.0, height: 40.0,
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0x1A6F8F72),
+                                                  borderRadius: BorderRadius.circular(12.0),
+                                                ),
+                                                child: Icon(Icons.house_outlined,
+                                                    color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                                              ),
+                                              const SizedBox(width: 16.0),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text('Indoor Growing',
+                                                        style: GoogleFonts.poppins(
+                                                            fontWeight: FontWeight.w600, fontSize: 15.0)),
+                                                    Text('Grow herbs & veggies year-round',
+                                                        style: GoogleFonts.poppins(
+                                                            fontSize: 12.0,
+                                                            color: FlutterFlowTheme.of(context).secondaryText)),
+                                                  ],
+                                                ),
+                                              ),
+                                              Icon(Icons.chevron_right_rounded,
+                                                  color: FlutterFlowTheme.of(context).secondaryText, size: 20.0),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                           ),

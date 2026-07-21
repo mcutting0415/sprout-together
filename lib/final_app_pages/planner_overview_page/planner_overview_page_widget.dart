@@ -836,7 +836,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           size: 15.0,
                         ),
                         onPressed: () async {
-                          final isPremium = await SubscriptionService.instance.isPremium();
+                          final isPremium = SubscriptionService.instance.isPro;
                           if (!isPremium) {
                             final gardens = await GardensTable().queryRows(
                               queryFn: (q) => q.eqOrNull('user_id', currentUserUid),

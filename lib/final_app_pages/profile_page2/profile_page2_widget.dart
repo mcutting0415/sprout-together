@@ -1058,10 +1058,10 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                         );
                       },
                     ),
-                    FutureBuilder<bool>(
-                      future: SubscriptionService.instance.isPremium(),
-                      builder: (context, snap) {
-                        final isPro = snap.data ?? false;
+                    ListenableBuilder(
+                      listenable: SubscriptionService.instance,
+                      builder: (context, _) {
+                        final isPro = SubscriptionService.instance.isPro;
                         return Container(
                           decoration: BoxDecoration(
                             color: isPro

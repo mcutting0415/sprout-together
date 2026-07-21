@@ -29,11 +29,7 @@ void main() async {
   await NotificationService.instance.initialize();
   await NotificationService.instance.requestPermission();
 
-<<<<<<< HEAD
-  // Initialize RevenueCat for subscriptions
-=======
   // Initialize RevenueCat subscriptions
->>>>>>> 7515dc7ca32fe6b8f2fa1a4d979590646dab74c5
   await SubscriptionService.instance.initialize();
 
   final appState = FFAppState(); // Initialize FFAppState

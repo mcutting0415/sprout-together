@@ -51,3 +51,6 @@ export '/final_app_pages/seed_inventory_page/seed_inventory_page_widget.dart'
 
 export '/final_app_pages/seed_starting_guide/seed_starting_guide_widget.dart'
     show SeedStartingGuideWidget;
+
+export '/final_app_pages/indoor_growing/indoor_growing_widget.dart'
+    show IndoorGrowingWidget;

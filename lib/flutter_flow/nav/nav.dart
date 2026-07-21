@@ -263,6 +263,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: SeedStartingGuideWidget.routePath,
           builder: (context, params) => const SeedStartingGuideWidget(),
         ),
+        FFRoute(
+          name: IndoorGrowingWidget.routeName,
+          path: IndoorGrowingWidget.routePath,
+          builder: (context, params) => const IndoorGrowingWidget(),
+        ),
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
 
