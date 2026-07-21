@@ -3,6 +3,8 @@ import '/final_app_pages/final_header/final_header_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/services/companion_planting_service.dart';
+import '/final_app_pages/paywall/paywall_widget.dart';
+import '/services/subscription_service.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -54,6 +56,18 @@ class _CompanionGuidePage2WidgetState
     super.initState();
     _model = createModel(context, () => CompanionGuidePage2Model());
     _loadPlants();
+    // Feature gate: companion guide requires premium
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final isPremium = await SubscriptionService.instance.isPremium();
+      if (!isPremium && mounted) {
+        final subscribed = await Navigator.of(context).pushNamed(
+          PaywallWidget.routeName,
+        );
+        if (subscribed != true && mounted) {
+          Navigator.of(context).pop();
+        }
+      }
+    });
   }
 
   @override

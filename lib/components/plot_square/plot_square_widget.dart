@@ -9,6 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'plot_square_model.dart';
 export 'plot_square_model.dart';
+import '/final_app_pages/paywall/paywall_widget.dart';
+import '/services/subscription_service.dart';
 
 class PlotSquareWidget extends StatefulWidget {
   const PlotSquareWidget({
@@ -90,6 +92,23 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
   }
 
   Future<void> _showPlantPicker() async {
+        // Feature gate: free users limited to 5 plants per garden
+    if (widget.isEmpty) {
+      final isPremium = await SubscriptionService.instance.isPremium();
+      if (!isPremium) {
+        final plots = await GardenPlotsTable().queryRows(
+          queryFn: (q) => q.eqOrNull('garden_id', widget.gardenID),
+        );
+        final assignedCount = plots
+            .where((p) => p.plantId != null && p.plantId!.isNotEmpty)
+            .length;
+        if (assignedCount >= 5) {
+          if (!context.mounted) return;
+          await Navigator.of(context).pushNamed(PaywallWidget.routeName);
+          return;
+        }
+      }
+    }
     // Pre-fetch plants so search doesn't flicker
     List<PlantsRow> allPlants = [];
     try {

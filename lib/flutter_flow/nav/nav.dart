@@ -242,6 +242,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => GardenGoalsPageWidget(),
         ),
         FFRoute(
+          name: PaywallWidget.routeName,
+          path: PaywallWidget.routePath,
+          builder: (context, params) => const PaywallWidget(),
+        ),
+        FFRoute(
           name: GardenTipsPageWidget.routeName,
           path: GardenTipsPageWidget.routePath,
           builder: (context, params) => GardenTipsPageWidget(
