@@ -18,6 +18,7 @@ import 'plant_details_page_model.dart';
 export 'plant_details_page_model.dart';
 import 'plant_knowledge_base.dart';
 import '/final_app_pages/plant_library_page/plant_images.dart';
+import '/services/companion_planting_service.dart';
 
 class PlantDetailsPageWidget extends StatefulWidget {
   const PlantDetailsPageWidget({
@@ -96,13 +97,34 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
           good.add(name);
         }
       }
+      // If Supabase has no companion data, fall back to the local service
+      if (good.isEmpty && avoid.isEmpty) {
+        final local = CompanionPlantingService.instance
+            .findCompanions(_plant?.plantName ?? '');
+        if (local != null) {
+          good.addAll((local['good'] as List? ?? []).cast<String>());
+          avoid.addAll((local['bad'] as List? ?? []).cast<String>());
+        }
+      }
       if (mounted) {
         setState(() {
           _goodCompanions = good;
           _avoidCompanions = avoid;
         });
       }
-    } catch (_) {}
+    } catch (_) {
+      // Fall back to local data on any error
+      final local = CompanionPlantingService.instance
+          .findCompanions(_plant?.plantName ?? '');
+      if (mounted) {
+        setState(() {
+          _goodCompanions =
+              List<String>.from((local?['good'] as List? ?? []));
+          _avoidCompanions =
+              List<String>.from((local?['bad'] as List? ?? []));
+        });
+      }
+    }
   }
 
   Future<void> _loadPurchaseLinks() async {
@@ -381,6 +403,52 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  /// Generates an Amazon affiliate "Shop for Seeds" tile for any plant.
+  Widget _buildShopSeedsSection(PlantsRow plant) {
+    final name = plant.plantName ?? 'plant';
+    // Encode plant name for URL search
+    final query = Uri.encodeComponent('$name seeds');
+    final amazonUrl =
+        'https://www.amazon.com/s?k=$query&tag=sprouttogether-20';
+    // For herbs and flowers, also show Click & Grow link if relevant
+    final isHerbOrSmall = (plant.category ?? '').toLowerCase().contains('herb') ||
+        (plant.category ?? '').toLowerCase().contains('flower') ||
+        (plant.category ?? '').toLowerCase().contains('indoor');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          '🌱 Shop for Seeds',
+          style: FlutterFlowTheme.of(context).titleMedium.override(
+            font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+            color: FlutterFlowTheme.of(context).primaryText,
+            letterSpacing: 0.0,
+            fontWeight: FontWeight.bold,
+            lineHeight: 1.4,
+          ),
+        ),
+        const SizedBox(height: 8.0),
+        _AffiliateLinkTile(
+          productName: '$name Seeds — Amazon',
+          storeName: 'Amazon',
+          icon: Icons.storefront_outlined,
+          accentColor: const Color(0xFF6F8F72),
+          onTap: () => _openLink(amazonUrl),
+        ),
+        if (isHerbOrSmall)
+          _AffiliateLinkTile(
+            productName: 'Grow $name Indoors — Click & Grow',
+            storeName: 'Click & Grow',
+            icon: Icons.eco_rounded,
+            accentColor: const Color(0xFF2E7D52),
+            onTap: () => _openLink(
+                'https://www.anrdoezrs.net/click-8012865-4297609?url=https%3A%2F%2Fwww.clickandgrow.com%2Fcollections%2Fplant-pods'),
+          ),
+      ],
     );
   }
 
@@ -862,6 +930,42 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                           ),
                         ],
                       ),
+                      // Companion tip from local service
+                      Builder(builder: (ctx) {
+                        final tip = CompanionPlantingService.instance
+                            .findCompanions(plant?.plantName ?? '')?['tip']
+                            as String?;
+                        if (tip == null || tip.isEmpty) return const SizedBox.shrink();
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14.0, vertical: 10.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0x0D7BA05B),
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(
+                                  color: const Color(0x337BA05B), width: 1.0),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.lightbulb_outline_rounded,
+                                    color: FlutterFlowTheme.of(ctx).primary,
+                                    size: 16.0),
+                                const SizedBox(width: 8.0),
+                                Expanded(
+                                  child: Text(tip,
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 12.5,
+                                          color: FlutterFlowTheme.of(ctx).primaryText,
+                                          height: 1.5)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
                       const SizedBox(height: 20.0),
                     ],
 
@@ -1015,6 +1119,13 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                           ],
                         );
                       }),
+                      const SizedBox(height: 20.0),
+                    ],
+
+                    // ── Shop for Seeds (auto-generated affiliate link) ────
+                    if (!_loadingPlant && plant != null) ...[
+                      const SizedBox(height: 4.0),
+                      _buildShopSeedsSection(plant),
                       const SizedBox(height: 20.0),
                     ],
 

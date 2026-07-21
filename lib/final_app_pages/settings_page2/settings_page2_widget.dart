@@ -1,4 +1,6 @@
 import '/components/header_widget.dart';
+import '/components/paywall_widget.dart';
+import '/services/subscription_service.dart';
 import '/components/section_card_child2_widget.dart';
 import '/components/section_card_child3_widget.dart';
 import '/components/section_card_child4_widget.dart';
@@ -193,118 +195,186 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                         ),
                       ),
                       // ── Subscription ───────────────────────────────────
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
-                            child: Text(
-                              'Subscription',
-                              style: FlutterFlowTheme.of(context).labelLarge.override(
-                                    font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                                    color: FlutterFlowTheme.of(context).secondaryText,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.0,
-                                  ),
-                            ),
-                          ),
-                          Material(
-                            color: Colors.transparent,
-                            elevation: 10.0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(context).secondaryBackground,
-                                borderRadius: BorderRadius.circular(24.0),
-                                border: Border.all(color: FlutterFlowTheme.of(context).alternate),
+                      ListenableBuilder(
+                        listenable: SubscriptionService.instance,
+                        builder: (context, _) {
+                          final isPro = SubscriptionService.instance.isPro;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
+                                child: Text(
+                                  'Subscription',
+                                  style: FlutterFlowTheme.of(context).labelLarge.override(
+                                        font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                                        color: FlutterFlowTheme.of(context).secondaryText,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 0.0,
+                                      ),
+                                ),
                               ),
-                              padding: const EdgeInsets.all(20.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 40.0, height: 40.0,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0x1A6F8F72),
-                                          borderRadius: BorderRadius.circular(12.0),
-                                        ),
-                                        child: Icon(Icons.workspace_premium_rounded,
-                                            color: FlutterFlowTheme.of(context).primary, size: 20.0),
-                                      ),
-                                      const SizedBox(width: 16.0),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Current Plan',
-                                                style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 15.0)),
-                                            Text('Free Plan',
-                                                style: GoogleFonts.poppins(
-                                                    fontSize: 12.0,
-                                                    color: FlutterFlowTheme.of(context).secondaryText)),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-                                        decoration: BoxDecoration(
-                                          color: FlutterFlowTheme.of(context).primary.withOpacity(0.12),
-                                          borderRadius: BorderRadius.circular(20.0),
-                                        ),
-                                        child: Text('FREE',
-                                            style: GoogleFonts.poppins(
-                                                fontSize: 11.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: FlutterFlowTheme.of(context).primary)),
-                                      ),
-                                    ],
+                              Material(
+                                color: Colors.transparent,
+                                elevation: 10.0,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                                    borderRadius: BorderRadius.circular(24.0),
+                                    border: Border.all(color: FlutterFlowTheme.of(context).alternate),
                                   ),
-                                  Divider(height: 24.0, color: FlutterFlowTheme.of(context).alternate),
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    onTap: () {
-                                      // TODO: link to subscription management page or in-app paywall
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                      child: Row(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Column(
+                                    children: [
+                                      Row(
                                         children: [
                                           Container(
                                             width: 40.0, height: 40.0,
                                             decoration: BoxDecoration(
-                                              color: const Color(0x1A6F8F72),
+                                              color: isPro
+                                                  ? const Color(0x1AFFD700)
+                                                  : const Color(0x1A6F8F72),
                                               borderRadius: BorderRadius.circular(12.0),
                                             ),
-                                            child: Icon(Icons.manage_accounts_rounded,
-                                                color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                                            child: Icon(
+                                              isPro
+                                                  ? Icons.workspace_premium_rounded
+                                                  : Icons.eco_rounded,
+                                              color: isPro
+                                                  ? const Color(0xFFB8860B)
+                                                  : FlutterFlowTheme.of(context).primary,
+                                              size: 20.0,
+                                            ),
                                           ),
                                           const SizedBox(width: 16.0),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text('Manage Subscription',
-                                                    style: GoogleFonts.poppins(
-                                                        fontWeight: FontWeight.w600, fontSize: 15.0)),
-                                                Text('Change or cancel your plan',
-                                                    style: GoogleFonts.poppins(
-                                                        fontSize: 12.0,
-                                                        color: FlutterFlowTheme.of(context).secondaryText)),
+                                                Text('Current Plan',
+                                                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 15.0)),
+                                                Text(
+                                                  isPro ? 'SproutTogether Pro' : 'Free Plan',
+                                                  style: GoogleFonts.poppins(
+                                                      fontSize: 12.0,
+                                                      color: FlutterFlowTheme.of(context).secondaryText)),
                                               ],
                                             ),
                                           ),
-                                          Icon(Icons.chevron_right_rounded,
-                                              color: FlutterFlowTheme.of(context).secondaryText, size: 20.0),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+                                            decoration: BoxDecoration(
+                                              color: isPro
+                                                  ? const Color(0xFFFFF8DC)
+                                                  : FlutterFlowTheme.of(context).primary.withOpacity(0.12),
+                                              borderRadius: BorderRadius.circular(20.0),
+                                            ),
+                                            child: Text(
+                                              isPro ? 'PRO' : 'FREE',
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 11.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: isPro
+                                                      ? const Color(0xFFB8860B)
+                                                      : FlutterFlowTheme.of(context).primary)),
+                                          ),
                                         ],
                                       ),
-                                    ),
+                                      Divider(height: 24.0, color: FlutterFlowTheme.of(context).alternate),
+                                      InkWell(
+                                        borderRadius: BorderRadius.circular(12.0),
+                                        onTap: () async {
+                                          if (isPro) {
+                                            // Open Apple subscription management
+                                            await launchURL(
+                                                'https://apps.apple.com/account/subscriptions');
+                                          } else {
+                                            // Open paywall
+                                            await Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                fullscreenDialog: true,
+                                                builder: (_) => const PaywallWidget(),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 40.0, height: 40.0,
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0x1A6F8F72),
+                                                  borderRadius: BorderRadius.circular(12.0),
+                                                ),
+                                                child: Icon(
+                                                  isPro
+                                                      ? Icons.manage_accounts_rounded
+                                                      : Icons.upgrade_rounded,
+                                                  color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                                              ),
+                                              const SizedBox(width: 16.0),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      isPro ? 'Manage Subscription' : 'Upgrade to Pro',
+                                                      style: GoogleFonts.poppins(
+                                                          fontWeight: FontWeight.w600, fontSize: 15.0)),
+                                                    Text(
+                                                      isPro
+                                                          ? 'Change or cancel your plan'
+                                                          : 'Unlock all features — from \$4.17/mo',
+                                                      style: GoogleFonts.poppins(
+                                                          fontSize: 12.0,
+                                                          color: FlutterFlowTheme.of(context).secondaryText)),
+                                                  ],
+                                                ),
+                                              ),
+                                              Icon(Icons.chevron_right_rounded,
+                                                  color: FlutterFlowTheme.of(context).secondaryText, size: 20.0),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      if (!isPro) ...[
+                                        Divider(height: 24.0, color: FlutterFlowTheme.of(context).alternate),
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  fullscreenDialog: true,
+                                                  builder: (_) => const PaywallWidget(),
+                                                ),
+                                              );
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: const Color(0xFF6F8F72),
+                                              foregroundColor: Colors.white,
+                                              elevation: 2,
+                                              padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(14.0)),
+                                            ),
+                                            child: Text('Upgrade to Pro',
+                                                style: GoogleFonts.poppins(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14.0)),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                        ],
+                            ],
+                          );
+                        },
                       ),
                       // ───────────────────────────────────────────────────
                       wrapWithModel(
