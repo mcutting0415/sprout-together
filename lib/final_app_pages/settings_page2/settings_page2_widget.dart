@@ -1,12 +1,10 @@
-<<<<<<< HEAD
-import '/components/header_widget.dart';
-import '/components/paywall_widget.dart';
-import '/services/subscription_service.dart';
-=======
 import '/auth/supabase_auth/auth_util.dart';
 import '/index.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
->>>>>>> 7515dc7ca32fe6b8f2fa1a4d979590646dab74c5
+import '/services/subscription_service.dart';
+import '/final_app_pages/paywall/paywall_widget.dart';
+import '/final_app_pages/seed_inventory_page/seed_inventory_page_widget.dart';
+import '/final_app_pages/seed_starting_guide/seed_starting_guide_widget.dart';
 import '/components/section_card_child2_widget.dart';
 import '/components/section_card_child3_widget.dart';
 import '/components/section_card_child4_widget.dart';
@@ -24,8 +22,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'settings_page2_model.dart';
 export 'settings_page2_model.dart';
-import '/services/subscription_service.dart';
-import '/final_app_pages/paywall/paywall_widget.dart';
 
 /// Create a Settings Page for my gardening app called SproutTogether.
 ///
@@ -474,6 +470,117 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                           child: () => SectionCardChild4Widget(),
                         ),
                       ),
+                      // ── Seed Inventory quick-link ───────────────────────
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
+                            child: Text(
+                              'Tools',
+                              style: FlutterFlowTheme.of(context).labelLarge.override(
+                                    font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                                    color: FlutterFlowTheme.of(context).secondaryText,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          ),
+                          Material(
+                            color: Colors.transparent,
+                            elevation: 10.0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context).secondaryBackground,
+                                borderRadius: BorderRadius.circular(24.0),
+                                border: Border.all(color: FlutterFlowTheme.of(context).alternate),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+                              child: Column(
+                                children: [
+                                  InkWell(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    onTap: () => context.pushNamed(SeedInventoryPageWidget.routeName),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 40.0, height: 40.0,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0x1A6F8F72),
+                                              borderRadius: BorderRadius.circular(12.0),
+                                            ),
+                                            child: Icon(Icons.inventory_2_rounded,
+                                                color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                                          ),
+                                          const SizedBox(width: 16.0),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text('Seed Inventory',
+                                                    style: GoogleFonts.poppins(
+                                                        fontWeight: FontWeight.w600, fontSize: 15.0)),
+                                                Text('Track your seed collection',
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 12.0,
+                                                        color: FlutterFlowTheme.of(context).secondaryText)),
+                                              ],
+                                            ),
+                                          ),
+                                          Icon(Icons.chevron_right_rounded,
+                                              color: FlutterFlowTheme.of(context).secondaryText, size: 20.0),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Divider(height: 1, color: FlutterFlowTheme.of(context).alternate),
+                                  InkWell(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    onTap: () => context.pushNamed(SeedStartingGuideWidget.routeName),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 40.0, height: 40.0,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0x1A6F8F72),
+                                              borderRadius: BorderRadius.circular(12.0),
+                                            ),
+                                            child: Icon(Icons.calendar_today_rounded,
+                                                color: FlutterFlowTheme.of(context).primary, size: 20.0),
+                                          ),
+                                          const SizedBox(width: 16.0),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text('Seed Starting Guide',
+                                                    style: GoogleFonts.poppins(
+                                                        fontWeight: FontWeight.w600, fontSize: 15.0)),
+                                                Text('Frost-date planting schedule',
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 12.0,
+                                                        color: FlutterFlowTheme.of(context).secondaryText)),
+                                              ],
+                                            ),
+                                          ),
+                                          Icon(Icons.chevron_right_rounded,
+                                              color: FlutterFlowTheme.of(context).secondaryText, size: 20.0),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      // ───────────────────────────────────────────────────
                       wrapWithModel(
                         model: _model.sectionCardModel5,
                         updateCallback: () => safeSetState(() {}),

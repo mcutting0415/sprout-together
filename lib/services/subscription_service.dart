@@ -62,7 +62,7 @@ class SubscriptionService extends ChangeNotifier {
     _isPro = info.entitlements.active.containsKey(_entitlementId);
   }
 
-  /// Load available packages from RevenueCat.
+  /// Load available packages from RevenueCat (stores result internally).
   Future<void> loadOfferings() async {
     _isLoading = true;
     _errorMessage = null;
@@ -82,6 +82,19 @@ class SubscriptionService extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  /// Fetch and return the full Offerings object directly (used by PaywallWidget).
+  Future<Offerings?> getOfferings() async {
+    try {
+      return await Purchases.getOfferings();
+    } catch (e) {
+      debugPrint('[SubscriptionService] getOfferings error: $e');
+      return null;
+    }
+  }
+
+  /// Purchase a package by direct reference (alias used by PaywallWidget).
+  Future<bool> purchasePackage(Package package) => purchase(package);
 
   /// Purchase a package. Returns true on success.
   Future<bool> purchase(Package package) async {

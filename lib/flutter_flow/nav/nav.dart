@@ -253,6 +253,16 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
             experienceLevel: params.getParam('experienceLevel', ParamType.String),
           ),
         ),
+        FFRoute(
+          name: SeedInventoryPageWidget.routeName,
+          path: SeedInventoryPageWidget.routePath,
+          builder: (context, params) => const SeedInventoryPageWidget(),
+        ),
+        FFRoute(
+          name: SeedStartingGuideWidget.routeName,
+          path: SeedStartingGuideWidget.routePath,
+          builder: (context, params) => const SeedStartingGuideWidget(),
+        ),
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
 

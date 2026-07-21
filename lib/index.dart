@@ -45,3 +45,9 @@ export '/final_app_pages/garden_tips_page/garden_tips_page_widget.dart'
 
 export '/final_app_pages/paywall/paywall_widget.dart'
     show PaywallWidget;
+
+export '/final_app_pages/seed_inventory_page/seed_inventory_page_widget.dart'
+    show SeedInventoryPageWidget;
+
+export '/final_app_pages/seed_starting_guide/seed_starting_guide_widget.dart'
+    show SeedStartingGuideWidget;
