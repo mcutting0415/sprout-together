@@ -141,6 +141,30 @@ class SubscriptionService extends ChangeNotifier {
       debugPrint('[SubscriptionService] refresh error: $e');
     }
   }
+
+  /// Links the RevenueCat anonymous identity to the authenticated Supabase user.
+  /// Call this after a successful sign-in.
+  Future<void> loginUser(String userId) async {
+    try {
+      await Purchases.logIn(userId);
+      await refresh();
+      debugPrint('[SubscriptionService] Logged in RevenueCat user: $userId');
+    } catch (e) {
+      debugPrint('[SubscriptionService] loginUser error: $e');
+    }
+  }
+
+  /// Resets RevenueCat identity on sign-out.
+  Future<void> logoutUser() async {
+    try {
+      await Purchases.logOut();
+      _isPro = false;
+      notifyListeners();
+      debugPrint('[SubscriptionService] Logged out RevenueCat user');
+    } catch (e) {
+      debugPrint('[SubscriptionService] logoutUser error: $e');
+    }
+  }
 }
 
 extension _ListExtension<T> on List<T> {

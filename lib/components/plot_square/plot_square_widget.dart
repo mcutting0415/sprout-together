@@ -104,7 +104,12 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
             .length;
         if (assignedCount >= 5) {
           if (!context.mounted) return;
-          await Navigator.of(context).pushNamed(PaywallWidget.routeName);
+          await showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) => const PaywallWidget(),
+          );
           return;
         }
       }
