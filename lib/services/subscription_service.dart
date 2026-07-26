@@ -29,10 +29,10 @@ class SubscriptionService extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Package? get monthlyPackage => _packages.firstWhereOrNull(
-      (p) => p.storeProduct.productIdentifier == _monthlyProductId);
+      (p) => p.storeProduct.identifier == _monthlyProductId);
 
   Package? get yearlyPackage => _packages.firstWhereOrNull(
-      (p) => p.storeProduct.productIdentifier == _yearlyProductId);
+      (p) => p.storeProduct.identifier == _yearlyProductId);
 
   /// Call once in main() before runApp.
   Future<void> initialize() async {
@@ -99,7 +99,7 @@ class SubscriptionService extends ChangeNotifier {
   Future<bool> purchase(Package package) async {
     try {
       final result = await Purchases.purchasePackage(package);
-      _updateFromCustomerInfo(result.customerInfo);
+      _updateFromCustomerInfo(result);
       notifyListeners();
       return _isPro;
     } on PurchasesErrorCode catch (e) {
