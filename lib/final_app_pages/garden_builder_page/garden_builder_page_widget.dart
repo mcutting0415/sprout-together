@@ -418,7 +418,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.local_florist_rounded,
+                                    Icon(Icons.local_florist_rounded,
                                         color: FlutterFlowTheme.of(context).primary, size: 14.0),
                                     const SizedBox(width: 6.0),
                                     Text(selectedPlantName ?? '',
@@ -432,7 +432,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                         selectedPlantId = null;
                                         selectedPlantName = null;
                                       }),
-                                      child: const Icon(Icons.close,
+                                      child: Icon(Icons.close,
                                           size: 14.0,
                                           color: FlutterFlowTheme.of(context).primary),
                                     ),
@@ -477,7 +477,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                         color: const Color(0x1A6F8F72),
                                         borderRadius:
                                             BorderRadius.circular(8.0)),
-                                    child: const Icon(
+                                    child: Icon(
                                         Icons.local_florist_rounded,
                                         color: FlutterFlowTheme.of(context).primary,
                                         size: 16.0),
@@ -485,7 +485,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                   title: Text(plant.plantName ?? 'Unknown',
                                       style: GoogleFonts.poppins(fontSize: 13.0)),
                                   trailing: selectedPlantId == plant.id
-                                      ? const Icon(Icons.check_circle_rounded,
+                                      ? Icon(Icons.check_circle_rounded,
                                           color: FlutterFlowTheme.of(context).primary, size: 18.0)
                                       : null,
                                   onTap: () => setSheetState(() {
@@ -568,7 +568,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
             decoration: BoxDecoration(
                 color: const Color(0x1A6F8F72),
                 borderRadius: BorderRadius.circular(12.0)),
-            child: const Icon(Icons.coffee_maker_rounded,
+            child: Icon(Icons.coffee_maker_rounded,
                 color: FlutterFlowTheme.of(context).primary, size: 22.0),
           ),
           const SizedBox(width: 12.0),
@@ -1506,7 +1506,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.touch_app_rounded, color: FlutterFlowTheme.of(context).primary, size: 18.0),
+                                      Icon(Icons.touch_app_rounded, color: FlutterFlowTheme.of(context).primary, size: 18.0),
                                       const SizedBox(width: 8.0),
                                       Expanded(
                                         child: Text('Tap squares to select them, then assign a plant to all at once.',
