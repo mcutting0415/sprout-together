@@ -91,7 +91,7 @@ class _SeedInventoryPageWidgetState extends State<SeedInventoryPageWidget> {
                           style: GoogleFonts.poppins(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF6F8F72)),
+                              color: FlutterFlowTheme.of(context).primary),
                         ),
                       ),
                     ],
@@ -177,7 +177,7 @@ class _SeedInventoryPageWidgetState extends State<SeedInventoryPageWidget> {
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () => _openAddSheet(),
-            backgroundColor: const Color(0xFF6F8F72),
+            backgroundColor: FlutterFlowTheme.of(context).primary,
             foregroundColor: Colors.white,
             icon: const Icon(Icons.add_rounded),
             label: Text('Add Seeds',
@@ -283,7 +283,7 @@ class _SeedTile extends StatelessWidget {
                   item.isOpen
                       ? Icons.grass_rounded
                       : Icons.inventory_2_rounded,
-                  color: const Color(0xFF6F8F72),
+                  color: FlutterFlowTheme.of(context).primary,
                   size: 22,
                 ),
               ),
@@ -494,7 +494,7 @@ class _SeedEditSheetState extends State<_SeedEditSheet> {
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline_rounded),
-                  color: const Color(0xFF6F8F72),
+                  color: FlutterFlowTheme.of(context).primary,
                   onPressed: _packets > 1
                       ? () => setState(() => _packets--)
                       : null,
@@ -504,7 +504,7 @@ class _SeedEditSheetState extends State<_SeedEditSheet> {
                         fontWeight: FontWeight.bold, fontSize: 16)),
                 IconButton(
                   icon: const Icon(Icons.add_circle_outline_rounded),
-                  color: const Color(0xFF6F8F72),
+                  color: FlutterFlowTheme.of(context).primary,
                   onPressed: () => setState(() => _packets++),
                 ),
               ],
@@ -517,7 +517,7 @@ class _SeedEditSheetState extends State<_SeedEditSheet> {
               onChanged: (v) => setState(() => _isOpen = v),
               title: Text('Packet opened',
                   style: GoogleFonts.poppins(fontSize: 14)),
-              activeColor: const Color(0xFF6F8F72),
+              activeColor: FlutterFlowTheme.of(context).primary,
               contentPadding: EdgeInsets.zero,
             ),
             const SizedBox(height: 8),
@@ -532,7 +532,7 @@ class _SeedEditSheetState extends State<_SeedEditSheet> {
               child: ElevatedButton(
                 onPressed: _save,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6F8F72),
+                  backgroundColor: FlutterFlowTheme.of(context).primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),

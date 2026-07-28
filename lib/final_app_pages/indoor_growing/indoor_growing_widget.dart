@@ -79,7 +79,7 @@ class _IndoorGrowingWidgetState extends State<IndoorGrowingWidget>
               margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: const Color(0xFF6F8F72),
+                color: FlutterFlowTheme.of(context).primary,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
@@ -125,7 +125,7 @@ class _IndoorGrowingWidgetState extends State<IndoorGrowingWidget>
                 labelColor: Colors.white,
                 unselectedLabelColor: theme.secondaryText,
                 indicator: BoxDecoration(
-                  color: const Color(0xFF6F8F72),
+                  color: FlutterFlowTheme.of(context).primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
@@ -393,7 +393,7 @@ class _LightCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6F8F72),
+                  color: FlutterFlowTheme.of(context).primary,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
@@ -628,7 +628,7 @@ class _ProductCard extends StatelessWidget {
                           style: GoogleFonts.poppins(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF6F8F72))),
+                              color: FlutterFlowTheme.of(context).primary)),
                     ),
                     const SizedBox(height: 4),
                   ],
@@ -650,13 +650,13 @@ class _ProductCard extends StatelessWidget {
                           style: GoogleFonts.poppins(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
-                              color: const Color(0xFF6F8F72))),
+                              color: FlutterFlowTheme.of(context).primary)),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF6F8F72),
+                          color: FlutterFlowTheme.of(context).primary,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(

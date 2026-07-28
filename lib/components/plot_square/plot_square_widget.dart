@@ -398,7 +398,7 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
           shape: BoxShape.rectangle,
           border: Border.all(
             color: valueOrDefault<Color>(
-              widget!.isEmpty ? Color(0xFFD8D2CB) : Color(0xFF6F8F72),
+              widget!.isEmpty ? Color(0xFFD8D2CB) : FlutterFlowTheme.of(context).primary,
               Color(0x4D6F8F72),
             ),
             width: 1.0,

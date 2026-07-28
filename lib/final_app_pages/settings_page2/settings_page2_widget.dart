@@ -358,7 +358,7 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                                               );
                                             },
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color(0xFF6F8F72),
+                                              backgroundColor: FlutterFlowTheme.of(context).primary,
                                               foregroundColor: Colors.white,
                                               elevation: 2,
                                               padding: const EdgeInsets.symmetric(vertical: 12.0),

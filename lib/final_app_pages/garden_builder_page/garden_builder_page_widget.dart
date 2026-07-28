@@ -369,14 +369,14 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                         horizontal: 16.0, vertical: 8.0),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? const Color(0xFF6F8F72)
+                                          ? FlutterFlowTheme.of(context).primary
                                           : FlutterFlowTheme.of(context)
                                               .secondaryBackground,
                                       borderRadius:
                                           BorderRadius.circular(20.0),
                                       border: Border.all(
                                         color: isSelected
-                                            ? const Color(0xFF6F8F72)
+                                            ? FlutterFlowTheme.of(context).primary
                                             : FlutterFlowTheme.of(context)
                                                 .alternate,
                                         width: 1.5,
@@ -413,18 +413,18 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                   color: const Color(0x1A6F8F72),
                                   borderRadius: BorderRadius.circular(10.0),
                                   border: Border.all(
-                                      color: const Color(0xFF6F8F72)),
+                                      color: FlutterFlowTheme.of(context).primary),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     const Icon(Icons.local_florist_rounded,
-                                        color: Color(0xFF6F8F72), size: 14.0),
+                                        color: FlutterFlowTheme.of(context).primary, size: 14.0),
                                     const SizedBox(width: 6.0),
                                     Text(selectedPlantName ?? '',
                                         style: GoogleFonts.poppins(
                                             fontSize: 13.0,
-                                            color: const Color(0xFF6F8F72),
+                                            color: FlutterFlowTheme.of(context).primary,
                                             fontWeight: FontWeight.w600)),
                                     const SizedBox(width: 6.0),
                                     GestureDetector(
@@ -434,7 +434,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                       }),
                                       child: const Icon(Icons.close,
                                           size: 14.0,
-                                          color: Color(0xFF6F8F72)),
+                                          color: FlutterFlowTheme.of(context).primary),
                                     ),
                                   ],
                                 ),
@@ -479,14 +479,14 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                             BorderRadius.circular(8.0)),
                                     child: const Icon(
                                         Icons.local_florist_rounded,
-                                        color: Color(0xFF6F8F72),
+                                        color: FlutterFlowTheme.of(context).primary,
                                         size: 16.0),
                                   ),
                                   title: Text(plant.plantName ?? 'Unknown',
                                       style: GoogleFonts.poppins(fontSize: 13.0)),
                                   trailing: selectedPlantId == plant.id
                                       ? const Icon(Icons.check_circle_rounded,
-                                          color: Color(0xFF6F8F72), size: 18.0)
+                                          color: FlutterFlowTheme.of(context).primary, size: 18.0)
                                       : null,
                                   onTap: () => setSheetState(() {
                                         selectedPlantId = plant.id;
@@ -555,7 +555,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
         borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
           color: container['plantId'] != null
-              ? const Color(0xFF6F8F72)
+              ? FlutterFlowTheme.of(context).primary
               : FlutterFlowTheme.of(context).alternate,
           width: 1.0,
         ),
@@ -569,7 +569,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                 color: const Color(0x1A6F8F72),
                 borderRadius: BorderRadius.circular(12.0)),
             child: const Icon(Icons.coffee_maker_rounded,
-                color: Color(0xFF6F8F72), size: 22.0),
+                color: FlutterFlowTheme.of(context).primary, size: 22.0),
           ),
           const SizedBox(width: 12.0),
           Expanded(
@@ -1406,13 +1406,13 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                           duration: const Duration(milliseconds: 150),
                                           decoration: BoxDecoration(
                                             color: isSelected
-                                                ? const Color(0xFF6F8F72).withOpacity(0.55)
+                                                ? FlutterFlowTheme.of(context).primary.withOpacity(0.55)
                                                 : Colors.black.withOpacity(0.04),
                                             borderRadius: BorderRadius.circular(14.0),
                                             border: Border.all(
                                               color: isSelected
-                                                  ? const Color(0xFF6F8F72)
-                                                  : const Color(0xFF6F8F72).withOpacity(0.25),
+                                                  ? FlutterFlowTheme.of(context).primary
+                                                  : FlutterFlowTheme.of(context).primary.withOpacity(0.25),
                                               width: isSelected ? 2.5 : 1.5,
                                             ),
                                           ),
@@ -1506,11 +1506,11 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.touch_app_rounded, color: Color(0xFF6F8F72), size: 18.0),
+                                      const Icon(Icons.touch_app_rounded, color: FlutterFlowTheme.of(context).primary, size: 18.0),
                                       const SizedBox(width: 8.0),
                                       Expanded(
                                         child: Text('Tap squares to select them, then assign a plant to all at once.',
-                                            style: GoogleFonts.poppins(fontSize: 12.0, color: const Color(0xFF6F8F72))),
+                                            style: GoogleFonts.poppins(fontSize: 12.0, color: FlutterFlowTheme.of(context).primary)),
                                       ),
                                     ],
                                   ),
@@ -1523,7 +1523,7 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                     height: 48.0,
                                     width: double.infinity,
                                     padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                                    color: const Color(0xFF6F8F72),
+                                    color: FlutterFlowTheme.of(context).primary,
                                     textStyle: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14.0),
                                     elevation: 0.0,
                                     borderRadius: BorderRadius.circular(20.0),

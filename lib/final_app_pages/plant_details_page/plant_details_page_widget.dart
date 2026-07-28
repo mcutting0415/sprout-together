@@ -436,7 +436,7 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
           productName: '$name Seeds — Amazon',
           storeName: 'Amazon',
           icon: Icons.storefront_outlined,
-          accentColor: const Color(0xFF6F8F72),
+          accentColor: FlutterFlowTheme.of(context).primary,
           onTap: () => _openLink(amazonUrl),
         ),
         if (isHerbOrSmall)

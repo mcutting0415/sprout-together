@@ -1068,7 +1068,7 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                               borderRadius: BorderRadius.circular(5.0),
                               border: Border.all(
                                 color: hasPlant
-                                    ? const Color(0xFF6F8F72)
+                                    ? FlutterFlowTheme.of(context).primary
                                     : theme.alternate,
                                 width: 1.0,
                               ),

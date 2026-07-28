@@ -54,7 +54,7 @@ class _SeedStartingGuideWidgetState extends State<SeedStartingGuideWidget> {
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
           colorScheme: ColorScheme.light(
-            primary: const Color(0xFF6F8F72),
+            primary: FlutterFlowTheme.of(context).primary,
             onSurface: FlutterFlowTheme.of(ctx).primaryText,
           ),
         ),
@@ -113,7 +113,7 @@ class _SeedStartingGuideWidgetState extends State<SeedStartingGuideWidget> {
                 margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6F8F72),
+                  color: FlutterFlowTheme.of(context).primary,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -185,7 +185,7 @@ class _SeedStartingGuideWidgetState extends State<SeedStartingGuideWidget> {
                               style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.bold)),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF6F8F72),
+                            backgroundColor: FlutterFlowTheme.of(context).primary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 24, vertical: 14),
@@ -220,12 +220,12 @@ class _SeedStartingGuideWidgetState extends State<SeedStartingGuideWidget> {
                             horizontal: 14, vertical: 6),
                         decoration: BoxDecoration(
                           color: selected
-                              ? const Color(0xFF6F8F72)
+                              ? FlutterFlowTheme.of(context).primary
                               : theme.secondaryBackground,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: selected
-                                ? const Color(0xFF6F8F72)
+                                ? FlutterFlowTheme.of(context).primary
                                 : theme.alternate,
                           ),
                         ),
