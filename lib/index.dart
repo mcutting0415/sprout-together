@@ -54,3 +54,6 @@ export '/final_app_pages/seed_starting_guide/seed_starting_guide_widget.dart'
 
 export '/final_app_pages/indoor_growing/indoor_growing_widget.dart'
     show IndoorGrowingWidget;
+
+export '/final_app_pages/tools_page/tools_page_widget.dart'
+    show ToolsPageWidget;

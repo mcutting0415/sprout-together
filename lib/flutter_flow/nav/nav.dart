@@ -268,6 +268,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: IndoorGrowingWidget.routePath,
           builder: (context, params) => const IndoorGrowingWidget(),
         ),
+        FFRoute(
+          name: ToolsPageWidget.routeName,
+          path: ToolsPageWidget.routePath,
+          builder: (context, params) => const ToolsPageWidget(),
+        ),
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
 

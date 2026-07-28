@@ -1614,6 +1614,41 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                   ),
                 ),
               ),
+              // Tools CTA
+              Padding(
+                padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
+                child: InkWell(
+                  onTap: () => context.pushNamed(ToolsPageWidget.routeName),
+                  borderRadius: BorderRadius.circular(16.0),
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4A8FA3).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16.0),
+                      border: Border.all(color: const Color(0xFF4A8FA3).withOpacity(0.4)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.build_outlined, color: const Color(0xFF4A8FA3), size: 22.0),
+                        SizedBox(width: 10.0),
+                        Text(
+                          'Gardening Tools',
+                          style: FlutterFlowTheme.of(context).titleSmall.override(
+                                font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                color: const Color(0xFF4A8FA3),
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        Spacer(),
+                        Icon(Icons.arrow_forward_ios_rounded, color: const Color(0xFF4A8FA3), size: 14.0),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               // Calendar CTA — full width button to avoid cutoff
               SafeArea(
                 top: false,
