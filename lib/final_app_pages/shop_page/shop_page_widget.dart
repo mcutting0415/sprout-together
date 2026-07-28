@@ -1065,41 +1065,18 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
     );
   }
 
-  // 2. Only trust URLs from known-good image hosts.
-  // Supabase shop_products rows can have bad third-party URLs (AirPods,
-  // unrelated stock photos) that load successfully but show the wrong thing.
-  // Restricting to Unsplash or Shopify CDN ensures relevant product images.
-  final bool isTrustedUrl = rawUrl.isNotEmpty &&
-      (rawUrl.contains('images.unsplash.com') ||
-       rawUrl.contains('cdn.shopify.com'));
-
-  if (isTrustedUrl) {
-    return CachedNetworkImage(
-      imageUrl: rawUrl,
-      height: 120.0,
-      width: double.infinity,
-      fit: BoxFit.cover,
-      placeholder: (context, url) => emojiPlaceholder(),
-      errorWidget: (context, url, error) => CachedNetworkImage(
-        imageUrl: categoryFallback,
-        height: 120.0,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => emojiPlaceholder(),
-        errorWidget: (context, url, error) => emojiPlaceholder(),
-      ),
-    );
-  } else {
-    // Untrusted or empty URL — go straight to the category fallback
-    return CachedNetworkImage(
-      imageUrl: categoryFallback,
-      height: 120.0,
-      width: double.infinity,
-      fit: BoxFit.cover,
-      placeholder: (context, url) => emojiPlaceholder(),
-      errorWidget: (context, url, error) => emojiPlaceholder(),
-    );
-  }
+  // 2. Product not in override map — use the category fallback.
+  // Never fall through to the Supabase DB image_url: DB rows can have
+  // Unsplash URLs that load successfully but show the wrong product.
+  // The category fallback is always a thematically correct photo.
+  return CachedNetworkImage(
+    imageUrl: categoryFallback,
+    height: 120.0,
+    width: double.infinity,
+    fit: BoxFit.cover,
+    placeholder: (context, url) => emojiPlaceholder(),
+    errorWidget: (context, url, error) => emojiPlaceholder(),
+  );
 }
 
 Color _storeColor(String storeName) {
