@@ -312,7 +312,16 @@ const Map<String, String> kPlantImageFallbacks = {
 /// allows hotlinking from Flutter iOS/Android apps. Wikimedia/Wikipedia URLs
 /// are intentionally excluded — they block requests without browser headers.
 String? bestPlantImageUrl(String? supabaseUrl, String? plantName) {
-  // 1. Exact match in fallback map (case-insensitive).
+  // 1. Use the DB URL first — every plant in Supabase already has a specific,
+  //    correct Unsplash image assigned to it. Prefer that over the name map.
+  if (supabaseUrl != null &&
+      supabaseUrl.isNotEmpty &&
+      (supabaseUrl.contains('images.unsplash.com') ||
+       supabaseUrl.contains('supabase.co/storage'))) {
+    return supabaseUrl;
+  }
+
+  // 2. Name-map fallback for plants with no / invalid DB URL.
   if (plantName != null && plantName.isNotEmpty) {
     final key = plantName.toLowerCase().trim();
     if (kPlantImageFallbacks.containsKey(key)) {
@@ -329,15 +338,6 @@ String? bestPlantImageUrl(String? supabaseUrl, String? plantName) {
       }
     }
     if (bestMatchUrl != null) return bestMatchUrl;
-  }
-
-  // 2. Fall back to trusted DB URL (Unsplash or our own Supabase storage).
-  // NOTE: upload.wikimedia.org is intentionally excluded.
-  if (supabaseUrl != null &&
-      supabaseUrl.isNotEmpty &&
-      (supabaseUrl.contains('images.unsplash.com') ||
-       supabaseUrl.contains('supabase.co/storage'))) {
-    return supabaseUrl;
   }
 
   return null;
