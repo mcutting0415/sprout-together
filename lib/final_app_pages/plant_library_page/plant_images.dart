@@ -238,7 +238,6 @@ const Map<String, String> kPlantImageFallbacks = {
   'collards':             '${_u}1576045057995-568f588f82fb$_q',
   'mustard greens':       '${_u}1576045057995-568f588f82fb$_q',
   'bok choy':             '${_u}1566897819059-0b71a5bc3b16$_q',
-  'swiss chard':          '${_u}1583073882588-4b08065b5fcb$_q',
   'amaranth greens':      '${_u}1576045057995-568f588f82fb$_q',
   'broccoli rabe':        '${_u}1459411621453-7b03977f4bfc$_q',
   'rapini':               '${_u}1459411621453-7b03977f4bfc$_q',

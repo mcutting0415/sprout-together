@@ -351,7 +351,7 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
                                 if (done.isNotEmpty) ...[
                                   _sectionLabel(theme, 'Completed',
                                       Icons.check_circle_rounded,
-                                      theme.primary)),
+                                      theme.primary),
                                   const SizedBox(height: 8.0),
                                   ...done.map((g) => _goalCard(theme, g)),
                                 ],
