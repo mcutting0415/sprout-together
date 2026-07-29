@@ -292,15 +292,15 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                   width: 100.0,
                   padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF4E7A2E).withOpacity(0.1),
+                    color: FlutterFlowTheme.of(context).primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10.0),
                     border: Border.all(
-                        color: const Color(0xFF4E7A2E).withOpacity(0.25)),
+                        color: FlutterFlowTheme.of(context).primary.withOpacity(0.25)),
                   ),
                   child: Column(
                     children: [
-                      const Icon(Icons.tips_and_updates_rounded,
-                          color: Color(0xFF4E7A2E), size: 16.0),
+                      Icon(Icons.tips_and_updates_rounded,
+                          color: FlutterFlowTheme.of(context).primary, size: 16.0),
                       const SizedBox(height: 4.0),
                       Text(
                         month >= 6 && month <= 8
@@ -312,7 +312,7 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                                     : 'Protect plants from hard freezes',
                         style: GoogleFonts.poppins(
                             fontSize: 9.5,
-                            color: const Color(0xFF4E7A2E),
+                            color: FlutterFlowTheme.of(context).primary,
                             height: 1.3),
                         textAlign: TextAlign.center,
                       ),
@@ -558,7 +558,7 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
                           style: FlutterFlowTheme.of(context).bodySmall.override(
                                 font: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                                 color: remaining == 0
-                                    ? const Color(0xFF4E7A2E)
+                                    ? FlutterFlowTheme.of(context).primary
                                     : FlutterFlowTheme.of(context).secondaryText,
                                 letterSpacing: 0.0,
                               ),
@@ -995,11 +995,11 @@ class _ExpansibleTipsState extends State<ExpansibleTips> {
                 Container(
                   width: 36.0, height: 36.0,
                   decoration: BoxDecoration(
-                    color: const Color(0x1A4E7A2E),
+                    color: FlutterFlowTheme.of(context).primary.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  child: const Icon(Icons.help_outline_rounded,
-                      color: Color(0xFF4E7A2E), size: 18.0),
+                  child: Icon(Icons.help_outline_rounded,
+                      color: FlutterFlowTheme.of(context).primary, size: 18.0),
                 ),
                 const SizedBox(width: 12.0),
                 Expanded(

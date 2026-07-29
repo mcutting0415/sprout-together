@@ -963,6 +963,8 @@ const _kShopProductImageOverrides = <String, String>{
 // These are the same Unsplash photos used in the plant-library fallback map,
 // so we know they load. Chosen to be thematically relevant to each category.
 const _kShopCategoryFallbacks = <String, String>{
+  'Smart Gardens':
+      'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
   'Seeds':
       'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
   // Garden hand tools / gloves
@@ -1065,10 +1067,31 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
     );
   }
 
-  // 2. Product not in override map — use the category fallback.
-  // Never fall through to the Supabase DB image_url: DB rows can have
-  // Unsplash URLs that load successfully but show the wrong product.
-  // The category fallback is always a thematically correct photo.
+  // 2. Try the product's own image_url if it's from a trusted host
+  //    (Unsplash or Shopify CDN) — these are known to load correctly.
+  //    If it fails, fall through to the category fallback.
+  final isTrustedUrl = rawUrl.isNotEmpty &&
+      (rawUrl.contains('images.unsplash.com') ||
+       rawUrl.contains('cdn.shopify.com'));
+  if (isTrustedUrl) {
+    return CachedNetworkImage(
+      imageUrl: rawUrl,
+      height: 120.0,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => emojiPlaceholder(),
+      errorWidget: (context, url, error) => CachedNetworkImage(
+        imageUrl: categoryFallback,
+        height: 120.0,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => emojiPlaceholder(),
+        errorWidget: (context, url, error) => emojiPlaceholder(),
+      ),
+    );
+  }
+
+  // 3. Product not in override map and no trusted URL — use category fallback.
   return CachedNetworkImage(
     imageUrl: categoryFallback,
     height: 120.0,

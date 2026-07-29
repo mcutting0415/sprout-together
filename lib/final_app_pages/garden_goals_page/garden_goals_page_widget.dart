@@ -209,13 +209,13 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
                                   horizontal: 12.0, vertical: 6.0),
                               decoration: BoxDecoration(
                                 color: selected
-                                    ? const Color(0xFF4E7A2E).withOpacity(0.15)
+                                    ? FlutterFlowTheme.of(context).primary.withOpacity(0.15)
                                     : FlutterFlowTheme.of(context)
                                         .primaryBackground,
                                 borderRadius: BorderRadius.circular(16.0),
                                 border: Border.all(
                                   color: selected
-                                      ? const Color(0xFF4E7A2E)
+                                      ? FlutterFlowTheme.of(context).primary
                                       : FlutterFlowTheme.of(context).alternate,
                                 ),
                               ),
@@ -226,7 +226,7 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
                                           ? FontWeight.w600
                                           : FontWeight.normal,
                                       color: selected
-                                          ? const Color(0xFF4E7A2E)
+                                          ? FlutterFlowTheme.of(context).primary
                                           : FlutterFlowTheme.of(context)
                                               .primaryText)),
                             ),
@@ -351,7 +351,7 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
                                 if (done.isNotEmpty) ...[
                                   _sectionLabel(theme, 'Completed',
                                       Icons.check_circle_rounded,
-                                      const Color(0xFF4E7A2E)),
+                                      theme.primary)),
                                   const SizedBox(height: 8.0),
                                   ...done.map((g) => _goalCard(theme, g)),
                                 ],
@@ -445,7 +445,7 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
               height: 40.0,
               decoration: BoxDecoration(
                 color: isComplete
-                    ? const Color(0xFF4E7A2E).withOpacity(0.15)
+                    ? theme.primary.withOpacity(0.15)
                     : color.withOpacity(0.12),
                 shape: BoxShape.circle,
               ),
@@ -453,7 +453,7 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
                 isComplete
                     ? Icons.check_circle_rounded
                     : _typeIcon(goal.goalType),
-                color: isComplete ? const Color(0xFF4E7A2E) : color,
+                color: isComplete ? theme.primary : color,
                 size: 20.0,
               ),
             ),
@@ -501,7 +501,7 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
                   ? Icons.check_box_rounded
                   : Icons.check_box_outline_blank_rounded,
               color: isComplete
-                  ? const Color(0xFF4E7A2E)
+                  ? theme.primary
                   : theme.secondaryText,
               size: 22.0,
             ),

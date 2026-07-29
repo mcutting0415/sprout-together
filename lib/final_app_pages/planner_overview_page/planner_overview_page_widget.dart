@@ -337,7 +337,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                   decoration: BoxDecoration(
                                     color: alreadyAdded
                                         ? FlutterFlowTheme.of(context).primary.withOpacity(0.15)
-                                        : const Color(0x1A6F8F72),
+                                        : FlutterFlowTheme.of(context).primary.withOpacity(0.10),
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   child: Icon(
@@ -1094,7 +1094,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                     width: 36.0,
                                     height: 36.0,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF4E7A2E).withOpacity(0.12),
+                                      color: FlutterFlowTheme.of(context).primary.withOpacity(0.12),
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
                                     child: Center(child: Text(emoji, style: TextStyle(fontSize: 18.0))),
@@ -1115,7 +1115,7 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                                           'Planted ✓',
                                           style: FlutterFlowTheme.of(context).bodySmall.override(
                                                 font: GoogleFonts.poppins(),
-                                                color: const Color(0xFF4E7A2E),
+                                                color: FlutterFlowTheme.of(context).primary,
                                                 fontSize: 11.0,
                                                 letterSpacing: 0.0,
                                               ),

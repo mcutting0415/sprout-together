@@ -102,7 +102,7 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0x1A7BA05B),
+        color: FlutterFlowTheme.of(context).primary.withOpacity(0.10),
         borderRadius: BorderRadius.circular(25.0),
         shape: BoxShape.rectangle,
         border: Border.all(
@@ -119,7 +119,7 @@ class _PlantLibraryCardWidgetState extends State<PlantLibraryCardWidget> {
             borderRadius: BorderRadius.circular(30.0),
             child: Container(
               decoration: BoxDecoration(
-                color: Color(0x1A7BA05B),
+                color: FlutterFlowTheme.of(context).primary.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(30.0),
                 shape: BoxShape.rectangle,
               ),

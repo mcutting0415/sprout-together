@@ -1065,7 +1065,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                         return Container(
                           decoration: BoxDecoration(
                             color: isPro
-                                ? const Color(0x206F8F72)
+                                ? FlutterFlowTheme.of(context).primary.withOpacity(0.13)
                                 : FlutterFlowTheme.of(context).alternate,
                             borderRadius: BorderRadius.circular(20.0),
                             border: Border.all(
@@ -1155,7 +1155,7 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Color(0x506F8F72),
+                        color: FlutterFlowTheme.of(context).primary.withOpacity(0.31),
                         borderRadius: BorderRadius.circular(24.0),
                         shape: BoxShape.rectangle,
                         border: Border.all(

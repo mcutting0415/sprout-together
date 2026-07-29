@@ -295,7 +295,7 @@ class _CompanionGuidePage2WidgetState
           gradient: LinearGradient(
             colors: [
               theme.primary.withOpacity(0.10),
-              const Color(0xFF4E7A2E).withOpacity(0.06),
+              theme.primary.withOpacity(0.06),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
