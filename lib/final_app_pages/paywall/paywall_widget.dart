@@ -163,10 +163,37 @@ class _PaywallWidgetState extends State<PaywallWidget> {
                 if (_loading)
                   const Center(child: CircularProgressIndicator())
                 else if (cur == null)
-                  Text(
-                    'Subscriptions unavailable. Please try again later.',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(color: theme.secondaryText),
+                  Column(
+                    children: [
+                      Text(
+                        'Unable to load subscription options.',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                            color: theme.primaryText,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Please check your internet connection and try again.',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                            color: theme.secondaryText, fontSize: 13),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton.icon(
+                        onPressed: () {
+                          setState(() => _loading = true);
+                          _load();
+                        },
+                        icon: Icon(Icons.refresh_rounded,
+                            color: theme.primary, size: 20),
+                        label: Text('Try Again',
+                            style: GoogleFonts.poppins(
+                                color: theme.primary,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                    ],
                   )
                 else ...[
                   if (annual != null)
