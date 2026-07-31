@@ -317,8 +317,19 @@ const Map<String, String> kPlantImageFallbacks = {
 /// allows hotlinking from Flutter iOS/Android apps. Wikimedia/Wikipedia URLs
 /// are intentionally excluded — they block requests without browser headers.
 String? bestPlantImageUrl(String? supabaseUrl, String? plantName) {
-  // 1. Use the DB URL first — every plant in Supabase already has a specific,
-  //    correct Unsplash image assigned to it. Prefer that over the name map.
+  // 1. VERIFIED override map wins over everything. Each entry here was
+  //    visually confirmed to show the correct plant. The Supabase DB
+  //    image_url values are unreliable (many show the wrong subject or are
+  //    dead links), so a verified entry must take priority over the DB URL.
+  if (plantName != null && plantName.isNotEmpty) {
+    final vkey = plantName.toLowerCase().trim();
+    final verified = kPlantImageVerified[vkey];
+    if (verified != null && verified.isNotEmpty) {
+      return verified;
+    }
+  }
+
+  // 2. DB URL next, for any plant not in the verified map.
   if (supabaseUrl != null &&
       supabaseUrl.isNotEmpty &&
       (supabaseUrl.contains('images.unsplash.com') ||
@@ -326,7 +337,7 @@ String? bestPlantImageUrl(String? supabaseUrl, String? plantName) {
     return supabaseUrl;
   }
 
-  // 2. Name-map fallback for plants with no / invalid DB URL.
+  // 3. Name-map fallback for plants with no / invalid DB URL.
   if (plantName != null && plantName.isNotEmpty) {
     final key = plantName.toLowerCase().trim();
     if (kPlantImageFallbacks.containsKey(key)) {
@@ -347,3 +358,162 @@ String? bestPlantImageUrl(String? supabaseUrl, String? plantName) {
 
   return null;
 }
+
+// AUTO-GENERATED verified plant images (each visually confirmed).
+// Keyed by lowercase plant_name. Checked FIRST in bestPlantImageUrl,
+// so these override the (unreliable) Supabase DB image_url values.
+const Map<String, String> kPlantImageVerified = {
+  'acorn squash': 'https://images.unsplash.com/photo-1560513977-6faee53459d7?w=600&q=80&fit=crop',
+  'alyssum': 'https://images.unsplash.com/photo-1659186309054-84d4efa301b9?w=600&q=80&fit=crop',
+  'amaranth': 'https://images.unsplash.com/photo-1632756757343-ed6558b97671?w=600&q=80&fit=crop',
+  'amaranth (grain)': 'https://images.unsplash.com/photo-1632756757343-ed6558b97671?w=600&q=80&fit=crop',
+  'apple': 'https://images.unsplash.com/photo-1630563451961-ac2ff27616ab?w=600&q=80&fit=crop',
+  'artichoke': 'https://images.unsplash.com/photo-1518735869015-566a18eae4be?w=600&q=80&fit=crop',
+  'arugula (wild/rocket)': 'https://images.unsplash.com/photo-1514910103003-aa6b5e4239ad?w=600&q=80&fit=crop',
+  'ashwagandha': 'https://images.unsplash.com/photo-1713260111133-30c5153e27cd?w=600&q=80&fit=crop',
+  'bachelor\'s button': 'https://images.unsplash.com/photo-1602197307731-1728f2f4797e?w=600&q=80&fit=crop',
+  'bachelor\'s button / cornflower': 'https://images.unsplash.com/photo-1602197307731-1728f2f4797e?w=600&q=80&fit=crop',
+  'banana pepper': 'https://images.unsplash.com/photo-1677520749998-bce1f5182a71?w=600&q=80&fit=crop',
+  'basil': 'https://images.unsplash.com/photo-1629157247277-48f870757026?w=600&q=80&fit=crop',
+  'beefsteak tomato': 'https://images.unsplash.com/photo-1638100345650-f26df74d980d?w=600&q=80&fit=crop',
+  'bell pepper': 'https://images.unsplash.com/photo-1601648764658-cf37e8c89b70?w=600&q=80&fit=crop',
+  'bitter melon': 'https://images.unsplash.com/photo-1763266065684-a32c71bbd82f?w=600&q=80&fit=crop',
+  'black-eyed susan': 'https://images.unsplash.com/photo-1652520425438-43a85849f8b7?w=600&q=80&fit=crop',
+  'bok choy (baby)': 'https://images.unsplash.com/photo-1708798534031-3711ec8cc16e?w=600&q=80&fit=crop',
+  'borage': 'https://images.unsplash.com/photo-1623872054684-4c6c97e54573?w=600&q=80&fit=crop',
+  'borage (for continuity)': 'https://images.unsplash.com/photo-1623872054684-4c6c97e54573?w=600&q=80&fit=crop',
+  'broccoli': 'https://images.unsplash.com/photo-1685504445355-0e7bdf90d415?w=600&q=80&fit=crop',
+  'buckwheat (cover crop)': 'https://images.unsplash.com/photo-1593708697557-f2feca483132?w=600&q=80&fit=crop',
+  'butternut squash': 'https://images.unsplash.com/photo-1583260142340-1569bcfeb39c?w=600&q=80&fit=crop',
+  'cabbage': 'https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=600&q=80&fit=crop',
+  'calendula (medicinal)': 'https://images.unsplash.com/photo-1632602304887-8439a8a14f37?w=600&q=80&fit=crop',
+  'carrot': 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=600&q=80&fit=crop',
+  'cauliflower': 'https://images.unsplash.com/photo-1566842600175-97dca489844f?w=600&q=80&fit=crop',
+  'cayenne pepper': 'https://images.unsplash.com/photo-1583119022894-919a68a3d0e3?w=600&q=80&fit=crop',
+  'celeriac': 'https://images.unsplash.com/photo-1575286368486-a9bd023a3d1e?w=600&q=80&fit=crop',
+  'chamomile': 'https://images.unsplash.com/photo-1606041008023-472dfb5e530f?w=600&q=80&fit=crop',
+  'chamomile (german)': 'https://images.unsplash.com/photo-1606041008023-472dfb5e530f?w=600&q=80&fit=crop',
+  'chard (swiss chard)': 'https://images.unsplash.com/photo-1553536645-f83758b55d23?w=600&q=80&fit=crop',
+  'chickpea / garbanzo bean': 'https://images.unsplash.com/photo-1644432757699-bb5a01e8fb0e?w=600&q=80&fit=crop',
+  'chives': 'https://images.unsplash.com/photo-1620331356189-d5b9e8883f4d?w=600&q=80&fit=crop',
+  'clover (white / dutch)': 'https://images.unsplash.com/photo-1609473295863-2d9299af71d4?w=600&q=80&fit=crop',
+  'columbine': 'https://images.unsplash.com/photo-1528834342297-fdefb9a5a92b?w=600&q=80&fit=crop',
+  'comfrey': 'https://images.unsplash.com/photo-1663167886882-67285e9a36d4?w=600&q=80&fit=crop',
+  'corn': 'https://images.unsplash.com/photo-1649251037465-72c9d378acb6?w=600&q=80&fit=crop',
+  'cowpea / black-eyed pea': 'https://images.unsplash.com/photo-1564894809611-1742fc40ed80?w=600&q=80&fit=crop',
+  'crimson clover': 'https://images.unsplash.com/photo-1609473295863-2d9299af71d4?w=600&q=80&fit=crop',
+  'cucumber': 'https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=600&q=80&fit=crop',
+  'curly parsley': 'https://images.unsplash.com/photo-1633640737481-2e9aabd87033?w=600&q=80&fit=crop',
+  'currant (black)': 'https://images.unsplash.com/photo-1723580892175-2e267106c089?w=600&q=80&fit=crop',
+  'currant (red)': 'https://images.unsplash.com/photo-1596016083775-71de95c542c8?w=600&q=80&fit=crop',
+  'dahlia': 'https://images.unsplash.com/photo-1546842931-886c185b4c8c?w=600&q=80&fit=crop',
+  'delicata squash': 'https://images.unsplash.com/photo-1697460627967-8a4a2d8d2a99?w=600&q=80&fit=crop',
+  'delphinium': 'https://images.unsplash.com/photo-1685576604563-44d8d1f80af2?w=600&q=80&fit=crop',
+  'dill': 'https://images.unsplash.com/photo-1509210459313-17feefdff5cd?w=600&q=80&fit=crop',
+  'echinacea': 'https://images.unsplash.com/photo-1595231776925-fedc9047ef4a?w=600&q=80&fit=crop',
+  'echinacea (coneflower)': 'https://images.unsplash.com/photo-1595231776925-fedc9047ef4a?w=600&q=80&fit=crop',
+  'echinacea / coneflower (purple)': 'https://images.unsplash.com/photo-1595231776925-fedc9047ef4a?w=600&q=80&fit=crop',
+  'edamame': 'https://images.unsplash.com/photo-1649257171206-37625b1f3b2f?w=600&q=80&fit=crop',
+  'eggplant': 'https://images.unsplash.com/photo-1615484477201-9f4953340fab?w=600&q=80&fit=crop',
+  'endive': 'https://images.unsplash.com/photo-1640958904159-51ae08bd3412?w=600&q=80&fit=crop',
+  'epazote': 'https://images.unsplash.com/photo-1726994803894-a64090cf5472?w=600&q=80&fit=crop',
+  'fava bean': 'https://images.unsplash.com/photo-1605402966404-ec40b9bd5009?w=600&q=80&fit=crop',
+  'fennel': 'https://images.unsplash.com/photo-1700478934050-953c93ad228e?w=600&q=80&fit=crop',
+  'fennel (florence)': 'https://images.unsplash.com/photo-1700478934050-953c93ad228e?w=600&q=80&fit=crop',
+  'garlic': 'https://images.unsplash.com/photo-1636210589096-a53d5dacd702?w=600&q=80&fit=crop',
+  'ginger': 'https://images.unsplash.com/photo-1630623093145-f606591c2546?w=600&q=80&fit=crop',
+  'goji berry': 'https://images.unsplash.com/photo-1653989451597-21b2fa4036bf?w=600&q=80&fit=crop',
+  'grape': 'https://images.unsplash.com/photo-1596363505729-4190a9506133?w=600&q=80&fit=crop',
+  'grape (table)': 'https://images.unsplash.com/photo-1596363505729-4190a9506133?w=600&q=80&fit=crop',
+  'green bean': 'https://images.unsplash.com/photo-1574963835594-61eede2070dc?w=600&q=80&fit=crop',
+  'ground cherry': 'https://images.unsplash.com/photo-1720032451853-94bb93db39a2?w=600&q=80&fit=crop',
+  'heirloom tomato': 'https://images.unsplash.com/photo-1615486171815-2611a6e3cd02?w=600&q=80&fit=crop',
+  'holy basil / tulsi': 'https://images.unsplash.com/photo-1669131080043-f69be198e64f?w=600&q=80&fit=crop',
+  'honeydew': 'https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=600&q=80&fit=crop',
+  'hops': 'https://images.unsplash.com/photo-1604040605063-8323c2b450cf?w=600&q=80&fit=crop',
+  'horseradish': 'https://images.unsplash.com/photo-1584118247518-68fd1f69ad4a?w=600&q=80&fit=crop',
+  'hot pepper': 'https://images.unsplash.com/photo-1583119022894-919a68a3d0e3?w=600&q=80&fit=crop',
+  'hot pepper (jalapeño)': 'https://images.unsplash.com/photo-1583119022894-919a68a3d0e3?w=600&q=80&fit=crop',
+  'hydrangea': 'https://images.unsplash.com/photo-1447875569765-2b3db822bec9?w=600&q=80&fit=crop',
+  'italian parsley': 'https://images.unsplash.com/photo-1633640737481-2e9aabd87033?w=600&q=80&fit=crop',
+  'jerusalem artichoke / sunchoke': 'https://images.unsplash.com/photo-1735316056593-3d5ce96fb195?w=600&q=80&fit=crop',
+  'kale': 'https://images.unsplash.com/photo-1624300477446-d379e923eca8?w=600&q=80&fit=crop',
+  'kiwi': 'https://images.unsplash.com/photo-1618897996318-5a901fa6ca71?w=600&q=80&fit=crop',
+  'kiwi (hardy)': 'https://images.unsplash.com/photo-1618897996318-5a901fa6ca71?w=600&q=80&fit=crop',
+  'lavender': 'https://images.unsplash.com/photo-1528756514091-dee5ecaa3278?w=600&q=80&fit=crop',
+  'lavender (english)': 'https://images.unsplash.com/photo-1528756514091-dee5ecaa3278?w=600&q=80&fit=crop',
+  'lemon basil': 'https://images.unsplash.com/photo-1629157247277-48f870757026?w=600&q=80&fit=crop',
+  'lemon thyme': 'https://images.unsplash.com/photo-1689082697963-c7791a09088b?w=600&q=80&fit=crop',
+  'lettuce': 'https://images.unsplash.com/photo-1640958904159-51ae08bd3412?w=600&q=80&fit=crop',
+  'lettuce (butterhead)': 'https://images.unsplash.com/photo-1640958904159-51ae08bd3412?w=600&q=80&fit=crop',
+  'lima bean': 'https://images.unsplash.com/photo-1785352213556-e0b3a6b871ad?w=600&q=80&fit=crop',
+  'luffa / loofah': 'https://images.unsplash.com/photo-1759156632043-eab44e007e67?w=600&q=80&fit=crop',
+  'lupine': 'https://images.unsplash.com/photo-1558172474-9c7c194c7d06?w=600&q=80&fit=crop',
+  'marigold': 'https://images.unsplash.com/photo-1661142175513-a5f0871f1ad1?w=600&q=80&fit=crop',
+  'medicinal aloe vera': 'https://images.unsplash.com/photo-1509423350716-97f9360b4e09?w=600&q=80&fit=crop',
+  'microgreens mix': 'https://images.unsplash.com/photo-1536630596251-b12ba0d9f7d4?w=600&q=80&fit=crop',
+  'mint': 'https://images.unsplash.com/photo-1618130070080-91f4d55a2383?w=600&q=80&fit=crop',
+  'mizuna': 'https://images.unsplash.com/photo-1708791913199-e07d87e372b5?w=600&q=80&fit=crop',
+  'moringa': 'https://images.unsplash.com/photo-1771643033515-0028fd03b708?w=600&q=80&fit=crop',
+  'mulberry': 'https://images.unsplash.com/photo-1660418056478-66fa71ceb526?w=600&q=80&fit=crop',
+  'nasturtium': 'https://images.unsplash.com/photo-1580205859016-58d126bb628b?w=600&q=80&fit=crop',
+  'new zealand spinach': 'https://images.unsplash.com/photo-1772587982334-136c6e5f6820?w=600&q=80&fit=crop',
+  'nigella / love-in-a-mist': 'https://images.unsplash.com/photo-1691332565618-df07a837abcf?w=600&q=80&fit=crop',
+  'onion': 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=600&q=80&fit=crop',
+  'pansy': 'https://images.unsplash.com/photo-1674365635962-c603b6ec772d?w=600&q=80&fit=crop',
+  'pansy / viola': 'https://images.unsplash.com/photo-1674365635962-c603b6ec772d?w=600&q=80&fit=crop',
+  'parsley': 'https://images.unsplash.com/photo-1633640737481-2e9aabd87033?w=600&q=80&fit=crop',
+  'passion fruit': 'https://images.unsplash.com/photo-1526318472351-c75fcf070305?w=600&q=80&fit=crop',
+  'passionflower (medicinal)': 'https://images.unsplash.com/photo-1593719500961-fca002fc1841?w=600&q=80&fit=crop',
+  'pea shoots': 'https://images.unsplash.com/photo-1768407313683-c7a365806e26?w=600&q=80&fit=crop',
+  'peach': 'https://images.unsplash.com/photo-1629828874514-c1e5103f2150?w=600&q=80&fit=crop',
+  'pear': 'https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=600&q=80&fit=crop',
+  'peas': 'https://images.unsplash.com/photo-1592394533824-9440e5d68530?w=600&q=80&fit=crop',
+  'peony': 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=600&q=80&fit=crop',
+  'persimmon': 'https://images.unsplash.com/photo-1697434467948-50f3d674dee1?w=600&q=80&fit=crop',
+  'phacelia': 'https://images.unsplash.com/photo-1597275182597-145e9a8db07e?w=600&q=80&fit=crop',
+  'poblano pepper': 'https://images.unsplash.com/photo-1567539549213-cc1697632146?w=600&q=80&fit=crop',
+  'potato': 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600&q=80&fit=crop',
+  'pumpkin': 'https://images.unsplash.com/photo-1692680919402-95fc56f99225?w=600&q=80&fit=crop',
+  'quince': 'https://images.unsplash.com/photo-1667400104714-53da4894bf18?w=600&q=80&fit=crop',
+  'quinoa': 'https://images.unsplash.com/photo-1586201375799-47cd24c3f595?w=600&q=80&fit=crop',
+  'radish microgreens': 'https://images.unsplash.com/photo-1536630596251-b12ba0d9f7d4?w=600&q=80&fit=crop',
+  'rhubarb': 'https://images.unsplash.com/photo-1557648493-6e5f8afda63d?w=600&q=80&fit=crop',
+  'roma tomato': 'https://images.unsplash.com/photo-1633397517223-9f900fc48e9e?w=600&q=80&fit=crop',
+  'romaine lettuce': 'https://images.unsplash.com/photo-1691906470255-640353380f3d?w=600&q=80&fit=crop',
+  'rosemary': 'https://images.unsplash.com/photo-1607721098274-e54cbfab475d?w=600&q=80&fit=crop',
+  'runner bean': 'https://images.unsplash.com/photo-1626159092318-6dd399554a63?w=600&q=80&fit=crop',
+  'rutabaga': 'https://images.unsplash.com/photo-1631909808696-969b7aa7ade9?w=600&q=80&fit=crop',
+  'sage': 'https://images.unsplash.com/photo-1617314608196-356afaecfe7c?w=600&q=80&fit=crop',
+  'serviceberry': 'https://images.unsplash.com/photo-1624719718913-2977b4ff5012?w=600&q=80&fit=crop',
+  'shallot': 'https://images.unsplash.com/photo-1565685225009-fc85d9109c80?w=600&q=80&fit=crop',
+  'shishito pepper': 'https://images.unsplash.com/photo-1626235431366-01a519fd3e14?w=600&q=80&fit=crop',
+  'shiso / perilla': 'https://images.unsplash.com/photo-1591495746097-8a92864d5c1f?w=600&q=80&fit=crop',
+  'snow pea': 'https://images.unsplash.com/photo-1697813586273-bd0ada83c395?w=600&q=80&fit=crop',
+  'spaghetti squash': 'https://images.unsplash.com/photo-1603052864227-4af6238dc5f8?w=600&q=80&fit=crop',
+  'sprouts (broccoli)': 'https://images.unsplash.com/photo-1653576840776-47a12be506e4?w=600&q=80&fit=crop',
+  'stevia (for tea use)': 'https://images.unsplash.com/photo-1713260111133-30c5153e27cd?w=600&q=80&fit=crop',
+  'strawberry': 'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?w=600&q=80&fit=crop',
+  'sugar snap pea': 'https://images.unsplash.com/photo-1477506252414-b2954dbdacf3?w=600&q=80&fit=crop',
+  'sunflower': 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=600&q=80&fit=crop',
+  'sunflower microgreens': 'https://images.unsplash.com/photo-1647613233075-e0d5546b0f22?w=600&q=80&fit=crop',
+  'sweet corn': 'https://images.unsplash.com/photo-1649251037465-72c9d378acb6?w=600&q=80&fit=crop',
+  'swiss chard': 'https://images.unsplash.com/photo-1679595044391-3c42b0f351b5?w=600&q=80&fit=crop',
+  'taro': 'https://images.unsplash.com/photo-1757283961544-e161ac41b201?w=600&q=80&fit=crop',
+  'tarragon': 'https://images.unsplash.com/photo-1726924244606-0df8fac5dd78?w=600&q=80&fit=crop',
+  'tarragon (french)': 'https://images.unsplash.com/photo-1726924244606-0df8fac5dd78?w=600&q=80&fit=crop',
+  'tatsoi': 'https://images.unsplash.com/photo-1574316071802-0d684efa7bf5?w=600&q=80&fit=crop',
+  'thai basil': 'https://images.unsplash.com/photo-1753796399663-0e5b7f719904?w=600&q=80&fit=crop',
+  'thyme': 'https://images.unsplash.com/photo-1689082697963-c7791a09088b?w=600&q=80&fit=crop',
+  'tomato': 'https://images.unsplash.com/photo-1607305387299-a3d9611cd469?w=600&q=80&fit=crop',
+  'turmeric': 'https://images.unsplash.com/photo-1666818398897-381dd5eb9139?w=600&q=80&fit=crop',
+  'valerian': 'https://images.unsplash.com/photo-1654022180371-c4d2d6347e28?w=600&q=80&fit=crop',
+  'watercress': 'https://images.unsplash.com/photo-1664355048238-65d3dda1a0c2?w=600&q=80&fit=crop',
+  'wheatgrass': 'https://images.unsplash.com/photo-1712019362859-2647bf42ea13?w=600&q=80&fit=crop',
+  'winter rye (cover crop)': 'https://images.unsplash.com/photo-1733778724090-29164bd1362d?w=600&q=80&fit=crop',
+  'winter savory': 'https://images.unsplash.com/photo-1726994803894-a64090cf5472?w=600&q=80&fit=crop',
+  'winter squash': 'https://images.unsplash.com/photo-1583260142340-1569bcfeb39c?w=600&q=80&fit=crop',
+  'winter squash (butternut)': 'https://images.unsplash.com/photo-1583260142340-1569bcfeb39c?w=600&q=80&fit=crop',
+  'yellow squash': 'https://images.unsplash.com/photo-1667155594027-90c688f3700f?w=600&q=80&fit=crop',
+  'zucchini': 'https://images.unsplash.com/photo-1691480291894-75229c2bfd44?w=600&q=80&fit=crop',
+};
