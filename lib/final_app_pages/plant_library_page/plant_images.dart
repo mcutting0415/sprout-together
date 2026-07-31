@@ -26,6 +26,7 @@ const Map<String, String> kPlantImageFallbacks = {
   'cayenne pepper':       '${_u}1518126839085-3ccabb5f6875$_q',
   'hot pepper':           '${_u}1518126839085-3ccabb5f6875$_q',
   'hot pepper (jalapeño)': '${_u}1518126839085-3ccabb5f6875$_q',
+  'hot pepper (jalapeno)': '${_u}1518126839085-3ccabb5f6875$_q',
   'banana pepper':        '${_u}1563565375-f3fdfdbefa83$_q',
   'poblano pepper':       '${_u}1563565375-f3fdfdbefa83$_q',
   'shishito pepper':      '${_u}1563565375-f3fdfdbefa83$_q',
@@ -35,14 +36,14 @@ const Map<String, String> kPlantImageFallbacks = {
   'zucchini':             '${_u}1719488118271-07064063e0fe$_q',
   'yellow squash':        '${_u}1595751615975-e78f92c38b85$_q',
   'acorn squash':         '${_u}1508480416-5fccd18e6c5e$_q',
-  'butternut squash':     '${_u}1508480416-5fccd18e6c5e$_q',
+  'butternut squash':     '${_u}1533924049770-7c32435557c5$_q',
   'delicata squash':      '${_u}1508480416-5fccd18e6c5e$_q',
-  'spaghetti squash':     '${_u}1508480416-5fccd18e6c5e$_q',
+  'spaghetti squash':     '${_u}1595751615975-e78f92c38b85$_q',
   'winter squash':        '${_u}1508480416-5fccd18e6c5e$_q',
-  'winter squash (butternut)': '${_u}1508480416-5fccd18e6c5e$_q',
+  'winter squash (butternut)': '${_u}1533924049770-7c32435557c5$_q',
   'pumpkin':              '${_u}1508480416-5fccd18e6c5e$_q',
-  'luffa / loofah':       '${_u}1587207850226-ba5ac4c96c9c$_q',
-  'bitter melon':         '${_u}1587207850226-ba5ac4c96c9c$_q',
+  'luffa / loofah':       '${_u}1719488118271-07064063e0fe$_q',
+  'bitter melon':         '${_u}1563280554-39684b777a3c$_q',
 
   // ── LEAFY GREENS ──────────────────────────────────────────────────────────
   // Each major leafy green gets its own distinct image.
@@ -86,7 +87,8 @@ const Map<String, String> kPlantImageFallbacks = {
   'celeriac':             '${_u}1573953342259-b1f5af1ad9a8$_q',
   'horseradish':          '${_u}1573953342259-b1f5af1ad9a8$_q',
   'taro':                 '${_u}1573953342259-b1f5af1ad9a8$_q',
-  'turmeric':             '${_u}1540148124525-2f0bbb7b5bf5$_q',
+  'turmeric':             '${_u}1615484477778-ca3b77940c25$_q',
+  'tumeric':              '${_u}1615484477778-ca3b77940c25$_q',
   'ginger':               '${_u}1615484477778-ca3b77940c25$_q',
   'jerusalem artichoke / sunchoke': '${_u}1573953342295-82d2253e3d4a$_q',
   'eggplant':             '${_u}1618777975250-c428b55e73d5$_q',
@@ -99,11 +101,13 @@ const Map<String, String> kPlantImageFallbacks = {
 
   // ── BEANS & LEGUMES ───────────────────────────────────────────────────────
   'green bean':           '${_u}1464226184884-fa280b87c399$_q',
+  'green beans':          '${_u}1464226184884-fa280b87c399$_q',
   'runner bean':          '${_u}1464226184884-fa280b87c399$_q',
   'fava bean':            '${_u}1464226184884-fa280b87c399$_q',
   'lima bean':            '${_u}1464226184884-fa280b87c399$_q',
   'cowpea / black-eyed pea': '${_u}1464226184884-fa280b87c399$_q',
-  'chickpea / garbanzo bean': '${_u}1548263594-a71ea65a8598$_q',
+  'chickpea / garbanzo bean': '${_u}1644432757699-bb5a01e8fb0e$_q',
+  'chickpea / garbanzo beans': '${_u}1644432757699-bb5a01e8fb0e$_q',
 
   // ── PEAS ──────────────────────────────────────────────────────────────────
   // Peas get their own distinct image (not lettuce).
@@ -126,16 +130,16 @@ const Map<String, String> kPlantImageFallbacks = {
   'curly parsley':        '${_u}1527964105263-1ac6265a569f$_q',
   'italian parsley':      '${_u}1527964105263-1ac6265a569f$_q',
   'cilantro':             '${_u}1527964105263-1ac6265a569f$_q',
-  'dill':                 '${_u}1527964105263-1ac6265a569f$_q',
-  'fennel':               '${_u}1527964105263-1ac6265a569f$_q',
-  'fennel (florence)':    '${_u}1527964105263-1ac6265a569f$_q',
+  'dill':                 '${_u}1585343333645-122edccf8e78$_q',
+  'fennel':               '${_u}1760393339688-cbb315e481f4$_q',
+  'fennel (florence)':    '${_u}1760393339688-cbb315e481f4$_q',
   'chives':               '${_u}1617970640806-4ff9fdce89ca$_q',
   'oregano':              '${_u}1558070510-504a0db43997$_q',
   'tarragon':             '${_u}1558070510-504a0db43997$_q',
   'tarragon (french)':    '${_u}1558070510-504a0db43997$_q',
   'winter savory':        '${_u}1558070510-504a0db43997$_q',
   'epazote':              '${_u}1617970640806-4ff9fdce89ca$_q',
-  'moringa':              '${_u}1629157247277-48f870757026$_q',
+  'moringa':              '${_u}1771643033515-0028fd03b708$_q',
 
   // ── LAVENDER ──────────────────────────────────────────────────────────────
   'lavender':             '${_u}1499002238440-d264edd596ec$_q',
@@ -153,13 +157,14 @@ const Map<String, String> kPlantImageFallbacks = {
   'passionflower (medicinal)': '${_u}1536633125620-8a3245c11ffa$_q',
   'calendula (medicinal)': '${_u}1569358731315-df9426c49e04$_q',
   'comfrey':              '${_u}1629157247277-48f870757026$_q',
-  'medicinal aloe vera':  '${_u}1558070510-504a0db43997$_q',
+  'medicinal aloe vera':  '${_u}1472029400112-33bcc050cae7$_q',
   'borage':               '${_u}1552160793-cbaf3ebcba72$_q',
   'borage (for continuity)': '${_u}1552160793-cbaf3ebcba72$_q',
 
   // ── FLOWERS ───────────────────────────────────────────────────────────────
   'sunflower':            '${_u}1598920710727-e6c74781538c$_q',
   'sunflower microgreens': '${_u}1548263594-a71ea65a8598$_q',
+  'calendula':            '${_u}1569358731315-df9426c49e04$_q',
   'marigold':             '${_u}1569358731315-df9426c49e04$_q',
   'nasturtium':           '${_u}1540039906769-84cf3d448bc1$_q',
   'bachelor\'s button':   '${_u}1552160793-cbaf3ebcba72$_q',
@@ -193,7 +198,7 @@ const Map<String, String> kPlantImageFallbacks = {
   'currant (red)':        '${_u}1594282241894-4da286138f44$_q',
   'goji berry':           '${_u}1594282241894-4da286138f44$_q',
   'honeydew':             '${_u}1560806887-1c81b3b3f6e6$_q',
-  'passion fruit':        '${_u}1506905925346-21bda4d32df4$_q',
+  'passion fruit':        '${_u}1567915826094-c2223c8b0a73$_q',
   'serviceberry':         '${_u}1594282241894-4da286138f44$_q',
 
   // ── BERRIES ───────────────────────────────────────────────────────────────
@@ -296,7 +301,7 @@ const Map<String, String> kPlantImageFallbacks = {
   'amaranth (grain)':     '${_u}1598920710727-e6c74781538c$_q',
   'buckwheat (cover crop)': '${_u}1535222830855-fd60aca7e065$_q',
   'clover (white / dutch)': '${_u}1535222830855-fd60aca7e065$_q',
-  'crimson clover':       '${_u}1552160793-cbaf3ebcba72$_q',
+  'crimson clover':       '${_u}1534438327276-14e5300c3a48$_q',
   'winter rye (cover crop)': '${_u}1535222830855-fd60aca7e065$_q',
 
   // ── MICROGREENS, SPROUTS & SPECIALTY ──────────────────────────────────────

@@ -1047,78 +1047,106 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
     ),
   );
 
-  // 1. Use the product's own image_url first — curated products have correct
-  //    Unsplash URLs already set per-product, so these take priority.
+  final overrideUrl = _kShopProductImageOverrides[productName];
   final isTrustedUrl = rawUrl.isNotEmpty &&
       (rawUrl.contains('images.unsplash.com') ||
        rawUrl.contains('cdn.shopify.com'));
-  if (isTrustedUrl) {
-    return CachedNetworkImage(
-      imageUrl: rawUrl,
-      height: 120.0,
-      width: double.infinity,
-      fit: BoxFit.cover,
-      placeholder: (context, url) => emojiPlaceholder(),
-      errorWidget: (context, url, error) {
-        // If the product's own URL fails, try the per-name override.
-        final overrideUrl = _kShopProductImageOverrides[productName];
-        if (overrideUrl != null && overrideUrl.isNotEmpty) {
-          return CachedNetworkImage(
-            imageUrl: overrideUrl,
-            height: 120.0,
-            width: double.infinity,
-            fit: BoxFit.cover,
-            placeholder: (ctx, u) => emojiPlaceholder(),
-            errorWidget: (ctx, u, e) => CachedNetworkImage(
-              imageUrl: categoryFallback,
-              height: 120.0,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              placeholder: (ctx2, u2) => emojiPlaceholder(),
-              errorWidget: (ctx2, u2, e2) => emojiPlaceholder(),
-            ),
-          );
-        }
-        return CachedNetworkImage(
+
+  // DB products (rows from Supabase) have an 'id' field. Their image_url
+  // values may point to incorrect stock photos (18-wheelers, headphones, etc.)
+  // even when the URL domain is trusted. The hand-curated override map takes
+  // priority for DB products.
+  // Curated products (no 'id') have image_url values we set in code, so their
+  // own URL takes priority with the override map as a load-error fallback.
+  final isDbProduct = product['id'] != null;
+
+  if (isDbProduct) {
+    // DB priority: override map → own URL → category
+    final primaryUrl = (overrideUrl != null && overrideUrl.isNotEmpty)
+        ? overrideUrl
+        : (isTrustedUrl ? rawUrl : null);
+    if (primaryUrl != null) {
+      return CachedNetworkImage(
+        imageUrl: primaryUrl,
+        height: 120.0,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        placeholder: (ctx, u) => emojiPlaceholder(),
+        errorWidget: (ctx, u, e) => CachedNetworkImage(
           imageUrl: categoryFallback,
           height: 120.0,
           width: double.infinity,
           fit: BoxFit.cover,
-          placeholder: (ctx, u) => emojiPlaceholder(),
-          errorWidget: (ctx, u, e) => emojiPlaceholder(),
-        );
-      },
-    );
-  }
-
-  // 2. No trusted product URL — check per-name override map (DB products).
-  final overrideUrl = _kShopProductImageOverrides[productName];
-  if (overrideUrl != null && overrideUrl.isNotEmpty) {
-    return CachedNetworkImage(
-      imageUrl: overrideUrl,
-      height: 120.0,
-      width: double.infinity,
-      fit: BoxFit.cover,
-      placeholder: (context, url) => emojiPlaceholder(),
-      errorWidget: (context, url, error) => CachedNetworkImage(
-        imageUrl: categoryFallback,
+          placeholder: (ctx2, u2) => emojiPlaceholder(),
+          errorWidget: (ctx2, u2, e2) => emojiPlaceholder(),
+        ),
+      );
+    }
+  } else {
+    // Curated priority: own URL → override → category
+    if (isTrustedUrl) {
+      return CachedNetworkImage(
+        imageUrl: rawUrl,
         height: 120.0,
         width: double.infinity,
         fit: BoxFit.cover,
-        placeholder: (context, url) => emojiPlaceholder(),
-        errorWidget: (context, url, error) => emojiPlaceholder(),
-      ),
-    );
+        placeholder: (ctx, u) => emojiPlaceholder(),
+        errorWidget: (ctx, u, e) {
+          if (overrideUrl != null && overrideUrl.isNotEmpty) {
+            return CachedNetworkImage(
+              imageUrl: overrideUrl,
+              height: 120.0,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              placeholder: (ctx2, u2) => emojiPlaceholder(),
+              errorWidget: (ctx2, u2, e2) => CachedNetworkImage(
+                imageUrl: categoryFallback,
+                height: 120.0,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                placeholder: (ctx3, u3) => emojiPlaceholder(),
+                errorWidget: (ctx3, u3, e3) => emojiPlaceholder(),
+              ),
+            );
+          }
+          return CachedNetworkImage(
+            imageUrl: categoryFallback,
+            height: 120.0,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            placeholder: (ctx2, u2) => emojiPlaceholder(),
+            errorWidget: (ctx2, u2, e2) => emojiPlaceholder(),
+          );
+        },
+      );
+    }
+    if (overrideUrl != null && overrideUrl.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: overrideUrl,
+        height: 120.0,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        placeholder: (ctx, u) => emojiPlaceholder(),
+        errorWidget: (ctx, u, e) => CachedNetworkImage(
+          imageUrl: categoryFallback,
+          height: 120.0,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          placeholder: (ctx2, u2) => emojiPlaceholder(),
+          errorWidget: (ctx2, u2, e2) => emojiPlaceholder(),
+        ),
+      );
+    }
   }
 
-  // 3. Fall back to category-level image.
+  // Fall back to category-level image.
   return CachedNetworkImage(
     imageUrl: categoryFallback,
     height: 120.0,
     width: double.infinity,
     fit: BoxFit.cover,
-    placeholder: (context, url) => emojiPlaceholder(),
-    errorWidget: (context, url, error) => emojiPlaceholder(),
+    placeholder: (ctx, u) => emojiPlaceholder(),
+    errorWidget: (ctx, u, e) => emojiPlaceholder(),
   );
 }
 

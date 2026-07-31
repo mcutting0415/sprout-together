@@ -890,6 +890,64 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
     );
   }
 
+  void _confirmArchive(BuildContext sheetCtx, GardensRow garden) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+        title: Text(
+          'Archive Garden?',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            fontSize: 17.0,
+            color: FlutterFlowTheme.of(context).primaryText,
+          ),
+        ),
+        content: Text(
+          'This garden will be moved to Your Archive. You can restore or reuse it as a template for future seasons anytime.',
+          style: GoogleFonts.poppins(
+            fontSize: 13.0,
+            height: 1.5,
+            color: FlutterFlowTheme.of(context).secondaryText,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(
+                color: FlutterFlowTheme.of(context).secondaryText,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(dialogCtx).pop();
+              Navigator.of(sheetCtx).pop();
+              try {
+                await GardensTable().update(
+                  data: {'is_archived': true},
+                  matchingRows: (q) => q.eqOrNull('id', garden.id),
+                );
+              } catch (_) {}
+              if (mounted) _loadData();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFBD7A2E),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+              textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14.0),
+            ),
+            child: const Text('Archive'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _showGardenDetail(FlutterFlowTheme theme, GardensRow garden) async {
     final size = (garden.width != null && garden.length != null)
         ? '${garden.width} × ${garden.length} ${garden.measurementUnit ?? 'ft'}'
@@ -1155,6 +1213,21 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
                         style: OutlinedButton.styleFrom(
                           foregroundColor: theme.primary,
                           side: BorderSide(color: theme.primary),
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
+                          textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14.0),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10.0),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _confirmArchive(ctx, garden),
+                        icon: const Icon(Icons.archive_rounded, size: 16.0),
+                        label: const Text('Archive'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFFBD7A2E),
+                          side: const BorderSide(color: Color(0xFFBD7A2E)),
                           padding: const EdgeInsets.symmetric(vertical: 12.0),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
                           textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14.0),

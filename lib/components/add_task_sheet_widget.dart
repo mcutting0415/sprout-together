@@ -191,6 +191,7 @@ class _AddTaskSheetWidgetState extends State<AddTaskSheetWidget> {
             'Harvest',
             'Plant',
             'Prune',
+            'Weed',
             'Other'
           ],
           onChanged: (val) => safeSetState(() => _model.dropDownValue = val),
