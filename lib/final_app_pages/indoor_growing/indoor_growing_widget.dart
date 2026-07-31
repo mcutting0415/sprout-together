@@ -47,29 +47,18 @@ class _IndoorGrowingWidgetState extends State<IndoorGrowingWidget>
           children: [
             // ── Header ─────────────────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Row(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back_ios_new_rounded,
-                        color: theme.primaryText, size: 20),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Indoor Growing',
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: theme.primaryText)),
-                        Text('Grow year-round, indoors',
-                            style: GoogleFonts.poppins(
-                                fontSize: 12, color: theme.secondaryText)),
-                      ],
-                    ),
-                  ),
+                  Text('Indoor Growing',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: theme.primaryText)),
+                  Text('Grow year-round, indoors',
+                      style: GoogleFonts.poppins(
+                          fontSize: 13, color: theme.secondaryText)),
                 ],
               ),
             ),

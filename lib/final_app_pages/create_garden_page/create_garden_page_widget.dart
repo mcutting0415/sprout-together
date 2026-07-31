@@ -224,30 +224,7 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          FlutterFlowIconButton(
-                            borderRadius: 8.0,
-                            buttonSize: 40.0,
-                            fillColor: Colors.transparent,
-                            icon: Icon(
-                              Icons.arrow_back_rounded,
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              size: 20.0,
-                            ),
-                            onPressed: () async {
-                              context.pushNamed(
-                                  PlannerOverviewPageWidget.routeName);
-                            },
-                          ),
-                          Container(
-                            width: 40.0,
-                          ),
-                        ],
-                      ),
+                      // (back button removed)
                       Text(
                         'Create Your Garden',
                         style: FlutterFlowTheme.of(context)

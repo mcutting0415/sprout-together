@@ -60,14 +60,9 @@ class _SeedInventoryPageWidgetState extends State<SeedInventoryPageWidget> {
               children: [
                 // ── Header ────────────────────────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios_new_rounded,
-                            color: theme.primaryText, size: 20),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
                       Expanded(
                         child: Text(
                           'Seed Inventory',

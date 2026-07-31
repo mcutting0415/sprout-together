@@ -1,18 +1,18 @@
-import '/flutter_flow/flutter_flow_icon_button.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
+import '/final_app_pages/final_header/final_header_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
 import 'help_page_widget.dart' show HelpPageWidget;
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class HelpPageModel extends FlutterFlowModel<HelpPageWidget> {
-  @override
-  void initState(BuildContext context) {}
+  late FinalHeaderModel finalHeaderModel;
 
   @override
-  void dispose() {}
+  void initState(BuildContext context) {
+    finalHeaderModel = createModel(context, () => FinalHeaderModel());
+  }
+
+  @override
+  void dispose() {
+    finalHeaderModel.maybeDispose();
+  }
 }
