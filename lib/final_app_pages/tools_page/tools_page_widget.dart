@@ -3,6 +3,7 @@ import '/final_app_pages/paywall/paywall_widget.dart';
 import '/final_app_pages/seed_inventory_page/seed_inventory_page_widget.dart';
 import '/final_app_pages/seed_starting_guide/seed_starting_guide_widget.dart';
 import '/final_app_pages/indoor_growing/indoor_growing_widget.dart';
+import '/final_app_pages/garden_tips_page/garden_tips_page_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/services/subscription_service.dart';
@@ -342,6 +343,91 @@ class _ToolsPageWidgetState extends State<ToolsPageWidget> {
                                 ],
                               );
                             },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24.0),
+                      // ── Resource Center ────────────────────────────────────
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 8.0),
+                        child: Text(
+                          'Resource Center',
+                          style: FlutterFlowTheme.of(context).labelLarge.override(
+                                font: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                                color: FlutterFlowTheme.of(context).secondaryText,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.0,
+                              ),
+                        ),
+                      ),
+                      Material(
+                        color: Colors.transparent,
+                        elevation: 10.0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24.0),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: FlutterFlowTheme.of(context).secondaryBackground,
+                            borderRadius: BorderRadius.circular(24.0),
+                            border: Border.all(
+                              color: FlutterFlowTheme.of(context).alternate,
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8.0,
+                            horizontal: 20.0,
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12.0),
+                            onTap: () => context.pushNamed(GardenTipsPageWidget.routeName),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 40.0,
+                                    height: 40.0,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0x1A6F8F72),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                    child: Icon(
+                                      Icons.lightbulb_rounded,
+                                      color: FlutterFlowTheme.of(context).primary,
+                                      size: 20.0,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16.0),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Garden Tips',
+                                          style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 15.0,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Expert advice for every gardener',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 12.0,
+                                            color: FlutterFlowTheme.of(context).secondaryText,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.chevron_right_rounded,
+                                    color: FlutterFlowTheme.of(context).secondaryText,
+                                    size: 20.0,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),

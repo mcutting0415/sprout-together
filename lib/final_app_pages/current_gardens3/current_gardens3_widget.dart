@@ -287,9 +287,8 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
             wrapWithModel(
               model: _model.finalHeaderModel,
               updateCallback: () => safeSetState(() {}),
-              child: FinalHeaderWidget(
+              child: const FinalHeaderWidget(
                 pageTitle: 'Garden Insights',
-                menuReplaceBackAction: widget.fromPlanner ? () => context.pop() : null,
               ),
             ),
             Expanded(

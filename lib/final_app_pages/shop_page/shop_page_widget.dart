@@ -1047,7 +1047,51 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
     ),
   );
 
-  // 1. Check hardcoded per-product overrides first — guaranteed correct image.
+  // 1. Use the product's own image_url first — curated products have correct
+  //    Unsplash URLs already set per-product, so these take priority.
+  final isTrustedUrl = rawUrl.isNotEmpty &&
+      (rawUrl.contains('images.unsplash.com') ||
+       rawUrl.contains('cdn.shopify.com'));
+  if (isTrustedUrl) {
+    return CachedNetworkImage(
+      imageUrl: rawUrl,
+      height: 120.0,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => emojiPlaceholder(),
+      errorWidget: (context, url, error) {
+        // If the product's own URL fails, try the per-name override.
+        final overrideUrl = _kShopProductImageOverrides[productName];
+        if (overrideUrl != null && overrideUrl.isNotEmpty) {
+          return CachedNetworkImage(
+            imageUrl: overrideUrl,
+            height: 120.0,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            placeholder: (ctx, u) => emojiPlaceholder(),
+            errorWidget: (ctx, u, e) => CachedNetworkImage(
+              imageUrl: categoryFallback,
+              height: 120.0,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              placeholder: (ctx2, u2) => emojiPlaceholder(),
+              errorWidget: (ctx2, u2, e2) => emojiPlaceholder(),
+            ),
+          );
+        }
+        return CachedNetworkImage(
+          imageUrl: categoryFallback,
+          height: 120.0,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          placeholder: (ctx, u) => emojiPlaceholder(),
+          errorWidget: (ctx, u, e) => emojiPlaceholder(),
+        );
+      },
+    );
+  }
+
+  // 2. No trusted product URL — check per-name override map (DB products).
   final overrideUrl = _kShopProductImageOverrides[productName];
   if (overrideUrl != null && overrideUrl.isNotEmpty) {
     return CachedNetworkImage(
@@ -1067,31 +1111,7 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
     );
   }
 
-  // 2. Try the product's own image_url if it's from a trusted host
-  //    (Unsplash or Shopify CDN) — these are known to load correctly.
-  //    If it fails, fall through to the category fallback.
-  final isTrustedUrl = rawUrl.isNotEmpty &&
-      (rawUrl.contains('images.unsplash.com') ||
-       rawUrl.contains('cdn.shopify.com'));
-  if (isTrustedUrl) {
-    return CachedNetworkImage(
-      imageUrl: rawUrl,
-      height: 120.0,
-      width: double.infinity,
-      fit: BoxFit.cover,
-      placeholder: (context, url) => emojiPlaceholder(),
-      errorWidget: (context, url, error) => CachedNetworkImage(
-        imageUrl: categoryFallback,
-        height: 120.0,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => emojiPlaceholder(),
-        errorWidget: (context, url, error) => emojiPlaceholder(),
-      ),
-    );
-  }
-
-  // 3. Product not in override map and no trusted URL — use category fallback.
+  // 3. Fall back to category-level image.
   return CachedNetworkImage(
     imageUrl: categoryFallback,
     height: 120.0,

@@ -781,9 +781,8 @@ class _GardenTipsPageWidgetState extends State<GardenTipsPageWidget> {
             wrapWithModel(
               model: _model.finalHeaderModel,
               updateCallback: () => safeSetState(() {}),
-              child: FinalHeaderWidget(
+              child: const FinalHeaderWidget(
                 pageTitle: 'Tips & Hacks',
-                menuReplaceBackAction: () => context.pop(),
               ),
             ),
             Expanded(

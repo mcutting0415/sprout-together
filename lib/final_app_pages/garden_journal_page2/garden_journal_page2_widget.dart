@@ -782,10 +782,8 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                     wrapWithModel(
                       model: _model.finalHeaderModel,
                       updateCallback: () => safeSetState(() {}),
-                      child: FinalHeaderWidget(
+                      child: const FinalHeaderWidget(
                         pageTitle: 'Garden Journal',
-                        // Only show back button when coming from garden insights
-                        backAction: widget.fromInsights ? () => context.pop() : null,
                       ),
                     ),
                     Padding(

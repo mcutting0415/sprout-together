@@ -319,9 +319,8 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
             wrapWithModel(
               model: _model.finalHeaderModel,
               updateCallback: () => safeSetState(() {}),
-              child: FinalHeaderWidget(
+              child: const FinalHeaderWidget(
                 pageTitle: 'My Goals',
-                backAction: () => context.pop(),
               ),
             ),
             Expanded(
