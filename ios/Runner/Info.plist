@@ -43,9 +43,9 @@
 	<true/>
 
 	<key>NSCameraUsageDescription</key>
-    <string>In order to take a picture or video, this app requires permission to access the camera.</string>
+    <string>SproutTogether uses your camera to photograph your plants and gardens. For example, you can take a photo of a new seedling to add to your garden journal or capture plant growth over time.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-    <string>In order to upload data, this app requires permission to access the photo library.</string>
+    <string>SproutTogether uses your photo library to let you add existing photos of your plants and gardens to your garden journal and profile.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
     <string>SproutTogether uses your location to show local weather and personalized planting recommendations for your area.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
