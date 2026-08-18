@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Reset Password · Sprout Together</title>
+<style>
+  :root {
+    --bg: #f4f8f2;
+    --card: #ffffff;
+    --text: #1f2a24;
+    --muted: #5c6b62;
+    --brand: #4c9a52;
+    --brand-dark: #3c7d41;
+    --border: #dfe7db;
+    --error: #c0453b;
+    --error-bg: #fbe9e7;
+    --ok: #2e7d32;
+    --ok-bg: #e7f4e8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12160f;
+      --card: #1b211a;
+      --text: #eaf1e6;
+      --muted: #9fb0a4;
+      --brand: #6bb970;
+      --brand-dark: #58a95d;
+      --border: #2c352a;
+      --error: #f0847a;
+      --error-bg: #3a201d;
+      --ok: #9ad79e;
+      --ok-bg: #1e2e1f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  }
+  .logo { font-size: 44px; text-align: center; line-height: 1; margin-bottom: 8px; }
+  h1 { font-size: 22px; text-align: center; margin: 0 0 4px; }
+  .sub { text-align: center; color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 16px 0 6px; }
+  input[type="password"] {
+    width: 100%;
+    padding: 14px 14px;
+    font-size: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+  input:focus { border-color: var(--brand); }
+  button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--brand);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  button:hover { background: var(--brand-dark); }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .msg { margin-top: 18px; padding: 12px 14px; border-radius: 10px; font-size: 14px; display: none; }
+  .msg.error { display: block; color: var(--error); background: var(--error-bg); }
+  .msg.ok { display: block; color: var(--ok); background: var(--ok-bg); }
+  .hint { color: var(--muted); font-size: 12px; margin-top: 8px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🌱</div>
+    <h1>Reset your password</h1>
+    <p class="sub">Sprout Together</p>
+
+    <div id="form-area">
+      <label for="pw">New password</label>
+      <input id="pw" type="password" autocomplete="new-password" placeholder="At least 8 characters" />
+      <label for="pw2">Confirm new password</label>
+      <input id="pw2" type="password" autocomplete="new-password" placeholder="Re-enter password" />
+      <button id="submit" disabled>Set new password</button>
+      <p class="hint">After updating, return to the Sprout Together app and log in with your new password.</p>
+    </div>
+
+    <div id="msg" class="msg"></div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://jcfecyfgznigadbpxvss.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjZmVjeWZnem5pZ2FkYnB4dnNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0OTMwNjgsImV4cCI6MjA5NzA2OTA2OH0.GnwcNFaBXqAflxKKMa0VOKLwDsWtnRz68plyXeLWXIw";
+
+  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { detectSessionInUrl: true, flowType: "implicit", persistSession: false }
+  });
+
+  const formArea = document.getElementById("form-area");
+  const msg = document.getElementById("msg");
+  const pw = document.getElementById("pw");
+  const pw2 = document.getElementById("pw2");
+  const submit = document.getElementById("submit");
+
+  let hasRecoverySession = false;
+
+  function showError(text) { msg.className = "msg error"; msg.textContent = text; }
+  function showOk(text) { msg.className = "msg ok"; msg.textContent = text; }
+
+  // If the email link was invalid or expired, Supabase puts an error in the URL.
+  (function checkUrlError() {
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const q = new URLSearchParams(window.location.search);
+    const err = hash.get("error_description") || q.get("error_description") || hash.get("error") || q.get("error");
+    if (err) {
+      formArea.classList.add("hidden");
+      showError("This reset link is invalid or has expired. Please open the Sprout Together app and request a new password reset email.");
+    }
+  })();
+
+  // A valid recovery link establishes a session we can use to update the password.
+  client.auth.onAuthStateChange((event, session) => {
+    if (session) { hasRecoverySession = true; updateButton(); }
+  });
+  client.auth.getSession().then(({ data }) => {
+    if (data && data.session) { hasRecoverySession = true; updateButton(); }
+  });
+
+  function updateButton() {
+    const valid = hasRecoverySession && pw.value.length >= 8 && pw.value === pw2.value;
+    submit.disabled = !valid;
+  }
+  pw.addEventListener("input", updateButton);
+  pw2.addEventListener("input", updateButton);
+
+  submit.addEventListener("click", async () => {
+    if (pw.value.length < 8) { showError("Password must be at least 8 characters."); return; }
+    if (pw.value !== pw2.value) { showError("The two passwords don't match."); return; }
+    submit.disabled = true;
+    submit.textContent = "Updating…";
+    const { error } = await client.auth.updateUser({ password: pw.value });
+    if (error) {
+      showError(error.message || "Could not update password. Please request a new reset email.");
+      submit.disabled = false;
+      submit.textContent = "Set new password";
+      return;
+    }
+    formArea.classList.add("hidden");
+    showOk("Your password has been updated. Return to the Sprout Together app and log in with your new password.");
+  });
+</script>
+</body>
+</html>

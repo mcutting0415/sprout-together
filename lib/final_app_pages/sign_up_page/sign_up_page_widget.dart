@@ -3,6 +3,7 @@ import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/services/subscription_service.dart';
 import 'dart:ui';
 import '/index.dart';
 import 'package:flutter/material.dart';
@@ -413,6 +414,34 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                         if (user == null) {
                           return;
                         }
+
+                        // Link RevenueCat identity to Supabase user
+                        final supaUser = SupaFlow.client.auth.currentUser;
+                        if (supaUser != null) {
+                          await SubscriptionService.instance
+                              .loginUser(supaUser.id);
+                        }
+
+                        // Clear any leftover setup state from a previous
+                        // account so this new account starts blank. Without
+                        // this, a prior user's cached name/town/photo would be
+                        // saved into the new account's profile.
+                        FFAppState().update(() {
+                          FFAppState().currentGardenID = '';
+                          FFAppState().hasCompletedProfileSetup = false;
+                          FFAppState().setupNameInput = '';
+                          FFAppState().setupTownInput = '';
+                          FFAppState().setupProfileImageURL = '';
+                          FFAppState().setupGardeningZone = '';
+                          FFAppState().setupZipCode = '';
+                          FFAppState().setupGardenTypes = [];
+                          FFAppState().setupExperienceLevel = '';
+                          FFAppState().setupGoals = [];
+                          FFAppState().selectedPlotIDs = [];
+                          FFAppState().selectedSeason = '';
+                          FFAppState().selectedGardenIDForDetail = '';
+                          FFAppState().selectedGardenPlotsList = [];
+                        });
 
                         await ProfilesTable().insert({
                           'id': currentUserUid,

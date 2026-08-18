@@ -1517,10 +1517,25 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                           );
                           return;
                         }
+                        // ── Size cap: keep plot generation bounded ────────
+                        final widthInput =
+                            int.tryParse(_model.textController2.text) ?? 0;
+                        final lengthInput =
+                            int.tryParse(_model.textController3.text) ?? 0;
+                        if (widthInput > 20 || lengthInput > 20) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Garden size is limited to 20 × 20. Please enter smaller dimensions.')),
+                          );
+                          return;
+                        }
                         // ── Pro gate: free users limited to 1 garden ──────
                         if (!SubscriptionService.instance.isPro) {
                           final existing = await GardensTable().queryRows(
-                            queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+                            queryFn: (q) => q
+                                .eqOrNull('user_id', currentUserUid)
+                                .eqOrNull('is_archived', false),
                           );
                           if (existing.length >= 1) {
                             if (!context.mounted) return;

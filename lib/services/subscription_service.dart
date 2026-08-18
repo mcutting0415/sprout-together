@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 /// Entitlement and product IDs — must match App Store Connect & RevenueCat exactly.
@@ -102,9 +103,10 @@ class SubscriptionService extends ChangeNotifier {
       _updateFromCustomerInfo(result);
       notifyListeners();
       return _isPro;
-    } on PurchasesErrorCode catch (e) {
-      if (e == PurchasesErrorCode.purchaseCancelledError) {
-        // User cancelled — not an error
+    } on PlatformException catch (e) {
+      final code = PurchasesErrorHelper.getErrorCode(e);
+      if (code == PurchasesErrorCode.purchaseCancelledError) {
+        // User cancelled — not an error, don't show a message.
         return false;
       }
       _errorMessage = 'Purchase failed. Please try again.';

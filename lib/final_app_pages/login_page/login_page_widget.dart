@@ -548,8 +548,18 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                       currentUserUid,
                                     ),
                                   );
-                                  if (FFAppState().hasCompletedProfileSetup ==
-                                      true) {
+                                  // Route based on THIS user's saved profile in
+                                  // the database, not stale in-memory state, so
+                                  // a new user is sent through setup.
+                                  final profileComplete =
+                                      (_model.profileQuery?.isNotEmpty ??
+                                              false) &&
+                                          (_model.profileQuery!.first
+                                                  .hasCompletedSetup ??
+                                              false);
+                                  FFAppState().hasCompletedProfileSetup =
+                                      profileComplete;
+                                  if (profileComplete) {
                                     context.pushNamedAuth(
                                         PlannerOverviewPageWidget.routeName,
                                         context.mounted);

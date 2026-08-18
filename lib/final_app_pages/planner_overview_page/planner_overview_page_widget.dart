@@ -839,7 +839,9 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           final isPremium = SubscriptionService.instance.isPro;
                           if (!isPremium) {
                             final gardens = await GardensTable().queryRows(
-                              queryFn: (q) => q.eqOrNull('user_id', currentUserUid),
+                              queryFn: (q) => q
+                                  .eqOrNull('user_id', currentUserUid)
+                                  .eqOrNull('is_archived', false),
                             );
                             if (gardens.length >= 1) {
                               if (context.mounted) {

@@ -362,21 +362,17 @@ class _PasswordResetPageWidgetState extends State<PasswordResetPageWidget> {
                                     email: _model.emailTextController.text,
                                     context: context,
                                   );
-                                  _model.profileQuery =
-                                      await ProfilesTable().queryRows(
-                                    queryFn: (q) => q.eqOrNull(
-                                      'id',
-                                      currentUserUid,
+                                  if (!context.mounted) return;
+                                  // The user is not logged in here, so don't
+                                  // route into the app. Confirm the email was
+                                  // sent and return to the login screen.
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'If an account exists for that email, a password reset link is on its way. Check your inbox.'),
                                     ),
                                   );
-                                  if (FFAppState().hasCompletedProfileSetup ==
-                                      true) {
-                                    context.pushNamed(
-                                        PlannerOverviewPageWidget.routeName);
-                                  } else {
-                                    context.pushNamed(
-                                        AccountSetupPage2Widget.routeName);
-                                  }
+                                  context.pushNamed(LoginPageWidget.routeName);
 
                                   safeSetState(() {});
                                 },

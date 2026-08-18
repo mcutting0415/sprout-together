@@ -1,6 +1,8 @@
 import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/components/plot_square/plot_square_widget.dart';
+import '/final_app_pages/paywall/paywall_widget.dart';
+import '/services/subscription_service.dart';
 import '/draft_pages/side_menu/side_menu_widget.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -601,6 +603,27 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
   Future<void> _applyCombineSelected() async {
     if (_combineSelectedIds.isEmpty) return;
 
+    // Feature gate: free users limited to 5 plants per garden. Combine mode
+    // must respect the same cap as single-plot planting.
+    if (!SubscriptionService.instance.isPro) {
+      final existing = await GardenPlotsTable().queryRows(
+        queryFn: (q) => q.eqOrNull('garden_id', widget!.gardenID),
+      );
+      final assignedCount = existing
+          .where((p) => p.plantId != null && p.plantId!.isNotEmpty)
+          .length;
+      if (assignedCount + _combineSelectedIds.length > 5) {
+        if (!mounted) return;
+        await showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => const PaywallWidget(),
+        );
+        return;
+      }
+    }
+
     // Pre-fetch plants so search doesn't flicker
     List<PlantsRow> allPlants = [];
     try {
@@ -761,9 +784,15 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
   }
 
   Future<void> _loadPlots() async {
+    if (widget!.gardenID == null || widget!.gardenID!.isEmpty) {
+      safeSetState(() {
+        _model.gardenPlotQuery = [];
+      });
+      return;
+    }
     final plots = await GardenPlotsTable().queryRows(
       queryFn: (q) => q
-          .eqOrNull('garden_id', widget!.gardenID)
+          .eq('garden_id', widget!.gardenID!)
           .order('row_index', ascending: true)
           .order('col_index', ascending: true),
     );
@@ -1182,11 +1211,13 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                                           if (newName.isNotEmpty) data['garden_name'] = newName;
                                                           if (newWidth != null) data['width'] = newWidth;
                                                           if (newLength != null) data['length'] = newLength;
-                                                          if (data.isNotEmpty) {
+                                                          if (data.isNotEmpty &&
+                                                              widget!.gardenID != null &&
+                                                              widget!.gardenID!.isNotEmpty) {
                                                             await GardensTable().update(
                                                               data: data,
                                                               matchingRows: (rows) =>
-                                                                  rows.eqOrNull('id', widget!.gardenID),
+                                                                  rows.eq('id', widget!.gardenID!),
                                                             );
                                                           }
                                                           if (ctx.mounted) Navigator.pop(ctx);

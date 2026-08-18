@@ -571,6 +571,16 @@ class _UpdatePasswordPageWidgetState extends State<UpdatePasswordPageWidget> {
                               ),
                               FFButtonWidget(
                                 onPressed: () async {
+                                  if (_model.passwordTextController.text !=
+                                      _model.confirmPasswordTextController
+                                          .text) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Passwords don\'t match!'),
+                                      ),
+                                    );
+                                    return;
+                                  }
                                   await authManager.updatePassword(
                                     newPassword:
                                         _model.passwordTextController.text,

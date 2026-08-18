@@ -1,4 +1,5 @@
 import '/auth/supabase_auth/auth_util.dart';
+import '/backend/supabase/supabase.dart';
 import '/index.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
 import '/services/subscription_service.dart';
@@ -446,6 +447,27 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                     onPressed: () async {
                       GoRouter.of(context).prepareAuthEvent();
                       await authManager.signOut();
+                      // Reset RevenueCat identity so the next account that
+                      // signs in isn't seen as this user (and can't inherit Pro).
+                      await SubscriptionService.instance.logoutUser();
+                      // Clear cached per-user state so the next account that
+                      // signs in on this device starts clean.
+                      FFAppState().update(() {
+                        FFAppState().currentGardenID = '';
+                        FFAppState().hasCompletedProfileSetup = false;
+                        FFAppState().setupNameInput = '';
+                        FFAppState().setupTownInput = '';
+                        FFAppState().setupProfileImageURL = '';
+                        FFAppState().setupGardeningZone = '';
+                        FFAppState().setupZipCode = '';
+                        FFAppState().setupGardenTypes = [];
+                        FFAppState().setupExperienceLevel = '';
+                        FFAppState().setupGoals = [];
+                        FFAppState().selectedPlotIDs = [];
+                        FFAppState().selectedSeason = '';
+                        FFAppState().selectedGardenIDForDetail = '';
+                        FFAppState().selectedGardenPlotsList = [];
+                      });
                       GoRouter.of(context).clearRedirectLocation();
                       if (context.mounted) {
                         context.pushReplacementNamed(LoginPageWidget.routeName);
@@ -511,19 +533,63 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                           ),
                         );
                         if (confirm == true) {
-                          // TODO: implement account deletion
-                          // e.g., await authManager.deleteUser(context: context);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text(
-                                    'Account deletion requested. You will receive a confirmation email.'),
-                                backgroundColor: FlutterFlowTheme.of(context).error,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12.0)),
-                              ),
-                            );
+                          try {
+                            // Server-side deletion (removes all data + the auth
+                            // user). A client cannot delete its own auth user.
+                            final response = await SupaFlow.client.functions
+                                .invoke('delete-account');
+                            final data = response.data;
+                            final ok = response.status == 200 &&
+                                data is Map &&
+                                data['success'] == true;
+                            if (!ok) {
+                              throw Exception(data is Map
+                                  ? (data['error'] ?? 'Deletion failed')
+                                  : 'Deletion failed');
+                            }
+
+                            // Account is gone — clear the local session/state.
+                            await authManager.signOut();
+                            await SubscriptionService.instance.logoutUser();
+                            FFAppState().update(() {
+                              FFAppState().currentGardenID = '';
+                              FFAppState().hasCompletedProfileSetup = false;
+                              FFAppState().setupNameInput = '';
+                              FFAppState().setupTownInput = '';
+                              FFAppState().setupProfileImageURL = '';
+                              FFAppState().setupGardeningZone = '';
+                              FFAppState().setupZipCode = '';
+                              FFAppState().setupGardenTypes = [];
+                              FFAppState().setupExperienceLevel = '';
+                              FFAppState().setupGoals = [];
+                              FFAppState().selectedPlotIDs = [];
+                              FFAppState().selectedSeason = '';
+                              FFAppState().selectedGardenIDForDetail = '';
+                              FFAppState().selectedGardenPlotsList = [];
+                            });
+                            if (context.mounted) {
+                              context.goNamedAuth(
+                                  LoginPageWidget.routeName, context.mounted);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Your account has been deleted.')),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text(
+                                      'Could not delete your account. Please try again or contact support.'),
+                                  backgroundColor:
+                                      FlutterFlowTheme.of(context).error,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.0)),
+                                ),
+                              );
+                            }
                           }
                         }
                       },

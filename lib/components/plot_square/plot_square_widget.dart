@@ -186,10 +186,15 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                         if (!widget.isEmpty)
                           TextButton(
                             onPressed: () async {
+                              if (widget.plotID == null ||
+                                  widget.plotID!.isEmpty) {
+                                Navigator.of(sheetContext).pop(false);
+                                return;
+                              }
                               await GardenPlotsTable().update(
                                 data: {'plant_id': ''},
                                 matchingRows: (rows) =>
-                                    rows.eqOrNull('id', widget.plotID),
+                                    rows.eq('id', widget.plotID!),
                               );
                               Navigator.of(sheetContext).pop(true);
                             },
@@ -311,10 +316,15 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                                           ),
                                     ),
                                     onTap: () async {
+                                      if (widget.plotID == null ||
+                                          widget.plotID!.isEmpty) {
+                                        Navigator.of(sheetContext).pop(false);
+                                        return;
+                                      }
                                       await GardenPlotsTable().update(
                                         data: {'plant_id': plant.id},
                                         matchingRows: (rows) =>
-                                            rows.eqOrNull('id', widget.plotID),
+                                            rows.eq('id', widget.plotID!),
                                       );
                                       // Auto-generate calendar tasks for this plant
                                       if (widget.gardenID != null && widget.gardenID!.isNotEmpty) {
