@@ -50,4 +50,8 @@ class ProfilesRow extends SupabaseDataRow {
   bool? get hasCompletedSetup => getField<bool>('has_completed_setup');
   set hasCompletedSetup(bool? value) =>
       setField<bool>('has_completed_setup', value);
+
+  List<String> get gardenPhotoUrls => getListField<String>('garden_photo_urls');
+  set gardenPhotoUrls(List<String>? value) =>
+      setListField<String>('garden_photo_urls', value);
 }

@@ -48,6 +48,19 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
     super.initState();
     _model = createModel(context, () => ProfilePage2Model());
     _loadGoals();
+    _loadGardenPhotos();
+  }
+
+  Future<void> _loadGardenPhotos() async {
+    try {
+      final rows = await ProfilesTable().querySingleRow(
+        queryFn: (q) => q.eqOrNull('id', currentUserUid),
+      );
+      final urls = rows.firstOrNull?.gardenPhotoUrls ?? [];
+      if (mounted && urls.isNotEmpty) {
+        setState(() => _gardenPhotoUrls = List<String>.from(urls));
+      }
+    } catch (_) {}
   }
 
   Future<void> _loadGoals() async {
@@ -487,6 +500,11 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
         safeSetState(() {
           _gardenPhotoUrls.addAll(downloadUrls);
         });
+        // Persist so photos survive reloads / device changes.
+        await ProfilesTable().update(
+          data: {'garden_photo_urls': _gardenPhotoUrls},
+          matchingRows: (rows) => rows.eqOrNull('id', currentUserUid),
+        );
       }
     } catch (e) {
       if (mounted) {
