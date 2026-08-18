@@ -64,14 +64,14 @@ class _GardenGoalsPageWidgetState extends State<GardenGoalsPageWidget> {
         'completed': nowCompleted,
         'completed_at': nowCompleted ? DateTime.now().toIso8601String() : null,
       },
-      matchingRows: (rows) => rows.eqOrNull('id', goal.id),
+      matchingRows: (rows) => rows.eqOrNull('id', goal.id).eqOrNull('user_id', currentUserUid),
     );
     await _loadGoals();
   }
 
   Future<void> _deleteGoal(UserGoalsRow goal) async {
     await UserGoalsTable().delete(
-      matchingRows: (rows) => rows.eqOrNull('id', goal.id),
+      matchingRows: (rows) => rows.eqOrNull('id', goal.id).eqOrNull('user_id', currentUserUid),
     );
     await _loadGoals();
   }

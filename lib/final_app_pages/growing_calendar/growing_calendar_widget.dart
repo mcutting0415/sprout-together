@@ -162,14 +162,16 @@ class _GrowingCalendarWidgetState extends State<GrowingCalendarWidget> {
     final newVal = !(task.completed ?? false);
     await GardenTasksTable().update(
       data: {'completed': newVal},
-      matchingRows: (q) => q.eqOrNull('id', task.id),
+      matchingRows: (q) =>
+          q.eqOrNull('id', task.id).eqOrNull('user_id', currentUserUid),
     );
     await _loadTasks();
   }
 
   Future<void> _deleteTask(GardenTasksRow task) async {
     await GardenTasksTable().delete(
-      matchingRows: (q) => q.eqOrNull('id', task.id),
+      matchingRows: (q) =>
+          q.eqOrNull('id', task.id).eqOrNull('user_id', currentUserUid),
     );
     await _loadTasks();
   }

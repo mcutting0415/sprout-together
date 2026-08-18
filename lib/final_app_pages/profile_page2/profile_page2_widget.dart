@@ -97,14 +97,14 @@ class _ProfilePage2WidgetState extends State<ProfilePage2Widget> {
         'completed': newVal,
         'completed_at': newVal ? DateTime.now().toIso8601String() : null,
       },
-      matchingRows: (q) => q.eqOrNull('id', goal.id),
+      matchingRows: (q) => q.eqOrNull('id', goal.id).eqOrNull('user_id', currentUserUid),
     );
     await _loadGoals();
   }
 
   Future<void> _deleteGoal(UserGoalsRow goal) async {
     await UserGoalsTable().delete(
-      matchingRows: (q) => q.eqOrNull('id', goal.id),
+      matchingRows: (q) => q.eqOrNull('id', goal.id).eqOrNull('user_id', currentUserUid),
     );
     await _loadGoals();
   }

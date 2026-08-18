@@ -307,8 +307,12 @@ class _AccountSetupPage2WidgetState extends State<AccountSetupPage2Widget> {
                               ),
                               FFButtonWidget(
                                 onPressed: () async {
-                                  await ProfilesTable().update(
-                                    data: {
+                                  try {
+                                    // upsert (not update) so setup still saves
+                                    // if the profile row wasn't created during
+                                    // sign-up. Errors are surfaced below rather
+                                    // than silently marking setup complete.
+                                    await SupaFlow.client.from('profiles').upsert({
                                       'id': currentUserUid,
                                       'full_name': FFAppState().setupNameInput,
                                       'town': FFAppState().setupTownInput,
@@ -323,23 +327,34 @@ class _AccountSetupPage2WidgetState extends State<AccountSetupPage2Widget> {
                                           FFAppState().setupExperienceLevel,
                                       'goals': FFAppState().setupGoals,
                                       'has_completed_setup': true,
-                                    },
-                                    matchingRows: (rows) => rows.eq('id', currentUserUid),
-                                  );
-                                  // Save selected goals to user_goals table
-                                  for (final goal in FFAppState().setupGoals) {
-                                    await UserGoalsTable().insert({
-                                      'user_id': currentUserUid,
-                                      'goal_text': goal,
-                                      'goal_type': 'initial',
-                                      'completed': false,
                                     });
-                                  }
-                                  FFAppState().hasCompletedProfileSetup = true;
-                                  safeSetState(() {});
+                                    // Save selected goals to user_goals table
+                                    for (final goal in FFAppState().setupGoals) {
+                                      await UserGoalsTable().insert({
+                                        'user_id': currentUserUid,
+                                        'goal_text': goal,
+                                        'goal_type': 'initial',
+                                        'completed': false,
+                                      });
+                                    }
+                                    FFAppState().hasCompletedProfileSetup = true;
+                                    safeSetState(() {});
 
-                                  context
-                                      .pushNamed(ProfilePage2Widget.routeName);
+                                    if (context.mounted) {
+                                      context.pushNamed(
+                                          ProfilePage2Widget.routeName);
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Couldn\'t save your profile. Please check your connection and try again.'),
+                                        ),
+                                      );
+                                    }
+                                  }
                                 },
                                 text: 'Start Growing',
                                 icon: Icon(

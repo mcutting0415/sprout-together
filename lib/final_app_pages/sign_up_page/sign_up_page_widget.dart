@@ -442,6 +442,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                           FFAppState().selectedGardenIDForDetail = '';
                           FFAppState().selectedGardenPlotsList = [];
                         });
+                        FFAppState().setupNameInput = _model.textController1.text.trim();
 
                         await ProfilesTable().insert({
                           'id': currentUserUid,

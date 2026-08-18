@@ -496,8 +496,10 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                   if (confirm == true && entry.id != null) {
                                     try {
                                       await GardenJournalEntriesTable().delete(
-                                        matchingRows: (q) =>
-                                            q.eqOrNull('id', entry.id),
+                                        matchingRows: (q) => q
+                                            .eqOrNull('id', entry.id)
+                                            .eqOrNull(
+                                                'user_id', currentUserUid),
                                       );
                                       Navigator.pop(ctx);
                                       _loadData();
@@ -677,7 +679,7 @@ class _GardenJournalPage2WidgetState extends State<GardenJournalPage2Widget> {
                                             'title': newTitle,
                                             'entry_text': notesController.text.trim(),
                                           },
-                                          matchingRows: (q) => q.eqOrNull('id', entry.id),
+                                          matchingRows: (q) => q.eqOrNull('id', entry.id).eqOrNull('user_id', currentUserUid),
                                         );
                                         Navigator.pop(ctx);
                                         _loadData();

@@ -930,7 +930,7 @@ class _CurrentGardens3WidgetState extends State<CurrentGardens3Widget> {
               try {
                 await GardensTable().update(
                   data: {'is_archived': true},
-                  matchingRows: (q) => q.eqOrNull('id', garden.id),
+                  matchingRows: (q) => q.eqOrNull('id', garden.id).eqOrNull('user_id', currentUserUid),
                 );
               } catch (_) {}
               if (mounted) _loadData();
