@@ -15,6 +15,7 @@ workflows:
     environment:
       groups:
         - ios_signing
+        - appstore
       flutter: stable
       xcode: 26
       cocoapods: default
@@ -124,12 +125,11 @@ workflows:
 
       - name: Upload to TestFlight
         script: |
-          xcrun altool --upload-app \
-            -f /Users/builder/clone/build/ios/ipa/Runner.ipa \
-            -t ios \
-            --username "cutting.mackenzie4@gmail.com" \
-            --password "$APP_SPECIFIC_PASSWORD" \
-            --output-format xml
+          # Uses an App Store Connect API key (env vars in the "appstore" group):
+          # APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER,
+          # APP_STORE_CONNECT_PRIVATE_KEY. Replaces the retired altool password auth.
+          app-store-connect publish \
+            --path /Users/builder/clone/build/ios/ipa/Runner.ipa
 
     artifacts:
       - build/ios/ipa/*.ipa
