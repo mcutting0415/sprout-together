@@ -361,17 +361,48 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                                           } catch (_) {}
                                         }
 
-                                        // Plant task
-                                        await addTask('Plant $plantName', 'Plant', today, 'Auto-generated planting date. Update if planted on a different day.');
-                                        // Harvest task (estimated 60 days)
-                                        await addTask('Harvest $plantName', 'Harvest', today.add(const Duration(days: 60)), 'Auto-generated estimated harvest date. Update based on your plant\'s progress.');
-                                        // Water schedule: every 3 days for 3 weeks
-                                        for (int i = 0; i <= 18; i += 3) {
-                                          await addTask('Water $plantName', 'Water', today.add(Duration(days: i)), 'Auto-generated watering schedule. Adjust frequency as needed.');
+                                        // Only create tasks that don't already
+                                        // exist for this garden, so multiple
+                                        // squares of the same plant (or adding
+                                        // more plants) don't flood the calendar
+                                        // with duplicate reminders.
+                                        List<GardenTasksRow> existingTasks;
+                                        try {
+                                          existingTasks =
+                                              await GardenTasksTable().queryRows(
+                                            queryFn: (q) => q.eqOrNull(
+                                                'garden_id', widget.gardenID),
+                                          );
+                                        } catch (_) {
+                                          existingTasks = [];
                                         }
-                                        // Weed schedule: weekly for 8 weeks
-                                        for (int i = 7; i <= 56; i += 7) {
-                                          await addTask('Weed Garden', 'Other', today.add(Duration(days: i)), 'Auto-generated weekly weeding reminder.');
+                                        final lowerPlant = plantName.toLowerCase();
+                                        final alreadyHasPlantTasks = existingTasks.any(
+                                            (t) => (t.taskName ?? '')
+                                                .toLowerCase()
+                                                .contains(lowerPlant));
+                                        final alreadyHasWeeding = existingTasks.any(
+                                            (t) => (t.taskName ?? '')
+                                                .toLowerCase()
+                                                .contains('weed'));
+
+                                        if (!alreadyHasPlantTasks) {
+                                          // One planting reminder
+                                          await addTask('Plant $plantName', 'Plant', today, 'Auto-generated planting date. Update if planted on a different day.');
+                                          // One harvest reminder (estimated 60 days)
+                                          await addTask('Harvest $plantName', 'Harvest', today.add(const Duration(days: 60)), 'Auto-generated estimated harvest date. Update based on your plant\'s progress.');
+                                          // Watering: every 3 days for 3 weeks
+                                          for (int i = 0; i <= 18; i += 3) {
+                                            await addTask('Water $plantName', 'Water', today.add(Duration(days: i)), 'Auto-generated watering schedule. Adjust frequency as needed.');
+                                          }
+                                        }
+
+                                        // Weeding is a whole-garden chore — create
+                                        // the schedule only once per garden.
+                                        if (!alreadyHasWeeding) {
+                                          for (int i = 7; i <= 56; i += 7) {
+                                            await addTask('Weed Garden', 'Other', today.add(Duration(days: i)), 'Auto-generated weekly weeding reminder.');
+                                          }
                                         }
                                       }
                                     },
