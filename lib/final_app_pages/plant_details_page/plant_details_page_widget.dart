@@ -540,6 +540,24 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                                       style: TextStyle(fontSize: 64.0))),
                             );
                           }(),
+                    // Back button (this page has no app bar)
+                    SafeArea(
+                      child: Padding(
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(8, 8, 0, 0),
+                        child: Material(
+                          color: Colors.black.withOpacity(0.38),
+                          shape: const CircleBorder(),
+                          clipBehavior: Clip.antiAlias,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back,
+                                color: Colors.white),
+                            tooltip: 'Back',
+                            onPressed: () => Navigator.of(context).maybePop(),
+                          ),
+                        ),
+                      ),
+                    ),
                     // Fade gradient
                     Align(
                       alignment: AlignmentDirectional(0.0, 1.0),

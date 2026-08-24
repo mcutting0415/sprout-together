@@ -138,8 +138,16 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                         .toLowerCase()
                         .contains(searchController.text.toLowerCase()))
                     .toList();
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.65,
+            final keyboardInset = MediaQuery.of(ctx).viewInsets.bottom;
+            final screenHeight = MediaQuery.of(ctx).size.height;
+            final sheetHeight =
+                (screenHeight * 0.65) < (screenHeight - keyboardInset - 60.0)
+                    ? (screenHeight * 0.65)
+                    : (screenHeight - keyboardInset - 60.0);
+            return Padding(
+              padding: EdgeInsets.only(bottom: keyboardInset),
+              child: Container(
+              height: sheetHeight,
               decoration: BoxDecoration(
                 color: FlutterFlowTheme.of(context).primaryBackground,
                 borderRadius: const BorderRadius.only(
@@ -326,7 +334,15 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                                         matchingRows: (rows) =>
                                             rows.eq('id', widget.plotID!),
                                       );
-                                      // Auto-generate calendar tasks for this plant
+                                      if (mounted) {
+                                        setState(() =>
+                                            _displayName = plant.plantName);
+                                      }
+                                      // Close the picker immediately so picking
+                                      // a plant feels instant; the calendar
+                                      // reminders below then save in the
+                                      // background without blocking the UI.
+                                      Navigator.of(sheetContext).pop(true);
                                       if (widget.gardenID != null && widget.gardenID!.isNotEmpty) {
                                         final today = DateTime.now();
                                         final plantName = plant.plantName ?? 'Plant';
@@ -358,11 +374,6 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                                           await addTask('Weed Garden', 'Other', today.add(Duration(days: i)), 'Auto-generated weekly weeding reminder.');
                                         }
                                       }
-                                      if (mounted) {
-                                        setState(
-                                            () => _displayName = plant.plantName);
-                                      }
-                                      Navigator.of(sheetContext).pop(true);
                                     },
                                   );
                                 },
@@ -370,7 +381,7 @@ class _PlotSquareWidgetState extends State<PlotSquareWidget> {
                   ),
                 ],
               ),
-            );
+            ));
           },
         );
       },
