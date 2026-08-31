@@ -1,0 +1,35 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a5b40"/>
+      <stop offset="1" stop-color="#2f4a34"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="7" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+
+  <!-- Sprout, matched to the app icon: big left leaf, small right leaf, stem, and 's' -->
+  <g fill="#aed6b1" filter="url(#glow)">
+    <!-- stem -->
+    <path d="M486 470 C486 545 490 590 490 640" fill="none" stroke="#aed6b1" stroke-width="46" stroke-linecap="round"/>
+    <!-- big left leaf -->
+    <path d="M498 500 C372 496 250 424 262 250 C440 288 520 392 498 500 Z"/>
+    <!-- small right leaf -->
+    <path d="M540 452 C616 440 700 384 742 248 C628 250 545 344 540 452 Z"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="512" y="806" text-anchor="middle"
+        font-family="'Avenir Next','Helvetica Neue',Arial,sans-serif"
+        font-size="118" font-weight="700" letter-spacing="1" fill="#aed6b1">Sprout</text>
+  <text x="512" y="912" text-anchor="middle"
+        font-family="'Avenir Next','Helvetica Neue',Arial,sans-serif"
+        font-size="118" font-weight="700" letter-spacing="1" fill="#aed6b1">Together</text>
+</svg>

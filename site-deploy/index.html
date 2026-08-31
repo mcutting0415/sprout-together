@@ -1,41 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name='impact-site-verification' value='10b5d5d1-1ee4-4b4b-a34c-1f57a5411b98'>
-  <title>SproutTogether – Grow Together</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="impact-site-verification" value="10b5d5d1-1ee4-4b4b-a34c-1f57a5411b98" />
+  <title>Sprout Together — Your Garden Companion App</title>
+  <meta name="description" content="Sprout Together is your all-in-one gardening app: care guides for 154 plants, a visual garden planner, companion planting, and planting & harvest timing. Free on the App Store." />
+  <link rel="canonical" href="https://sprouttogether.app/" />
+
+  <!-- Open Graph (Facebook, Pinterest, LinkedIn, iMessage, Slack) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Sprout Together" />
+  <meta property="og:url" content="https://sprouttogether.app/" />
+  <meta property="og:title" content="Sprout Together — Your Garden Companion App" />
+  <meta property="og:description" content="Care guides for 154 plants, a visual garden planner, companion planting, and planting &amp; harvest timing for where you live. Free on the App Store." />
+  <meta property="og:image" content="https://sprouttogether.app/img/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Sprout Together app shown on two phones, with the garden builder and a plant care guide." />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sprout Together — Your Garden Companion App" />
+  <meta name="twitter:description" content="Care guides for 154 plants, a visual garden planner, companion planting, and planting &amp; harvest timing for where you live. Free on the App Store." />
+  <meta name="twitter:image" content="https://sprouttogether.app/img/og-image.png" />
   <style>
+    :root {
+      --green-dark: #2f4a34;
+      --green: #3c6f45;
+      --green-2: #4a7c59;
+      --mint: #aed6b1;
+      --mint-soft: #cfe7d0;
+      --cream: #f4f8f2;
+      --card: #ffffff;
+      --ink: #1e2c22;
+      --muted: #5c6b62;
+      --border: #dde6d8;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8faf7; color: #2d2d2d; }
-    header { background: #4a7c59; color: white; padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1rem; }
-    header h1 { font-size: 1.5rem; font-weight: 700; }
-    .hero { text-align: center; padding: 5rem 2rem 3rem; }
-    .hero h2 { font-size: 2.5rem; font-weight: 700; color: #2d5a3d; margin-bottom: 1rem; }
-    .hero p { font-size: 1.1rem; color: #555; max-width: 500px; margin: 0 auto 2rem; line-height: 1.6; }
-    .badge { display: inline-block; background: #4a7c59; color: white; padding: 0.75rem 2rem; border-radius: 50px; font-weight: 600; font-size: 1rem; text-decoration: none; }
-    .links { display: flex; gap: 2rem; justify-content: center; padding: 1rem; }
-    .links a { color: #4a7c59; text-decoration: none; font-size: 0.9rem; }
-    .links a:hover { text-decoration: underline; }
-    footer { text-align: center; padding: 2rem; color: #888; font-size: 0.85rem; margin-top: 4rem; border-top: 1px solid #e0e8e0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink); background: var(--cream); line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    /* App Store button */
+    .appstore {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: #111; color: #fff; text-decoration: none;
+      padding: 14px 24px; border-radius: 14px; font-weight: 600; font-size: 1rem;
+      transition: transform .15s ease, box-shadow .15s ease;
+      box-shadow: 0 6px 20px rgba(0,0,0,.15);
+    }
+    .appstore:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,.22); }
+    .appstore svg { width: 22px; height: 22px; fill: #fff; }
+    .appstore small { display: block; font-size: .68rem; font-weight: 500; opacity: .85; line-height: 1; margin-bottom: 2px; }
+    .appstore b { font-size: 1.05rem; line-height: 1; }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 30; background: rgba(244,248,242,.9);
+      backdrop-filter: saturate(140%) blur(10px); border-bottom: 1px solid var(--border);
+    }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.15rem; color: var(--green); }
+    .brand svg { width: 30px; height: 30px; }
+    nav .cta-small { background: var(--green); color: #fff; text-decoration: none; padding: 9px 18px; border-radius: 10px; font-weight: 600; font-size: .92rem; }
+    nav .cta-small:hover { background: var(--green-dark); }
+
+    /* Hero */
+    .hero { background: linear-gradient(160deg, var(--green) 0%, var(--green-dark) 100%); color: #fff; overflow: hidden; }
+    .hero .wrap { display: grid; grid-template-columns: 1fr 0.85fr; gap: 40px; align-items: center; padding-top: 72px; padding-bottom: 72px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .18em; font-size: .78rem; font-weight: 700; color: var(--mint); margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); line-height: 1.05; letter-spacing: -0.02em; font-weight: 800; margin-bottom: 18px; }
+    .hero p.lead { font-size: 1.18rem; color: rgba(255,255,255,.88); max-width: 30ch; margin-bottom: 30px; }
+    .phone {
+      border-radius: 40px; overflow: hidden; border: 8px solid #10140e;
+      box-shadow: 0 30px 70px rgba(0,0,0,.35); background: #10140e; transform: rotate(1.5deg);
+      max-width: 320px; margin: 0 auto;
+    }
+    .phone img { border-radius: 32px; }
+
+    /* Stats */
+    .stats { background: var(--card); border-bottom: 1px solid var(--border); }
+    .stats .wrap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 34px 24px; text-align: center; }
+    .stats .n { font-size: 1.9rem; font-weight: 800; color: var(--green); letter-spacing: -0.02em; }
+    .stats .l { font-size: .9rem; color: var(--muted); margin-top: 2px; }
+
+    /* Section heading */
+    .section { padding: 84px 0; }
+    .section-head { text-align: center; max-width: 620px; margin: 0 auto 56px; }
+    .section-head .eyebrow { color: var(--green-2); }
+    .section-head h2 { font-size: clamp(1.9rem, 4vw, 2.6rem); letter-spacing: -0.02em; font-weight: 800; margin-bottom: 12px; }
+    .section-head p { color: var(--muted); font-size: 1.08rem; }
+
+    /* Feature rows */
+    .feature { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; margin-bottom: 96px; }
+    .feature:last-child { margin-bottom: 0; }
+    .feature.reverse .txt { order: 2; }
+    .feature .fimg { display: flex; justify-content: center; }
+    .feature .fphone { border-radius: 34px; overflow: hidden; border: 7px solid #10140e; box-shadow: 0 20px 50px rgba(31,52,36,.18); max-width: 300px; background: #10140e; }
+    .feature .fphone img { border-radius: 28px; }
+    .feature .tag { display: inline-block; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--green-2); margin-bottom: 12px; }
+    .feature h3 { font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -0.02em; font-weight: 800; margin-bottom: 12px; }
+    .feature p { color: var(--muted); font-size: 1.06rem; }
+
+    /* CTA */
+    .cta { background: linear-gradient(160deg, var(--green-2), var(--green-dark)); color: #fff; text-align: center; }
+    .cta .wrap { padding: 84px 24px; }
+    .cta h2 { font-size: clamp(2rem, 4.5vw, 2.8rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 14px; text-wrap: balance; }
+    .cta p { color: rgba(255,255,255,.88); font-size: 1.12rem; margin-bottom: 30px; }
+    .cta .appstore { background: #fff; color: #111; }
+    .cta .appstore svg { fill: #111; }
+
+    /* Footer */
+    footer { background: var(--green-dark); color: rgba(255,255,255,.75); padding: 48px 0 40px; }
+    footer .wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+    footer .brand { color: #fff; }
+    footer .tagline { color: var(--mint); font-weight: 600; letter-spacing: .04em; font-size: .95rem; }
+    footer .links { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; }
+    footer .links a { color: rgba(255,255,255,.8); text-decoration: none; font-size: .92rem; }
+    footer .links a:hover { color: #fff; text-decoration: underline; }
+    footer .copy { font-size: .82rem; color: rgba(255,255,255,.5); margin-top: 6px; }
+
+    @media (max-width: 820px) {
+      .hero .wrap { grid-template-columns: 1fr; text-align: center; padding-top: 56px; padding-bottom: 56px; }
+      .hero p.lead { margin-left: auto; margin-right: auto; }
+      .hero .fimg, .hero .phone { margin-top: 12px; }
+      .stats .wrap { grid-template-columns: repeat(2, 1fr); gap: 28px 20px; }
+      .feature { grid-template-columns: 1fr; gap: 28px; text-align: center; margin-bottom: 64px; }
+      .feature.reverse .txt { order: 0; }
+      .feature .tag { margin-top: 4px; }
+    }
+    @media (max-width: 420px) { nav .brand span { display: none; } }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🌱 SproutTogether</h1>
+  <!-- Sprout logo, reused -->
+  <nav>
+    <div class="wrap">
+      <div class="brand">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#35543a"/><g fill="#aed6b1"><path d="M49 50 C36 49 24 42 25 25 C43 29 51 39 49 50 Z"/><path d="M54 45 C62 44 70 38 74 25 C63 25 54 34 54 45 Z"/><path d="M48 47 C48 55 49 60 49 66" fill="none" stroke="#aed6b1" stroke-width="5" stroke-linecap="round"/></g></svg>
+        <span>Sprout Together</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:18px">
+        <a href="/plants/" style="text-decoration:none;font-weight:600;font-size:.95rem;color:var(--green)">Plant Guides</a>
+        <a class="cta-small" href="https://apps.apple.com/us/app/sprouttogether/id6785081475">Download</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap">
+      <div class="txt">
+        <div class="eyebrow">Learn • Plant • Grow • Share</div>
+        <h1>Plan, grow &amp; harvest with confidence.</h1>
+        <p class="lead">Your all-in-one garden companion — care guides for 154 plants, a visual planner, and reminders for exactly when to plant and harvest.</p>
+        <a class="appstore" href="https://apps.apple.com/us/app/sprouttogether/id6785081475">
+          <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+          <span><small>Download on the</small><b>App Store</b></span>
+        </a>
+      </div>
+      <div class="fimg">
+        <div class="phone"><img src="img/plants.jpg" alt="Sprout Together plant library" /></div>
+      </div>
+    </div>
   </header>
-  <div class="hero">
-    <h2>Grow Together</h2>
-    <p>Your garden companion app. Track plants, share tips, and grow a community of gardeners.</p>
-    <a class="badge" href="https://apps.apple.com/us/app/sprouttogether/id6785081475">Download on the App Store</a>
-  </div>
-  <div class="links">
-    <a href="/privacy-policy">Privacy Policy</a>
-    <a href="/terms-of-service">Terms of Service</a>
-  </div>
+
+  <section class="stats">
+    <div class="wrap">
+      <div><div class="n">154</div><div class="l">Plant care guides</div></div>
+      <div><div class="n">🌱</div><div class="l">Visual garden planner</div></div>
+      <div><div class="n">📅</div><div class="l">Plant &amp; harvest timing</div></div>
+      <div><div class="n">🌼</div><div class="l">Companion planting</div></div>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="section-head">
+      <div class="eyebrow">Everything you need to grow</div>
+      <h2>From first seed to full harvest</h2>
+      <p>Whether it's your first pot on a balcony or a full backyard plot, Sprout Together helps you plan it, grow it, and keep track of it all.</p>
+    </div>
+
+    <div class="feature">
+      <div class="txt">
+        <span class="tag">Plant library</span>
+        <h3>Care guides for 154 plants</h3>
+        <p>Vegetables, herbs, and flowers — each with sunlight, watering, and spacing needs, plus exactly when to plant and how to care for it through the season.</p>
+      </div>
+      <div class="fimg"><div class="fphone"><img src="img/detail.png" alt="Plant care guide" /></div></div>
+    </div>
+
+    <div class="feature reverse">
+      <div class="txt">
+        <span class="tag">Garden planner</span>
+        <h3>Design your garden beds</h3>
+        <p>Lay out your plots and drop in your plants with a simple visual planner. See your whole garden come together before you plant a single seed.</p>
+      </div>
+      <div class="fimg"><div class="fphone"><img src="img/builder.jpg" alt="Garden builder" /></div></div>
+    </div>
+
+    <div class="feature">
+      <div class="txt">
+        <span class="tag">Companion planting</span>
+        <h3>Plant the right things together</h3>
+        <p>Discover which plants thrive side by side — and which to keep apart — so your garden grows healthier and more productive, naturally.</p>
+      </div>
+      <div class="fimg"><div class="fphone"><img src="img/companion.jpg" alt="Companion planting guide" /></div></div>
+    </div>
+
+    <div class="feature reverse">
+      <div class="txt">
+        <span class="tag">Garden journal</span>
+        <h3>Track every season</h3>
+        <p>Log your progress, jot notes, and add photos so you can look back and grow even better next year.</p>
+      </div>
+      <div class="fimg"><div class="fphone"><img src="img/journal.jpg" alt="Garden journal" /></div></div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap">
+      <h2>Start growing today</h2>
+      <p>Free on the App Store. Plan your dream garden in minutes.</p>
+      <a class="appstore" href="https://apps.apple.com/us/app/sprouttogether/id6785081475">
+        <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+        <span><small>Download on the</small><b>App Store</b></span>
+      </a>
+    </div>
+  </section>
+
   <footer>
-    &copy; 2025 SproutTogether. All rights reserved.
+    <div class="wrap">
+      <div class="brand">
+        <svg viewBox="0 0 100 100" aria-hidden="true" width="28" height="28"><rect width="100" height="100" rx="24" fill="#4a7c59"/><g fill="#e9f5ea"><path d="M49 50 C36 49 24 42 25 25 C43 29 51 39 49 50 Z"/><path d="M54 45 C62 44 70 38 74 25 C63 25 54 34 54 45 Z"/><path d="M48 47 C48 55 49 60 49 66" fill="none" stroke="#e9f5ea" stroke-width="5" stroke-linecap="round"/></g></svg>
+        Sprout Together
+      </div>
+      <div class="tagline">Learn • Plant • Grow • Share</div>
+      <div class="links">
+        <a href="/plants/">Plant Guides</a>
+        <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/terms-of-service">Terms of Service</a>
+        <a href="mailto:hello@sprouttogether.app">Contact</a>
+      </div>
+      <div class="copy">© 2025 Sprout Together. All rights reserved.</div>
+    </div>
   </footer>
-  <p style="display:none">Impact-Site-Verification: ed9333d2-5d42-42c7-a254-d6fd87a07b06</p>
 </body>
 </html>

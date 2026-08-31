@@ -1,0 +1,532 @@
+<title>Sprout Together — Marketing Playbook</title>
+<style>
+  :root {
+    --bg: #f0f4ec;
+    --surface: #ffffff;
+    --surface-2: #f8faf4;
+    --ink: #1d2a22;
+    --muted: #5e6f64;
+    --faint: #8a9990;
+    --border: #dbe5d5;
+    --accent: #3c6f45;
+    --accent-strong: #2c5334;
+    --mint: #d9ebda;
+    --mint-line: #b6d8ba;
+    --done: #7a8a80;
+    --shadow: 0 1px 2px rgba(31,52,36,.05), 0 8px 24px rgba(31,52,36,.05);
+    --radius: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10140e; --surface: #191f16; --surface-2: #1e251b; --ink: #e9f0e4;
+      --muted: #9db0a2; --faint: #74857a; --border: #2a3428; --accent: #82c98a;
+      --accent-strong: #a3dca7; --mint: #223420; --mint-line: #34492f; --done: #6a7c70;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10140e; --surface: #191f16; --surface-2: #1e251b; --ink: #e9f0e4;
+    --muted: #9db0a2; --faint: #74857a; --border: #2a3428; --accent: #82c98a;
+    --accent-strong: #a3dca7; --mint: #223420; --mint-line: #34492f; --done: #6a7c70;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 96px; }
+
+  .progress-rail { position: sticky; top: 0; z-index: 20; height: 5px; background: var(--border); box-shadow: 0 1px 0 var(--border); }
+  .progress-fill { height: 100%; width: 0; background: var(--accent); transition: width .3s ease; }
+
+  header { padding: 56px 0 8px; }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .brand .logo { width: 44px; height: 44px; flex: none; }
+  .brand .name { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+  .brand .name span { color: var(--muted); font-weight: 500; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: .72rem; font-weight: 700; color: var(--accent); }
+  h1 { font-size: clamp(2.1rem, 6vw, 3rem); line-height: 1.05; letter-spacing: -0.025em; font-weight: 800; margin: 14px 0 16px; text-wrap: balance; }
+  .lede { font-size: 1.12rem; color: var(--muted); max-width: 60ch; margin: 0 0 24px; }
+
+  .counter { display: inline-flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 8px 16px; font-size: .9rem; font-weight: 600; box-shadow: var(--shadow); }
+  .counter b { color: var(--accent-strong); font-variant-numeric: tabular-nums; }
+  .counter .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+  .phase { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px 24px; margin-top: 20px; }
+  .phase-head { display: flex; align-items: baseline; gap: 14px; }
+  .badge { flex: none; width: 34px; height: 34px; border-radius: 10px; background: var(--mint); border: 1px solid var(--mint-line); color: var(--accent-strong); display: grid; place-items: center; font-weight: 800; font-size: 1rem; font-variant-numeric: tabular-nums; transform: translateY(3px); }
+  .phase h2 { font-size: 1.35rem; letter-spacing: -0.02em; margin: 0; font-weight: 750; }
+  .goal { color: var(--muted); font-size: .95rem; margin: 6px 0 4px 48px; }
+  .when { display: inline-block; margin: 2px 0 0 48px; font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--faint); }
+
+  ul.tasks { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .task { display: flex; gap: 13px; align-items: flex-start; padding: 10px 8px; border-radius: 10px; cursor: pointer; transition: background .15s ease; }
+  .task:hover { background: var(--surface-2); }
+  .task input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .box { flex: none; width: 22px; height: 22px; margin-top: 1px; border-radius: 7px; border: 2px solid var(--mint-line); background: var(--surface); display: grid; place-items: center; transition: all .15s ease; }
+  .box svg { width: 13px; height: 13px; opacity: 0; transform: scale(.6); transition: all .15s ease; color: #fff; }
+  .task input:checked + .box { background: var(--accent); border-color: var(--accent); }
+  .task input:checked + .box svg { opacity: 1; transform: scale(1); }
+  .task input:focus-visible + .box { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .task .txt { font-size: .98rem; }
+  .task .txt small { display: block; color: var(--muted); font-size: .85rem; margin-top: 2px; line-height: 1.45; }
+  .task input:checked ~ .txt { color: var(--done); text-decoration: line-through; text-decoration-color: var(--mint-line); }
+  .task input:checked ~ .txt small { text-decoration: none; }
+
+  .call { margin: 16px 0 4px 0; border-left: 3px solid var(--accent); background: var(--surface-2); border-radius: 0 12px 12px 0; padding: 12px 16px; font-size: .92rem; }
+  .call .k { text-transform: uppercase; letter-spacing: .1em; font-size: .68rem; font-weight: 800; color: var(--accent); display: block; margin-bottom: 4px; }
+  code, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .86em; background: var(--mint); color: var(--accent-strong); padding: 1px 6px; border-radius: 6px; }
+  .copyblock { display: block; white-space: pre-wrap; background: var(--mint); color: var(--accent-strong); padding: 10px 12px; border-radius: 8px; margin-top: 6px; font-family: ui-monospace, Menlo, monospace; font-size: .82rem; line-height: 1.5; overflow-x: auto; cursor: copy; position: relative; }
+  .copyblock:hover { outline: 1px solid var(--accent); }
+  .copyhint { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 700; margin: 10px 0 0; }
+
+  /* Copy-paste disclosure */
+  details.disc { margin: 14px 0 2px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); overflow: hidden; }
+  details.disc > summary { cursor: pointer; padding: 12px 15px; font-weight: 700; font-size: .9rem; color: var(--accent-strong); list-style: none; display: flex; align-items: center; gap: 9px; }
+  details.disc > summary::-webkit-details-marker { display: none; }
+  details.disc > summary::before { content: "▸"; color: var(--accent); font-size: .8rem; transition: transform .15s ease; }
+  details.disc[open] > summary::before { transform: rotate(90deg); }
+  details.disc .body { padding: 2px 15px 16px; }
+  details.disc .lbl { font-size: .78rem; font-weight: 700; color: var(--muted); margin: 14px 0 2px; }
+  details.disc .lbl:first-child { margin-top: 4px; }
+  details.disc .chars { color: var(--faint); font-weight: 500; }
+
+  .cap { margin-top: 14px; padding: 14px 15px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+  .cap h4 { margin: 0 0 8px; font-size: .82rem; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+  .cap p { margin: 0 0 8px; font-size: .92rem; white-space: pre-wrap; }
+  .cap .tags { font-size: .82rem; color: var(--muted); }
+
+  .tbl { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: .88rem; }
+  .tbl th, .tbl td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .tbl th { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); }
+  .tbl td b { color: var(--accent-strong); }
+
+  .divider { margin: 48px 0 4px; }
+  .divider .eyebrow { display: block; margin-bottom: 6px; }
+  .divider h2 { font-size: 1.7rem; letter-spacing: -0.02em; margin: 0; font-weight: 800; }
+
+  .bank { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
+  @media (max-width: 560px) { .bank { grid-template-columns: 1fr; } }
+  .bank div { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 13px; font-size: .9rem; }
+  .bank div b { color: var(--accent-strong); font-weight: 700; margin-right: 4px; }
+
+  .routine { background: linear-gradient(160deg, var(--accent-strong), var(--accent)); color: #fff; border-radius: var(--radius); padding: 28px 26px; margin-top: 20px; box-shadow: var(--shadow); }
+  .routine h2 { margin: 0 0 4px; font-size: 1.35rem; letter-spacing: -0.02em; }
+  .routine p.sub { margin: 0 0 16px; opacity: .85; font-size: .92rem; }
+  .routine ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .routine li { display: flex; gap: 12px; align-items: flex-start; font-size: .96rem; }
+  .routine li .d { flex: none; font-weight: 800; background: rgba(255,255,255,.16); border-radius: 8px; padding: 2px 9px; font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; }
+
+  .tools { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .tool { display: flex; gap: 12px; align-items: baseline; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 13px 16px; }
+  .tool b { font-weight: 700; }
+  .tool .role { color: var(--muted); font-size: .9rem; }
+  .tool .free { margin-left: auto; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); background: var(--mint); padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+
+  footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--faint); font-size: .85rem; }
+  .reset { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 7px 15px; font-size: .82rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .reset:hover { border-color: var(--accent); color: var(--accent); }
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--accent-strong); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: .86rem; font-weight: 600; opacity: 0; pointer-events: none; transition: all .2s ease; z-index: 50; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+
+<div class="progress-rail"><div class="progress-fill" id="pfill"></div></div>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 100 100" aria-hidden="true">
+        <rect width="100" height="100" rx="24" fill="#35543a"/>
+        <g fill="#aed6b1">
+          <path d="M49 50 C36 49 24 42 25 25 C43 29 51 39 49 50 Z"/>
+          <path d="M54 45 C62 44 70 38 74 25 C63 25 54 34 54 45 Z"/>
+          <path d="M48 47 C48 55 49 60 49 66" fill="none" stroke="#aed6b1" stroke-width="5" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <div class="name">Sprout Together<br><span>Marketing Playbook</span></div>
+    </div>
+
+    <div class="eyebrow">Your grow-the-app plan · everything in one place</div>
+    <h1>From zero to downloads, one step at a time.</h1>
+    <p class="lede">Work top to bottom and check off each task — your progress saves on this device. Every piece of copy you need is embedded right here, behind the “copy-paste” drawers. Tap any green block to select it. The first four phases are free.</p>
+    <div class="counter"><span class="dot"></span> <span><b id="cdone">0</b> of <b id="ctotal">0</b> steps done</span></div>
+  </header>
+
+  <!-- PHASE 0 -->
+  <section class="phase">
+    <div class="phase-head"><div class="badge">0</div><h2>Set your foundation</h2></div>
+    <p class="goal">Before you post anywhere, dial in the App Store page — this is where downloads are won or lost. All the copy is right here.</p>
+    <span class="when">Do first · ~1–2 hours</span>
+    <ul class="tasks">
+      <li class="task"><input type="checkbox" id="t1"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Update your App Store listing (ASO)<small>In App Store Connect → your app → the editable version (says “Prepare for Submission”). Paste the fields below. These go live when build 98 is approved &amp; released.</small></span></li>
+    </ul>
+
+    <details class="disc">
+      <summary>📋 Copy-paste: App Store text fields</summary>
+      <div class="body">
+        <div class="lbl">App Name <span class="chars">(30 char max)</span></div>
+        <div class="copyblock">Sprout Together: Garden Plan</div>
+        <div class="lbl">Subtitle <span class="chars">(30 char max)</span></div>
+        <div class="copyblock">Garden planner &amp; plant guides</div>
+        <div class="lbl">Keywords <span class="chars">(100 char max · no spaces after commas)</span></div>
+        <div class="copyblock">vegetable,herb,seed,harvest,companion,gardening,grow,sow,raised,bed,zone,flower,veggie,homestead</div>
+        <div class="lbl">Promotional Text <span class="chars">(170 char · updatable anytime, no new version needed)</span></div>
+        <div class="copyblock">Plan your dream garden in minutes. Care guides for 154 plants, know exactly when to plant &amp; harvest, and keep it all in one place. Start growing today 🌱</div>
+      </div>
+    </details>
+
+    <details class="disc">
+      <summary>📋 Copy-paste: Full description</summary>
+      <div class="body">
+        <div class="copyblock">Sprout Together is your all-in-one gardening companion — helping you plan, grow, and harvest with confidence, whether it's your first seed or your fiftieth season.
+
+🌱 154 PLANT CARE GUIDES
+Expert guides for vegetables, herbs, and flowers. Learn exactly when to plant, how to care for each variety, and when to harvest for peak flavor and yield.
+
+📅 KNOW WHEN TO PLANT &amp; HARVEST
+Timing is everything in the garden. Get clear planting and harvest windows so you never miss the right moment again.
+
+🪴 DESIGN YOUR GARDEN
+Lay out your beds and plots, place your plants, and see your whole garden come together in a simple visual planner.
+
+🌼 COMPANION PLANTING MADE EASY
+Discover which plants thrive together (and which to keep apart) so your garden grows healthier and more productive.
+
+📓 YOUR GARDEN JOURNAL
+Track your plants, jot notes, add photos, and watch your progress season after season.
+
+🛒 CURATED SHOP
+Browse a hand-picked selection of quality seeds, tools, and supplies from trusted brands — everything you need to get growing.
+
+Whether you're planning a few pots on a balcony or a full backyard plot, Sprout Together gives you the knowledge and tools to grow with confidence.
+
+Download Sprout Together and start growing today. 🌱
+
+—
+Sprout Together offers an optional Pro subscription that unlocks unlimited gardens and plants. Subscriptions renew automatically unless canceled at least 24 hours before the end of the period. Manage or cancel anytime in your App Store account settings.</div>
+      </div>
+    </details>
+
+    <details class="disc">
+      <summary>📋 Copy-paste: “What's New” (build 98)</summary>
+      <div class="body">
+        <div class="copyblock">We've been busy in the garden! This update makes everything smoother and more reliable:
+• Fixed password reset — it now works end to end
+• Real in-app account deletion
+• More reliable syncing so your gardens, journal, and photos stay put
+• A pile of behind-the-scenes fixes and polish
+
+Happy growing! 🌱</div>
+      </div>
+    </details>
+
+    <ul class="tasks">
+      <li class="task"><input type="checkbox" id="t2"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Refresh your screenshots with captions<small>Your first 3 show in search results — lead with the plant guides and the planner. Overlay text + Canva steps below.</small></span></li>
+    </ul>
+
+    <details class="disc">
+      <summary>🖼️ Screenshot overlay text + how to make them</summary>
+      <div class="body">
+        <table class="tbl">
+          <tr><th>#</th><th>Headline (big)</th><th>Subhead (small)</th></tr>
+          <tr><td>1</td><td><b>Care guides for 154 plants</b></td><td>Veggies, herbs &amp; flowers — all in your pocket</td></tr>
+          <tr><td>2</td><td><b>Never miss planting season</b></td><td>Know exactly when to plant &amp; harvest</td></tr>
+          <tr><td>3</td><td><b>Design your garden beds</b></td><td>Lay out plots and plants in minutes</td></tr>
+          <tr><td>4</td><td><b>Companion planting, solved</b></td><td>See what grows well together</td></tr>
+          <tr><td>5</td><td><b>Track every season</b></td><td>Photos, notes &amp; progress in your journal</td></tr>
+        </table>
+        <div class="call" style="margin-top:14px;"><span class="k">Canva steps (10 min)</span>1. New design → Custom size → <b>1290 × 2796 px</b>.<br>2. Background: dark green <code>#35543a</code>; place the screenshot in the lower ~70%.<br>3. Top band: headline in bold pale-mint/white, subhead beneath. Keep text in the top third.<br>4. Add the small sprout logo in a corner; use the same font/layout on all 5.<br>5. Export PNG → upload in App Store Connect.</div>
+      </div>
+    </details>
+
+    <ul class="tasks">
+      <li class="task"><input type="checkbox" id="t3"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Lock your brand basics<small>Profile picture (done ✓), tagline <em>“Plan · Grow · Harvest”</em>, and your link: <code>sprouttogether.app</code>.</small></span></li>
+      <li class="task"><input type="checkbox" id="t4"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Create free accounts for your tools<small>Canva (graphics), CapCut (video), and a scheduler like Later or Buffer. All free tiers.</small></span></li>
+    </ul>
+  </section>
+
+  <!-- PHASE 1 -->
+  <section class="phase">
+    <div class="phase-head"><div class="badge">1</div><h2>Set up your channels</h2></div>
+    <p class="goal">Create the two accounts that matter most: Pinterest (people plan gardens there) and Instagram (visual + Reels reach).</p>
+    <span class="when">Day 1–2 · ~1 hour</span>
+    <ul class="tasks">
+      <li class="task"><input type="checkbox" id="t5"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Create a Pinterest <b>Business</b> account<small>Free + unlocks analytics. Add the profile picture &amp; bio, then “claim” <code>sprouttogether.app</code> in settings.</small></span></li>
+      <li class="task"><input type="checkbox" id="t6"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Make your 7 Pinterest boards<small>Vegetable Gardening for Beginners · Companion Planting Charts · Raised Bed &amp; Layout Ideas · When to Plant (Seasonal) · Herb Gardens · Harvest Tips · Container &amp; Balcony Gardening.</small></span></li>
+      <li class="task"><input type="checkbox" id="t7"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Create an Instagram <b>Business</b> account<small>Add the profile picture, bio, link, and 3 Highlights: <em>Tips</em>, <em>Plants</em>, <em>The App</em>.</small></span></li>
+      <li class="task"><input type="checkbox" id="t8"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Paste in your bios (below)</span></li>
+    </ul>
+    <details class="disc">
+      <summary>📋 Copy-paste: Your bios</summary>
+      <div class="body">
+        <div class="lbl">Instagram bio</div>
+        <div class="copyblock">🌱 Sprout Together
+Plan · Grow · Harvest
+Care guides for 154 plants 🪴
+Your pocket garden companion
+👇 Free on the App Store</div>
+        <div class="lbl">Pinterest bio</div>
+        <div class="copyblock">Your all-in-one garden companion 🌱 Plant guides, garden planners &amp; when-to-harvest tips. Plan your dream garden with the free Sprout Together app 👇</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- PHASE 2 -->
+  <section class="phase">
+    <div class="phase-head"><div class="badge">2</div><h2>Build a content stash</h2></div>
+    <p class="goal">Batch-make a small library up front so you're never scrambling. A weekend of work = a month of content. Your first week of posts is written below.</p>
+    <span class="when">Week 1 · ~3–4 hours</span>
+    <ul class="tasks">
+      <li class="task"><input type="checkbox" id="t9"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Make 3 reusable Canva templates<small>A tall <b>Pin</b> (1000×1500), a square <b>carousel</b> slide (1080×1080), and a <b>quote/tip</b> card — all in your green + mint brand colors.</small></span></li>
+      <li class="task"><input type="checkbox" id="t10"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Create your first 5 Pinterest pins (below)</span></li>
+      <li class="task"><input type="checkbox" id="t11"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Film 3 quick phone videos of the app<small>15–20 sec each: planning a bed, opening a care guide, checking “when to plant.” These become your Reels.</small></span></li>
+      <li class="task"><input type="checkbox" id="t12"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Queue your first week of captions (below)</span></li>
+    </ul>
+
+    <details class="disc">
+      <summary>✍️ Your first week of Instagram captions (7)</summary>
+      <div class="body">
+        <div class="cap"><h4>1 · Carousel — 5 easy veggies</h4><p>New to gardening? Start here. 🌱
+
+These 5 veggies are almost impossible to mess up:
+🍅 Cherry tomatoes — endless harvest
+🥬 Lettuce — ready in ~30 days
+🌶️ Peppers — love heat, low fuss
+🫛 Green beans — grow fast, keep producing
+🌿 Herbs — thrive on a windowsill
+
+Save this for spring 🌼 Want to know exactly when to plant each in your area? Sprout Together tells you — free, link in bio.</p><p class="tags">#vegetablegarden #beginnergardener #gardeningtips #growyourown #companionplanting</p></div>
+
+        <div class="cap"><h4>2 · Reel — plan a bed</h4><p>Plan your whole garden in about 60 seconds ⏱️🌱
+[Screen-record: laying out a bed + dropping in plants]
+
+No graph paper, no guessing. This is Sprout Together — free on the App Store (link in bio). What are you growing this year? 👇</p><p class="tags">#gardenplanner #raisedbedgarden #vegetablegarden #gardeningtips #growyourown</p></div>
+
+        <div class="cap"><h4>3 · Seasonal — what to plant now</h4><p>What to plant this month 🌿
+
+[Adjust for your season] Great time to start: lettuce, spinach, peas, radishes, carrots. Cool weather = happy greens.
+
+Not sure what works in YOUR zone? Sprout Together gives you personalized planting windows. Free — link in bio 🌱</p><p class="tags">#whattoplant #vegetablegarden #gardeningtips #seasonalgardening #growyourown</p></div>
+
+        <div class="cap"><h4>4 · Carousel — companion planting</h4><p>Plant these together, thank yourself later 🍅🌿
+
+Tomatoes LOVE:
+✅ Basil — better flavor + repels pests
+✅ Marigolds — nature's pest control
+✅ Carrots — great use of space
+🚫 Keep away from: cabbage &amp; fennel
+
+The full guide's in Sprout Together (free, link in bio) 🌱</p><p class="tags">#companionplanting #vegetablegarden #organicgardening #gardeningtips #growyourown</p></div>
+
+        <div class="cap"><h4>5 · Tip — is it ready?</h4><p>How to know your tomatoes are actually ready 🍅
+
+• Full, deep color to the stem
+• Slight give when gently squeezed
+• Comes off with an easy twist
+
+Sprout Together tracks harvest timing for 154 plants — free, link in bio 🌱</p><p class="tags">#harvest #vegetablegarden #gardeningtips #homegrown #growyourown</p></div>
+
+        <div class="cap"><h4>6 · Reel — “when to plant”</h4><p>Stop guessing when to plant 🌱
+[Screen-record: a plant guide + planting window]
+
+Every plant has a right time — different where you live. Sprout Together gives the exact window for 154 plants, by your zone. Free (link in bio). Save for planting season 🌼</p><p class="tags">#gardeningtips #vegetablegarden #whattoplant #beginnergardener #gardenplanner</p></div>
+
+        <div class="cap"><h4>7 · Intro — meet the app</h4><p>Meet your new garden bestie 🌱🪴
+
+📖 Care guides for 154 plants
+📅 Know when to plant &amp; harvest
+🪴 Design your garden beds
+🌼 Companion planting made easy
+📓 A journal for every season
+
+First seed or fiftieth season — it's free on the App Store. Link in bio 👇</p><p class="tags">#vegetablegarden #gardeningapp #gardenplanner #growyourown #gardeningtips</p></div>
+      </div>
+    </details>
+
+    <details class="disc">
+      <summary>📌 Your first 5 Pinterest pins (title + description)</summary>
+      <div class="body">
+        <div class="cap"><h4>Pin 1</h4><p><b>On the pin:</b> Companion Planting Cheat Sheet 🍅🌿
+<b>Description:</b> The plant pairs that help each other thrive (and the ones to keep apart). Plan your garden free with Sprout Together → sprouttogether.app  #companionplanting #vegetablegarden #gardeningtips</p></div>
+        <div class="cap"><h4>Pin 2</h4><p><b>On the pin:</b> 5 Veggies You Can't Mess Up 🌱
+<b>Description:</b> Perfect first crops for new gardeners. Get planting times for your zone in the free Sprout Together app. #beginnergardener #vegetablegarden #growyourown</p></div>
+        <div class="cap"><h4>Pin 3</h4><p><b>On the pin:</b> What to Plant This Month 🌿
+<b>Description:</b> Your seasonal planting guide. Personalized planting windows inside Sprout Together — free. #whattoplant #gardeningtips #seasonalgardening</p></div>
+        <div class="cap"><h4>Pin 4</h4><p><b>On the pin:</b> Plan Your Garden Beds in Minutes 🪴
+<b>Description:</b> Lay out your whole garden visually — no graph paper. Free app: sprouttogether.app  #gardenplanner #raisedbedgarden #vegetablegarden</p></div>
+        <div class="cap"><h4>Pin 5</h4><p><b>On the pin:</b> When to Harvest 10 Common Veggies 🧺
+<b>Description:</b> Pick at peak flavor every time. Harvest timing for 154 plants in Sprout Together. #harvest #vegetablegarden #homegrown</p></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- PHASE 3 -->
+  <section class="phase">
+    <div class="phase-head"><div class="badge">3</div><h2>Start posting (build the habit)</h2></div>
+    <p class="goal">Consistency beats perfection. Follow the weekly rhythm near the bottom of this page.</p>
+    <span class="when">Ongoing · ~20 min/day</span>
+    <ul class="tasks">
+      <li class="task"><input type="checkbox" id="t13"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Set your cadence<small><b>Instagram:</b> 3–4×/week, Reels first. <b>Pinterest:</b> 5–10 pins/week.</small></span></li>
+      <li class="task"><input type="checkbox" id="t14"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Schedule a week of posts at once<small>Use Later/Buffer on Sunday to queue the week — then just engage.</small></span></li>
+      <li class="task"><input type="checkbox" id="t15"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Do 15 minutes of engagement daily<small>Reply to every comment; comment on 5–10 other gardeners' posts.</small></span></li>
+      <li class="task"><input type="checkbox" id="t16"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Use 5–10 focused hashtags<small><code>#vegetablegarden</code> <code>#gardeningtips</code> <code>#companionplanting</code> <code>#raisedbedgarden</code> <code>#gardenplanner</code> <code>#growyourown</code> <code>#beginnergardener</code></small></span></li>
+    </ul>
+  </section>
+
+  <!-- PHASE 4 -->
+  <section class="phase">
+    <div class="phase-head"><div class="badge">4</div><h2>Get discovered</h2></div>
+    <p class="goal">Go where gardeners gather. Lead with genuine help — never spam a link.</p>
+    <span class="when">Week 2+ · a few hours/week</span>
+    <ul class="tasks">
+      <li class="task"><input type="checkbox" id="t17"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Join &amp; help in gardening communities<small>Reddit (<code>r/gardening</code>, <code>r/vegetablegardening</code>), Facebook groups. Mention the app only when it genuinely fits.</small></span></li>
+      <li class="task"><input type="checkbox" id="t18"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Reach out to 5–10 micro-influencers<small>Gardeners with 1k–50k followers. Offer free Pro access for an honest mention or story.</small></span></li>
+      <li class="task"><input type="checkbox" id="t19"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Ask happy users for App Store reviews<small>Boosts ranking + conversion. Add an in-app review prompt in a future build.</small></span></li>
+      <li class="task"><input type="checkbox" id="t20"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Submit to app roundups &amp; Product Hunt<small>Search “best gardening apps” lists. Many feature a free, polished app for the asking.</small></span></li>
+    </ul>
+  </section>
+
+  <!-- PHASE 5 -->
+  <section class="phase">
+    <div class="phase-head"><div class="badge">5</div><h2>Turn on paid ads</h2></div>
+    <p class="goal">Once your listing converts and you have ~$300/month to test, start with Apple Search Ads — cheapest, highest-intent channel for apps.</p>
+    <span class="when">When ready · ~$10/day to start</span>
+    <ul class="tasks">
+      <li class="task"><input type="checkbox" id="t21"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Set up Apple Search Ads<small>At <code>searchads.apple.com</code>: a “Discovery” campaign (Search Match on) + an “Exact keywords” one. Keywords below.</small></span></li>
+      <li class="task"><input type="checkbox" id="t22"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Start at $10/day, optimize weekly<small>Run 3–4 days untouched. Then raise bids on cheap converters, add wasteful terms as negatives; keep cost-per-install under ~$2–3.</small></span></li>
+      <li class="task"><input type="checkbox" id="t23"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Later: test Meta &amp; Pinterest ads<small>Reuse your best organic posts as the ad creative.</small></span></li>
+    </ul>
+    <details class="disc">
+      <summary>📋 Copy-paste: Apple Search Ads keywords</summary>
+      <div class="body">
+        <div class="copyblock">garden planner, vegetable garden, gardening app, when to plant, companion planting, plant care, raised bed, garden layout, harvest calendar, plant identifier, veggie garden, grow vegetables</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- PHASE 6 -->
+  <section class="phase">
+    <div class="phase-head"><div class="badge">6</div><h2>Track &amp; grow</h2></div>
+    <p class="goal">Check your numbers weekly, double down on what works, let winners compound.</p>
+    <span class="when">Ongoing · ~30 min/week</span>
+    <ul class="tasks">
+      <li class="task"><input type="checkbox" id="t24"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Check your three dashboards weekly<small><b>Downloads:</b> App Store Connect → Analytics. <b>Signups:</b> Supabase → Authentication → Users. <b>Reach:</b> Instagram &amp; Pinterest analytics.</small></span></li>
+      <li class="task"><input type="checkbox" id="t25"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Repost your top performers<small>Make three more like whatever gets the most saves/shares. Refresh the “What to Plant This Month” pin monthly.</small></span></li>
+      <li class="task"><input type="checkbox" id="t26"><span class="box"><svg viewBox="0 0 16 16"><path d="M2 8l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Start an email list (optional, powerful)<small>Add a “Garden tips” signup to your site — the one audience no algorithm can take from you.</small></span></li>
+    </ul>
+  </section>
+
+  <!-- WEEKLY ROUTINE -->
+  <div class="divider"><span class="eyebrow">Your repeatable loop</span><h2>The weekly rhythm</h2></div>
+  <div class="routine">
+    <h2>Once you're rolling, this is the whole job</h2>
+    <p class="sub">~2 hours on Sunday + 20 minutes a day. That's it.</p>
+    <ul>
+      <li><span class="d">Sun</span><span>Batch-make 3–4 posts + 5 pins in Canva. Schedule the week.</span></li>
+      <li><span class="d">Mon</span><span>Plant tip or “how to tell it's ready to harvest.”</span></li>
+      <li><span class="d">Wed</span><span>Reel — a quick app clip or satisfying garden moment.</span></li>
+      <li><span class="d">Fri</span><span>Seasonal: “what to plant / do this week.”</span></li>
+      <li><span class="d">Daily</span><span>15 min engaging with other gardeners.</span></li>
+    </ul>
+  </div>
+
+  <!-- CONTENT BANK -->
+  <div class="divider"><span class="eyebrow">Never run out of ideas</span><h2>Content bank</h2></div>
+  <p class="lede" style="font-size:1rem;margin-top:8px;">Each works as an IG post, a Reel, or a Pin.</p>
+  <div class="bank">
+    <div><b>1.</b> 5 easy vegetables for beginners</div>
+    <div><b>2.</b> Companion planting: what loves tomatoes</div>
+    <div><b>3.</b> What to plant this month</div>
+    <div><b>4.</b> How to tell when [veggie] is ready</div>
+    <div><b>5.</b> 3 plants that repel pests naturally</div>
+    <div><b>6.</b> Plan a raised bed in 60 seconds</div>
+    <div><b>7.</b> Herbs for a windowsill</div>
+    <div><b>8.</b> Common beginner mistakes (&amp; fixes)</div>
+    <div><b>9.</b> Find your planting zone in the app</div>
+    <div><b>10.</b> Fast-growing veggies</div>
+    <div><b>11.</b> What to do in the garden this weekend</div>
+    <div><b>12.</b> Seed-starting timeline, simplified</div>
+    <div><b>13.</b> Before/after: bed plan → real garden</div>
+    <div><b>14.</b> Best veggies for containers</div>
+    <div><b>15.</b> “Plant this, not that” together guide</div>
+    <div><b>16.</b> How deep to plant common seeds</div>
+    <div><b>17.</b> A day in your garden journal</div>
+    <div><b>18.</b> Watering myths, busted</div>
+    <div><b>19.</b> Harvest calendar for summer crops</div>
+    <div><b>20.</b> Meet Sprout Together</div>
+  </div>
+
+  <!-- TOOLS -->
+  <div class="divider"><span class="eyebrow">Everything you'll use</span><h2>Your toolkit</h2></div>
+  <div class="tools">
+    <div class="tool"><b>Canva</b> <span class="role">Pins, carousels, screenshot overlays</span><span class="free">Free</span></div>
+    <div class="tool"><b>CapCut</b> <span class="role">Editing Reels &amp; short video</span><span class="free">Free</span></div>
+    <div class="tool"><b>Later or Buffer</b> <span class="role">Schedule posts &amp; pins ahead</span><span class="free">Free tier</span></div>
+    <div class="tool"><b>Apple Search Ads</b> <span class="role">Ads inside the App Store</span><span class="free">Paid</span></div>
+    <div class="tool"><b>App Store Connect</b> <span class="role">Downloads &amp; listing edits</span><span class="free">Free</span></div>
+    <div class="tool"><b>Supabase</b> <span class="role">Who signed up (your user list)</span><span class="free">Free</span></div>
+  </div>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+      <span>Sprout Together · your marketing playbook. Progress saves on this device.</span>
+      <button class="reset" id="reset">Reset progress</button>
+    </div>
+  </footer>
+</div>
+
+<div class="toast" id="toast">Selected — now copy (⌘/Ctrl-C)</div>
+
+<script>
+  (function () {
+    var KEY = 'spt-playbook-v1';
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('.task input[type=checkbox]'));
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { saved = {}; }
+
+    var fill = document.getElementById('pfill');
+    var cdone = document.getElementById('cdone');
+    var ctotal = document.getElementById('ctotal');
+    ctotal.textContent = boxes.length;
+
+    function render() {
+      var done = boxes.filter(function (b) { return b.checked; }).length;
+      cdone.textContent = done;
+      fill.style.width = (boxes.length ? (done / boxes.length * 100) : 0) + '%';
+    }
+    function persist() {
+      var o = {};
+      boxes.forEach(function (b) { if (b.checked) o[b.id] = 1; });
+      try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {}
+    }
+    boxes.forEach(function (b) {
+      b.checked = !!saved[b.id];
+      b.addEventListener('change', function () { persist(); render(); });
+    });
+    render();
+
+    document.getElementById('reset').addEventListener('click', function () {
+      if (!confirm('Clear all your checkmarks and start fresh?')) return;
+      boxes.forEach(function (b) { b.checked = false; });
+      persist(); render();
+    });
+
+    // Tap a green block to select its text for easy copying
+    var toast = document.getElementById('toast'), tmr;
+    document.querySelectorAll('.copyblock').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var r = document.createRange(); r.selectNodeContents(el);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        try { document.execCommand('copy'); toast.textContent = 'Copied to clipboard'; }
+        catch (e) { toast.textContent = 'Selected — now copy (⌘/Ctrl-C)'; }
+        toast.classList.add('show'); clearTimeout(tmr);
+        tmr = setTimeout(function () { toast.classList.remove('show'); }, 1600);
+      });
+    });
+  })();
+</script>
