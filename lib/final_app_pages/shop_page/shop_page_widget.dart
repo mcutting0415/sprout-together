@@ -3,7 +3,6 @@ import '/final_app_pages/final_header/final_header_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'dart:ui';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -702,7 +701,8 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
                   const SizedBox(width: 4.0),
                   Expanded(
                     child: Text(
-                      'Links open partner stores. We may earn a small commission at no cost to you.',
+                      'Links open partner stores. We may earn a small commission at no extra cost to you. '
+                      'As an Amazon Associate I earn from qualifying purchases.',
                       style: FlutterFlowTheme.of(context).bodySmall.override(
                             font: GoogleFonts.poppins(),
                             color: FlutterFlowTheme.of(context).secondaryText,
@@ -775,237 +775,11 @@ class _ShopPageWidgetState extends State<ShopPageWidget>
   }
 }
 
-/// Per-product image overrides — checked before the DB image_url.
-/// Keys match exact product names for BOTH Supabase DB rows AND curated products.
-/// All URLs are from trusted hosts (Unsplash or Shopify CDN).
-const _kShopProductImageOverrides = <String, String>{
-  // ── SMART GARDENS ────────────────────────────────────────────────────────
-  'Smart Garden 3 — Countertop Indoor Garden':
-      'https://images.unsplash.com/photo-1682629088818-1ec55d0cf45b?w=400&q=80&fit=crop',
-  'Smart Garden 9 — Best-Selling Indoor Garden':
-      'https://images.unsplash.com/photo-1682629088851-daa687df7f7f?w=400&q=80&fit=crop',
-  'Smart Garden 9 PRO — App-Controlled Indoor Garden':
-      'https://images.unsplash.com/photo-1682629088818-1ec55d0cf45b?w=400&q=80&fit=crop',
-  'Smart Garden 27 — Large Indoor Home Garden':
-      'https://images.unsplash.com/photo-1682629088851-daa687df7f7f?w=400&q=80&fit=crop',
-  'Click & Grow Herb Garden Plant Pods (9-Pack)':
-      'https://images.unsplash.com/photo-1686297161641-bacf717b166d?w=400&q=80&fit=crop',
-  'Click & Grow Tomato Plant Pods (3-Pack)':
-      'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&q=80&fit=crop',
-  // ── SEEDS ────────────────────────────────────────────────────────────────
-  // curated product names
-  'Heirloom Vegetable Seed Collection (35 varieties)':
-      'https://images.unsplash.com/photo-1525183363149-fe2044bbbe23?w=400&q=80&fit=crop',
-  'Organic Herb Seeds Variety Pack (15 types)':
-      'https://images.unsplash.com/photo-1622383564921-7efafd1f5ebe?w=400&q=80&fit=crop',
-  'Microgreens Seed Growing Kit':
-      'https://images.unsplash.com/photo-1739633833966-bcdb08751925?w=400&q=80&fit=crop',
-  'Tomato Seed Variety Pack (10 types)':
-      'https://images.unsplash.com/photo-1752249764392-28d6eb72ef4e?w=400&q=80&fit=crop',
-  'Pepper Seed Assortment (Sweet & Hot)':
-      'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&q=80&fit=crop',
-  // DB product names
-  'Heirloom Tomato Seed Collection':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/best-selling-tomatoes-collection-Comp.jpg?v=1756309253',
-  'Basil Seeds - Genovese':
-      'https://images.unsplash.com/photo-1629157247277-48f870757026?w=400&q=80&fit=crop',
-  'Salad Greens Mix':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/lettuce-salad-leaf-blend-mix-com-wm_1222x1222_3570a053-1fa4-4e2b-9828-fc381d6c3376.jpg?v=1764633742',
-  'Herb Garden Starter Collection':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Organic_Herb_Collection_8_Pack_Collage_Comp.jpg?v=1778194453',
-  'Sweet Pepper Seed Mix':
-      'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&q=80&fit=crop',
-  'Cucumber Straight Eight Seeds':
-      'https://images.unsplash.com/photo-1518568403628-df55701ade9e?w=400&q=80&fit=crop',
-  'Wildflower Seed Mix':
-      'https://images.unsplash.com/photo-1759693233180-866a8577603f?w=400&q=80&fit=crop',
-  'Marigold Seeds - French Mix':
-      'https://images.unsplash.com/photo-1661142175513-a5f0871f1ad1?w=400&q=80&fit=crop',
-  'Sunflower Seeds - Giant Russian':
-      'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400&q=80&fit=crop',
-  'Zucchini Seeds - Black Beauty':
-      'https://images.unsplash.com/photo-1719488118271-07064063e0fe?w=400&q=80&fit=crop',
-  'Dragon Tongue Bean Seeds':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/dragons-tongue-beans-wm_700_1222x1222_2396e638-12b9-4e6a-8554-34123c4a7bef.jpg?v=1764633795',
-  'Rainbow Carrot Seeds':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Carrot-Seeds-Rainbow-Blend-Organic-comp.jpg?v=1762440662',
-  // ── TOOLS ────────────────────────────────────────────────────────────────
-  // curated product names
-  'Soil Knife (Hori Hori) with Sheath':
-      'https://images.unsplash.com/photo-1579197586491-aed481d3a945?w=400&q=80&fit=crop',
-  'Heavy-Duty Garden Pruning Shears':
-      'https://images.unsplash.com/photo-1774647001686-314f877fb9c5?w=400&q=80&fit=crop',
-  'Soil pH & Moisture Meter':
-      'https://images.unsplash.com/photo-1648587743737-f7e568558dae?w=400&q=80&fit=crop',
-  // DB product names
-  'Ergonomic Trowel Set':
-      'https://images.unsplash.com/photo-1579197586491-aed481d3a945?w=400&q=80&fit=crop',
-  'Bypass Pruner - Felco F2':
-      'https://images.unsplash.com/photo-1774647001686-314f877fb9c5?w=400&q=80&fit=crop',
-  'Garden Hose with Nozzle':
-      'https://images.unsplash.com/photo-1697293585549-6eb147d2a8f4?w=400&q=80&fit=crop',
-  'DeWit Hand Weeder':
-      'https://images.unsplash.com/photo-1598851418241-f52c34b6e4c3?w=400&q=80&fit=crop',
-  'Hori Hori Garden Knife':
-      'https://images.unsplash.com/photo-1579197586491-aed481d3a945?w=400&q=80&fit=crop',
-  'Radius Garden Kneeler':
-      'https://images.unsplash.com/photo-1665395131429-e1ee267da39a?w=400&q=80&fit=crop',
-  'Tomato Cage Set of 3':
-      'https://images.unsplash.com/photo-1631217615640-bb244f2cf90c?w=400&q=80&fit=crop',
-  // ── SOIL & AMENDMENTS ────────────────────────────────────────────────────
-  // curated product names
-  'Perlite for Drainage (8 qt)':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/perlite-wm_1_1222x1222_0ec1fbb2-971b-46cc-b9b1-c419857199a5.jpg?v=1764633919',
-  'Raised Bed Soil Blend (1.5 cu ft)':
-      'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=400&q=80&fit=crop',
-  'Coco Coir Brick (10 lbs compressed)':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Collage_Minute_Soil_2_50be3d92-ca63-4cdf-bbed-d3cf8fca2acd.jpg?v=1776821374',
-  // DB product names
-  'FoxFarm Ocean Forest Potting Soil':
-      'https://images.unsplash.com/photo-1678101631231-99967c6e49ad?w=400&q=80&fit=crop',
-  'Espoma Tomato-Tone Fertilizer':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/1745345731_fertilizer_espoma_plant_tone_5_3_3_organic_4lb_bag_comp_ed1747a6-e555-4d09-835e-d961d8ffbac1.jpg?v=1762453402',
-  'Coco Coir Brick - 5 Pack':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Collage_Minute_Soil_2_50be3d92-ca63-4cdf-bbed-d3cf8fca2acd.jpg?v=1776821374',
-  'Perlite - 8 Quart Bag':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/perlite-wm_1_1222x1222_0ec1fbb2-971b-46cc-b9b1-c419857199a5.jpg?v=1764633919',
-  'Worm Castings - 15 lb Bag':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/Worm-Castings-Comp.jpg?v=1762440335',
-  'Espoma Herb and Vegetable Fertilizer':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/1740507920_fertilizer_espoma_garden_food_10_10_10_675lb_bag_wm_comp_1bbd3198-7fb7-45da-9b03-014f49de965b.jpg?v=1762453068',
-  // ── FERTILIZERS ──────────────────────────────────────────────────────────
-  'Tomato & Vegetable Fertilizer (4 lbs)':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/1745345731_fertilizer_espoma_plant_tone_5_3_3_organic_4lb_bag_comp_ed1747a6-e555-4d09-835e-d961d8ffbac1.jpg?v=1762453402',
-  'Slow-Release Granular Fertilizer (5 lbs)':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/1740507920_fertilizer_espoma_garden_food_10_10_10_675lb_bag_wm_comp_1bbd3198-7fb7-45da-9b03-014f49de965b.jpg?v=1762453068',
-  'Mycorrhizae Root Builder (4 oz)':
-      'https://cdn.shopify.com/s/files/1/2016/2681/files/1686148778_CopyofTL-WM-Black-2023-06-07T081508.924.jpg?v=1762449629',
-  // ── POTS & CONTAINERS ────────────────────────────────────────────────────
-  'Fabric Grow Bags — 5 Gallon (5-pack)':
-      'https://images.unsplash.com/photo-1744234233614-92fb223101c1?w=400&q=80&fit=crop',
-  'Fabric Grow Bags — 10 Gallon (5-pack)':
-      'https://images.unsplash.com/photo-1783345700933-6ae766a8f83c?w=400&q=80&fit=crop',
-  '15-Gallon Fabric Grow Bag Set of 5':
-      'https://images.unsplash.com/photo-1744234233614-92fb223101c1?w=400&q=80&fit=crop',
-  'Terracotta Pot Set - 3 Sizes':
-      'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80&fit=crop',
-  'Hanging Basket with Coconut Liner':
-      'https://images.unsplash.com/photo-1485902409384-e367af5b5c92?w=400&q=80&fit=crop',
-  'Self-Watering Planter Box':
-      'https://images.unsplash.com/photo-1702568227996-0d39769fd2ab?w=400&q=80&fit=crop',
-  'Raised Garden Bed - 4x4 Cedar':
-      'https://images.unsplash.com/photo-1607529107925-04e67ae44b09?w=400&q=80&fit=crop',
-  // ── WATERING ─────────────────────────────────────────────────────────────
-  'Adjustable Soaker Hose (25 ft)':
-      'https://images.unsplash.com/photo-1588501985911-6932ea666801?w=400&q=80&fit=crop',
-  'Hose Wand with Adjustable Head':
-      'https://images.unsplash.com/photo-1684867430779-e66e779a19b7?w=400&q=80&fit=crop',
-  'Automatic Drip Watering Spikes (12-pack)':
-      'https://images.unsplash.com/photo-1774264036185-d86cce86dcd1?w=400&q=80&fit=crop',
-  // ── TRELLISES & SUPPORTS ─────────────────────────────────────────────────
-  'Heavy-Duty Bamboo Stakes (4 ft, 25-pack)':
-      'https://images.unsplash.com/photo-1643754547206-97f97802b916?w=400&q=80&fit=crop',
-  'Cucumber & Bean Trellis Netting (5×15 ft)':
-      'https://images.unsplash.com/photo-1762992891925-e7f8b885d7c0?w=400&q=80&fit=crop',
-  'Plant Clips & Twist Ties Set (100-pc)':
-      'https://images.unsplash.com/photo-1631981795661-82fe6c26a9d1?w=400&q=80&fit=crop',
-  // ── PEST CONTROL ─────────────────────────────────────────────────────────
-  'Neem Oil Spray — Organic (32 oz)':
-      'https://images.unsplash.com/photo-1632243575963-3143700087ed?w=400&q=80&fit=crop',
-  'Copper Slug & Snail Barrier Tape (16 ft)':
-      'https://images.unsplash.com/photo-1700902922508-4a19c8dce0e0?w=400&q=80&fit=crop',
-  'Yellow Sticky Insect Traps (24-pack)':
-      'https://images.unsplash.com/photo-1569358731315-df9426c49e04?w=400&q=80&fit=crop',
-  'Diatomaceous Earth (4 lbs food grade)':
-      'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=400&q=80&fit=crop',
-  'Neem Oil Spray - Organic':
-      'https://images.unsplash.com/photo-1632243575963-3143700087ed?w=400&q=80&fit=crop',
-  'Yellow Sticky Trap Strips - 20 Pack':
-      'https://images.unsplash.com/photo-1569358731315-df9426c49e04?w=400&q=80&fit=crop',
-  'Diatomaceous Earth - 4 lb':
-      'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=400&q=80&fit=crop',
-  'Copper Tape Slug Barrier - 30ft':
-      'https://images.unsplash.com/photo-1700902922508-4a19c8dce0e0?w=400&q=80&fit=crop',
-  // ── GROW LIGHTS ──────────────────────────────────────────────────────────
-  'LED Grow Light Bar — Full Spectrum (24 in)':
-      'https://images.unsplash.com/photo-1783759935182-6317f3988b0f?w=400&q=80&fit=crop',
-  'Clip-On Grow Light for Windowsill':
-      'https://images.unsplash.com/photo-1783759935144-f50d438e88d6?w=400&q=80&fit=crop',
-  'Full-Spectrum LED Panel 45W':
-      'https://images.unsplash.com/photo-1620746576696-27c4c9712755?w=400&q=80&fit=crop',
-  'LED Grow Light Bar - Full Spectrum':
-      'https://images.unsplash.com/photo-1783759935182-6317f3988b0f?w=400&q=80&fit=crop',
-  'Seedling Heat Mat with Thermostat':
-      'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&q=80&fit=crop',
-  '4-Tier Grow Light Stand':
-      'https://images.unsplash.com/photo-1620746576696-27c4c9712755?w=400&q=80&fit=crop',
-  'Outlet Timer for Grow Lights':
-      'https://images.unsplash.com/photo-1565049981953-379c9c2a5d48?w=400&q=80&fit=crop',
-  // ── OUTDOOR LIGHTING ─────────────────────────────────────────────────────
-  'Solar Pathway Stake Lights (8-pack)':
-      'https://images.unsplash.com/photo-1741646557129-eeb404155d65?w=400&q=80&fit=crop',
-  'Waterproof LED Garden Spotlights (2-pack)':
-      'https://images.unsplash.com/photo-1640365554715-cfbb20efcf91?w=400&q=80&fit=crop',
-  'Solar String Fairy Lights (33 ft)':
-      'https://images.unsplash.com/photo-1714381633320-e5c3fd0f14db?w=400&q=80&fit=crop',
-  'Motion-Activated Garden Floodlight':
-      'https://images.unsplash.com/photo-1621886943381-cb97cc18b17a?w=400&q=80&fit=crop',
-  'Mason Jar Solar Lanterns (4-pack)':
-      'https://images.unsplash.com/photo-1571142319985-b0e308787cc8?w=400&q=80&fit=crop',
-  'Solar Garden Path Lights - Set of 8':
-      'https://images.unsplash.com/photo-1741646557129-eeb404155d65?w=400&q=80&fit=crop',
-  'Solar Spotlights for Garden Beds':
-      'https://images.unsplash.com/photo-1640365554715-cfbb20efcf91?w=400&q=80&fit=crop',
-  'Outdoor String Lights - 48ft Edison':
-      'https://images.unsplash.com/photo-1714381633320-e5c3fd0f14db?w=400&q=80&fit=crop',
-};
-// Reliable Unsplash fallback images per category.
-// These are the same Unsplash photos used in the plant-library fallback map,
-// so we know they load. Chosen to be thematically relevant to each category.
-const _kShopCategoryFallbacks = <String, String>{
-  'Smart Gardens':
-      'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
-  'Seeds':
-      'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop',
-  // Garden hand tools / gloves
-  'Tools':
-      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80&fit=crop',
-  // Rich dark soil / earth
-  'Soil & Amendments':
-      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&q=80&fit=crop',
-  // Lush green herbs / plants (fertilizer result)
-  'Fertilizers':
-      'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&q=80&fit=crop',
-  // Terracotta plant pots
-  'Pots & Containers':
-      'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80&fit=crop',
-  // Classic garden watering can
-  'Watering':
-      'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=400&q=80&fit=crop',
-  // Bean vines climbing a support
-  'Trellises & Supports':
-      'https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=400&q=80&fit=crop',
-  // Marigolds — natural pest deterrent companion plant
-  'Pest Control':
-      'https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=400&q=80&fit=crop',
-  // LED grow lights over seedling trays
-  'Grow Lights':
-      'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=400&q=80&fit=crop',
-  // Solar outdoor garden lights
-  'Outdoor Lighting':
-      'https://images.unsplash.com/photo-1611095973763-414019e72400?w=400&q=80&fit=crop',
-};
-
 Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
-  final rawUrl = (product['image_url'] ?? '') as String;
   final productName = (product['name'] ?? 'garden product') as String;
   final category = (product['category'] ?? '') as String;
 
-  // Unsplash fallback for this category (guaranteed to load)
-  final categoryFallback = _kShopCategoryFallbacks[category]
-      ?? 'https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400&q=80&fit=crop';
-
-  // Map categories to emojis for the last-resort placeholder
+  // Category mark shown on every product card.
   final emoji = category == 'Seeds' ? '🌱'
       : category == 'Tools' ? '🔧'
       : category == 'Soil & Amendments' ? '🪱'
@@ -1013,6 +787,10 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
       : category == 'Pest Control' ? '🐛'
       : category == 'Grow Lights' ? '💡'
       : category == 'Outdoor Lighting' ? '🔆'
+      : category == 'Fertilizers' ? '🧪'
+      : category == 'Watering' ? '💧'
+      : category == 'Trellises & Supports' ? '🪜'
+      : category == 'Smart Gardens' ? '🏡'
       : '🛍️';
 
   Widget emojiPlaceholder() => Container(
@@ -1047,46 +825,11 @@ Widget _shopProductImage(BuildContext context, Map<String, dynamic> product) {
     ),
   );
 
-  final overrideUrl = _kShopProductImageOverrides[productName];
-  final isTrustedUrl = rawUrl.isNotEmpty &&
-      (rawUrl.contains('images.unsplash.com') ||
-       rawUrl.contains('cdn.shopify.com'));
-
-  // The override map is the single source of truth for product images and
-  // wins for BOTH curated and DB products. Supabase image_url values (and even
-  // some curated URLs) point at wrong stock photos — 18-wheelers, headphones,
-  // ball pits — so a hand-verified override always takes priority.
-  // Order: verified override → own trusted URL → category fallback.
-  final primaryUrl = (overrideUrl != null && overrideUrl.isNotEmpty)
-      ? overrideUrl
-      : (isTrustedUrl ? rawUrl : null);
-  if (primaryUrl != null) {
-    return CachedNetworkImage(
-      imageUrl: primaryUrl,
-      height: 120.0,
-      width: double.infinity,
-      fit: BoxFit.cover,
-      placeholder: (ctx, u) => emojiPlaceholder(),
-      errorWidget: (ctx, u, e) => CachedNetworkImage(
-        imageUrl: categoryFallback,
-        height: 120.0,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        placeholder: (ctx2, u2) => emojiPlaceholder(),
-        errorWidget: (ctx2, u2, e2) => emojiPlaceholder(),
-      ),
-    );
-  }
-
-  // Fall back to category-level image.
-  return CachedNetworkImage(
-    imageUrl: categoryFallback,
-    height: 120.0,
-    width: double.infinity,
-    fit: BoxFit.cover,
-    placeholder: (ctx, u) => emojiPlaceholder(),
-    errorWidget: (ctx, u, e) => emojiPlaceholder(),
-  );
+  // Product photography intentionally omitted. These are third-party products;
+  // representing them with stock photos is misleading, and Amazon's terms restrict
+  // using images not sourced through their own API. The category card below is
+  // honest about what it is. See also: the website shop, which does the same.
+  return emojiPlaceholder();
 }
 
 Color _storeColor(String storeName) {
