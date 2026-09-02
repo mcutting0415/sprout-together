@@ -15,7 +15,9 @@
 // (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are injected by the platform.)
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Anthropic from "https://esm.sh/@anthropic-ai/sdk@0.71.0";
+// npm: specifier rather than esm.sh — the Anthropic SDK pulls in enough Node
+// built-ins that the esm.sh build fails to boot in the edge runtime.
+import Anthropic from "npm:@anthropic-ai/sdk@0.123.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
