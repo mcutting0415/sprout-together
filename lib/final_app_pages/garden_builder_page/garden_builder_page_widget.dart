@@ -1,5 +1,6 @@
 import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
+import '/components/plant_picker_list/plant_picker_list_widget.dart';
 import '/components/plot_square/plot_square_widget.dart';
 import '/final_app_pages/paywall/paywall_widget.dart';
 import '/services/subscription_service.dart';
@@ -259,16 +260,8 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
         String selectedSize = 'Medium';
         String? selectedPlantId;
         String? selectedPlantName;
-        final searchController = TextEditingController();
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
-            final filtered = searchController.text.isEmpty
-                ? allPlants
-                : allPlants
-                    .where((p) => (p.plantName ?? '')
-                        .toLowerCase()
-                        .contains(searchController.text.toLowerCase()))
-                    .toList();
             return Padding(
               padding: MediaQuery.viewInsetsOf(sheetContext),
               child: Container(
@@ -442,59 +435,15 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                                 ),
                               ),
                             ],
-                            TextField(
-                              controller: searchController,
-                              textInputAction: TextInputAction.search,
-                              onChanged: (v) => setSheetState(() {}),
-                              decoration: InputDecoration(
-                                hintText: 'Search plants...',
-                                prefixIcon:
-                                    const Icon(Icons.search, size: 18.0),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12.0)),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    borderSide: BorderSide(
-                                        color: FlutterFlowTheme.of(context)
-                                            .alternate)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).primary,
-                                        width: 1.5)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12.0, vertical: 10.0),
-                              ),
+                            PlantPickerList(
+                              plants: allPlants,
+                              selectedPlantId: selectedPlantId,
+                              shrinkWrap: true,
+                              onSelect: (plant) => setSheetState(() {
+                                selectedPlantId = plant.id;
+                                selectedPlantName = plant.plantName;
+                              }),
                             ),
-                            const SizedBox(height: 4.0),
-                            ...filtered.map((plant) => ListTile(
-                                  dense: true,
-                                  contentPadding:
-                                      const EdgeInsets.symmetric(horizontal: 4.0),
-                                  leading: Container(
-                                    width: 32.0,
-                                    height: 32.0,
-                                    decoration: BoxDecoration(
-                                        color: const Color(0x1A6F8F72),
-                                        borderRadius:
-                                            BorderRadius.circular(8.0)),
-                                    child: Icon(
-                                        Icons.local_florist_rounded,
-                                        color: FlutterFlowTheme.of(context).primary,
-                                        size: 16.0),
-                                  ),
-                                  title: Text(plant.plantName ?? 'Unknown',
-                                      style: GoogleFonts.poppins(fontSize: 13.0)),
-                                  trailing: selectedPlantId == plant.id
-                                      ? Icon(Icons.check_circle_rounded,
-                                          color: FlutterFlowTheme.of(context).primary, size: 18.0)
-                                      : null,
-                                  onTap: () => setSheetState(() {
-                                        selectedPlantId = plant.id;
-                                        selectedPlantName = plant.plantName;
-                                      }),
-                                )),
                             const SizedBox(height: 24.0),
                           ],
                         ),
@@ -638,16 +587,8 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        final searchController = TextEditingController();
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
-            final filtered = searchController.text.isEmpty
-                ? allPlants
-                : allPlants
-                    .where((p) => (p.plantName ?? '')
-                        .toLowerCase()
-                        .contains(searchController.text.toLowerCase()))
-                    .toList();
             return Container(
               height: MediaQuery.of(context).size.height * 0.65,
               decoration: BoxDecoration(
@@ -687,71 +628,17 @@ class _GardenBuilderPageWidgetState extends State<GardenBuilderPageWidget> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
-                    child: TextField(
-                      controller: searchController,
-                      textInputAction: TextInputAction.search,
-                      onChanged: (v) => setSheetState(() {}),
-                      decoration: InputDecoration(
-                        hintText: 'Search plants...',
-                        prefixIcon: const Icon(Icons.search, size: 18.0),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0)),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(
-                                color:
-                                    FlutterFlowTheme.of(context).alternate)),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(
-                                color: FlutterFlowTheme.of(context).primary,
-                                width: 1.5)),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12.0, vertical: 10.0),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                      child: PlantPickerList(
+                        plants: allPlants,
+                        onSelect: (plant) {
+                          selectedPlant = plant;
+                          Navigator.of(sheetContext).pop();
+                        },
                       ),
                     ),
-                  ),
-                  Divider(
-                      height: 1.0,
-                      color: FlutterFlowTheme.of(context).alternate),
-                  Expanded(
-                    child: filtered.isEmpty
-                        ? Center(
-                            child: Text('No plants found',
-                                style: GoogleFonts.poppins(
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryText)))
-                        : ListView.builder(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 8.0),
-                            itemCount: filtered.length,
-                            itemBuilder: (context, index) {
-                              final plant = filtered[index];
-                              return ListTile(
-                                leading: Container(
-                                  width: 36.0,
-                                  height: 36.0,
-                                  decoration: BoxDecoration(
-                                      color: const Color(0x1A6F8F72),
-                                      borderRadius:
-                                          BorderRadius.circular(8.0)),
-                                  child: Icon(Icons.local_florist_rounded,
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      size: 18.0),
-                                ),
-                                title: Text(plant.plantName ?? 'Unknown',
-                                    style:
-                                        GoogleFonts.poppins(fontSize: 14.0)),
-                                onTap: () {
-                                  selectedPlant = plant;
-                                  Navigator.of(sheetContext).pop();
-                                },
-                              );
-                            },
-                          ),
                   ),
                 ],
               ),
