@@ -202,6 +202,14 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
                             Navigator.pop(context);
                             context.pushNamed('PreviousGardensPage2');
                           },
+                        ),
+                        _buildNavRow(
+                          icon: Icons.center_focus_strong_rounded,
+                          label: 'Plant Scanner',
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.pushNamed('PlantScan');
+                          },
                           isLast: true,
                         ),
                       ],

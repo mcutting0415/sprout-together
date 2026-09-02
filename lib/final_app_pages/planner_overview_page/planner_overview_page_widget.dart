@@ -2,6 +2,7 @@ import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
+import '/services/plant_scan_service.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -1549,6 +1550,68 @@ class _PlannerOverviewPageWidgetState extends State<PlannerOverviewPageWidget> {
                           icon: insight['icon'] as IconData,
                           text: insight['text'] as String,
                         )),
+                      // Scan shortcut: someone reading garden insights is
+                      // often already looking at a plant that worries them.
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            0.0, 4.0, 0.0, 12.0),
+                        child: InkWell(
+                          onTap: () => context.pushNamed('PlantScan'),
+                          borderRadius: BorderRadius.circular(14.0),
+                          child: Container(
+                            padding: const EdgeInsets.all(14.0),
+                            decoration: BoxDecoration(
+                              color: FlutterFlowTheme.of(context)
+                                  .primary
+                                  .withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(14.0),
+                              border: Border.all(
+                                  color: FlutterFlowTheme.of(context)
+                                      .primary
+                                      .withOpacity(0.25)),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.center_focus_strong_rounded,
+                                    color:
+                                        FlutterFlowTheme.of(context).primary,
+                                    size: 20.0),
+                                const SizedBox(width: 10.0),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Scan a plant',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.w600,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2.0),
+                                      Text(
+                                        'Identify it, or find out what’s wrong',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 11.5,
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryText,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(Icons.chevron_right_rounded,
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText,
+                                    size: 20.0),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                       Align(
                         alignment: Alignment.centerRight,
                         child: FFButtonWidget(

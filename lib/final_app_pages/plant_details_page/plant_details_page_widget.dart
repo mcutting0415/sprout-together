@@ -3,6 +3,7 @@ import '/backend/supabase/supabase.dart';
 import '/components/benefit_badge_widget.dart';
 import '/components/requirement_row_widget.dart';
 import '/components/timeline_item2_widget.dart';
+import '/services/plant_scan_service.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -635,6 +636,70 @@ class _PlantDetailsPageWidgetState extends State<PlantDetailsPageWidget> {
                           lineHeight: 1.5,
                         ),
                       ),
+
+                    const SizedBox(height: 20.0),
+
+                    // ── Diagnose from a photo ────────────────────────────
+                    // Placed above the care sections deliberately: someone
+                    // opening a plant page because something looks wrong
+                    // shouldn't have to scroll past ideal-conditions copy.
+                    InkWell(
+                      onTap: () => context.pushNamed(
+                        'PlantScan',
+                        extra: <String, dynamic>{
+                          'initialMode': ScanMode.diagnose,
+                        },
+                      ),
+                      borderRadius: BorderRadius.circular(20.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: theme.secondaryBackground,
+                          borderRadius: BorderRadius.circular(20.0),
+                          border: Border.all(color: theme.alternate),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 40.0,
+                              height: 40.0,
+                              decoration: BoxDecoration(
+                                color: theme.primary.withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              child: Icon(Icons.healing_rounded,
+                                  color: theme.primary, size: 20.0),
+                            ),
+                            const SizedBox(width: 12.0),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Something look wrong?',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: theme.primaryText,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2.0),
+                                  Text(
+                                    'Take a photo and we’ll diagnose it',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12.0,
+                                      color: theme.secondaryText,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(Icons.chevron_right_rounded,
+                                color: theme.secondaryText, size: 20.0),
+                          ],
+                        ),
+                      ),
+                    ),
 
                     const SizedBox(height: 20.0),
 

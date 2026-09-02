@@ -17,6 +17,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import 'serialization_util.dart';
 
 import '/index.dart';
+import '/services/plant_scan_service.dart';
 
 export 'package:go_router/go_router.dart';
 export 'serialization_util.dart';
@@ -98,6 +99,18 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: PlannerOverviewPageWidget.routeName,
           path: PlannerOverviewPageWidget.routePath,
           builder: (context, params) => PlannerOverviewPageWidget(),
+        ),
+        FFRoute(
+          name: PlantScanPageWidget.routeName,
+          path: PlantScanPageWidget.routePath,
+          builder: (context, params) => PlantScanPageWidget(
+            // Callers can open straight into diagnose mode (e.g. the plant
+            // page's "something look wrong?" card) by passing it via `extra`.
+            initialMode: (params.state.extra is Map)
+                ? ((params.state.extra as Map)['initialMode'] as ScanMode? ??
+                    ScanMode.identify)
+                : ScanMode.identify,
+          ),
         ),
         FFRoute(
           name: PlantLibraryPageWidget.routeName,

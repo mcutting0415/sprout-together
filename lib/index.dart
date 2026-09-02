@@ -1,6 +1,7 @@
 // Export pages
 export '/final_app_pages/planner_overview_page/planner_overview_page_widget.dart'
     show PlannerOverviewPageWidget;
+export '/final_app_pages/plant_scan_page/plant_scan_page_widget.dart';
 export '/final_app_pages/plant_library_page/plant_library_page_widget.dart'
     show PlantLibraryPageWidget;
 export '/final_app_pages/growing_calendar/growing_calendar_widget.dart'
