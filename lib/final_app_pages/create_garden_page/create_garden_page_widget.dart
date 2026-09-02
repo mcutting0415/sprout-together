@@ -184,6 +184,54 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
     super.dispose();
   }
 
+  /// True when the user has typed something worth warning about.
+  bool _hasUnsavedInput() {
+    for (final c in [
+      _model.textController1,
+      _model.textController2,
+      _model.textController3,
+      _model.textController4,
+    ]) {
+      if ((c?.text ?? '').trim().isNotEmpty) return true;
+    }
+    return false;
+  }
+
+  /// Leaves garden creation. Confirms first only when the user has actually
+  /// entered something — an unconditional "are you sure?" on an empty form is
+  /// just an extra tap.
+  Future<void> _confirmLeave(BuildContext context) async {
+    final hasInput = _hasUnsavedInput();
+    if (!hasInput) {
+      context.safePop();
+      return;
+    }
+    final leave = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('Discard this garden?',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        content: Text(
+          'You have unsaved details. Leaving now will lose them.',
+          style: GoogleFonts.poppins(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('Keep editing', style: GoogleFonts.poppins()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text('Discard',
+                style: GoogleFonts.poppins(
+                    color: FlutterFlowTheme.of(context).error)),
+          ),
+        ],
+      ),
+    );
+    if (leave == true && context.mounted) context.safePop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -224,7 +272,40 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // (back button removed)
+                      // Back out of garden creation. Uses safePop() rather
+                      // than pushNamed(PlannerOverview) — the old button
+                      // pushed a new route, so the stack grew on every
+                      // "back" and the system gesture landed here again.
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          FlutterFlowIconButton(
+                            borderRadius: 8.0,
+                            buttonSize: 40.0,
+                            fillColor: Colors.transparent,
+                            icon: Icon(
+                              Icons.arrow_back_rounded,
+                              color: FlutterFlowTheme.of(context).primaryText,
+                              size: 20.0,
+                            ),
+                            onPressed: () => _confirmLeave(context),
+                          ),
+                          TextButton(
+                            onPressed: () => _confirmLeave(context),
+                            child: Text(
+                              'Cancel',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    FlutterFlowTheme.of(context).secondaryText,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       Text(
                         'Create Your Garden',
                         style: FlutterFlowTheme.of(context)
