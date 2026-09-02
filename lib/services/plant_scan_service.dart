@@ -10,7 +10,7 @@ class PlantScanResponse {
     this.result,
     this.error,
     this.scansUsed = 0,
-    this.freeLimit = 5,
+    this.freeLimit = 0,
     this.isPro = false,
   });
 
@@ -48,6 +48,11 @@ class PlantScanService {
   /// and re-encoding in Dart and avoids pulling in another package.
   static const captureMaxEdge = 1280.0;
   static const captureQuality = 82;
+
+  /// Mirrors FREE_SCAN_LIMIT in the edge function. The server is the only
+  /// authority — this exists so the UI can say the right thing before the
+  /// first call. 0 means the scanner is Pro-only.
+  static const freeScanLimit = 0;
 
   /// Matches MAX_IMAGE_BYTES in the edge function. Checked here too so an
   /// oversized file fails instantly instead of after a slow upload.
@@ -105,14 +110,14 @@ class PlantScanService {
         return PlantScanResponse(
           error: map['error'].toString(),
           scansUsed: (map['used'] as num?)?.toInt() ?? 0,
-          freeLimit: (map['limit'] as num?)?.toInt() ?? 5,
+          freeLimit: (map['limit'] as num?)?.toInt() ?? freeScanLimit,
         );
       }
 
       return PlantScanResponse(
         result: Map<String, dynamic>.from(map['result'] as Map),
         scansUsed: (map['scans_used'] as num?)?.toInt() ?? 0,
-        freeLimit: (map['free_limit'] as num?)?.toInt() ?? 5,
+        freeLimit: (map['free_limit'] as num?)?.toInt() ?? freeScanLimit,
         isPro: map['is_pro'] == true,
       );
     } catch (e) {
@@ -149,7 +154,8 @@ class PlantScanService {
 
   /// How many free scans this user has left, read straight from the ledger.
   /// Returns null when it can't be determined (offline, signed out).
-  Future<int?> freeScansRemaining({int freeLimit = 5}) async {
+  Future<int?> freeScansRemaining({int freeLimit = freeScanLimit}) async {
+    if (freeLimit == 0) return 0;
     final uid = SupaFlow.client.auth.currentUser?.id;
     if (uid == null) return null;
     try {

@@ -27,8 +27,11 @@ const corsHeaders = {
 // One constant so the model can be changed without an app release.
 const MODEL = "claude-opus-5";
 
-// Scans a signed-out-of-Pro user gets before the paywall.
-const FREE_SCAN_LIMIT = 5;
+// Scans a non-Pro user gets before the paywall.
+// 0 makes the scanner Pro-only, so it never costs money for a user who isn't
+// paying. Raise it to reintroduce a free trial — no app release needed, this
+// is server-side.
+const FREE_SCAN_LIMIT = 0;
 
 // Hard ceiling per user per day, Pro included — protects against a runaway
 // client loop turning into an unbounded bill.
@@ -228,6 +231,9 @@ Deno.serve(async (req) => {
 
   const pro = await isProUser(userId);
   if (!pro) {
+    if (FREE_SCAN_LIMIT === 0) {
+      return json({ error: "free_limit_reached", used: 0, limit: 0 }, 402);
+    }
     const { count: lifetime } = await admin
       .from("ai_scan_usage")
       .select("*", { count: "exact", head: true })

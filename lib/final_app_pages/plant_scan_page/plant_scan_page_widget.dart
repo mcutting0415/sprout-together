@@ -111,9 +111,13 @@ class _PlantScanPageWidgetState extends State<PlantScanPageWidget> {
             _imageArea(theme),
             const SizedBox(height: 14.0),
             _captureButtons(theme),
-            if (_scansLeft != null) ...[
+            if (PlantScanService.freeScanLimit > 0 && _scansLeft != null) ...[
               const SizedBox(height: 12.0),
               _remainingBanner(theme, _scansLeft!),
+            ] else if (PlantScanService.freeScanLimit == 0 &&
+                _response?.isPro != true) ...[
+              const SizedBox(height: 12.0),
+              _proBadge(theme),
             ],
             const SizedBox(height: 20.0),
             if (_busy) _loading(theme),
@@ -261,6 +265,30 @@ class _PlantScanPageWidgetState extends State<PlantScanPageWidget> {
         ),
       );
 
+  Widget _proBadge(FlutterFlowTheme theme) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+        decoration: BoxDecoration(
+          color: const Color(0x1A6F8F72),
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.workspace_premium_rounded,
+                size: 15.0, color: theme.primary),
+            const SizedBox(width: 8.0),
+            Expanded(
+              child: Text(
+                'Included with Sprout Together Pro',
+                style: GoogleFonts.poppins(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: theme.primary),
+              ),
+            ),
+          ],
+        ),
+      );
+
   Widget _loading(FlutterFlowTheme theme) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 26.0),
         child: Column(
@@ -391,8 +419,12 @@ class _PlantScanPageWidgetState extends State<PlantScanPageWidget> {
   Widget _errorCard(FlutterFlowTheme theme, PlantScanResponse res) {
     switch (res.error) {
       case 'free_limit_reached':
-        return _notice(theme, Icons.lock_outline_rounded,
-            'You’ve used your free scans',
+        return _notice(
+            theme,
+            Icons.lock_outline_rounded,
+            PlantScanService.freeScanLimit == 0
+                ? 'Plant Scanner is a Pro feature'
+                : 'You’ve used your free scans',
             'Upgrade to Pro for unlimited plant identification and diagnosis.');
       case 'daily_cap_reached':
         return _notice(theme, Icons.hourglass_empty_rounded,
