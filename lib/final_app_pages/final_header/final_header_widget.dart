@@ -186,7 +186,20 @@ class _FinalHeaderWidgetState extends State<FinalHeaderWidget> {
                                     context.pushNamed(PlantLibraryPageWidget.routeName);
                                   },
                                 ),
-                                // 4. Companion Plants
+                                // 4. Plant Scanner
+                                ListTile(
+                                  leading: Icon(Icons.center_focus_strong_rounded,
+                                      color: FlutterFlowTheme.of(context).primary),
+                                  title: Text('Plant Scanner',
+                                      style: FlutterFlowTheme.of(context).bodyLarge),
+                                  trailing: Icon(Icons.chevron_right_rounded,
+                                      color: FlutterFlowTheme.of(context).secondaryText),
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                    context.pushNamed('PlantScan');
+                                  },
+                                ),
+                                // 5. Companion Plants
                                 ListTile(
                                   leading: Icon(Icons.people_rounded,
                                       color: FlutterFlowTheme.of(context).primary),
