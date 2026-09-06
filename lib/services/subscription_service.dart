@@ -1,3 +1,4 @@
+import '/backend/supabase/supabase.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -48,6 +49,20 @@ class SubscriptionService extends ChangeNotifier {
         _updateFromCustomerInfo(info);
         notifyListeners();
       });
+
+      // Re-link the RevenueCat identity to the signed-in Supabase user.
+      //
+      // loginUser() is otherwise only called from the login and sign-up pages,
+      // so a restored session — which is what happens on almost every launch —
+      // left RevenueCat on its anonymous id. Anything keyed on the Supabase
+      // user id then failed to find the customer, including the server-side
+      // entitlement check in the plant-scan edge function, which would deny a
+      // paying subscriber. Purchases.logIn is a no-op when the id already
+      // matches, so this is safe to run on every start.
+      final currentUserId = SupaFlow.client.auth.currentUser?.id;
+      if (currentUserId != null && currentUserId.isNotEmpty) {
+        await Purchases.logIn(currentUserId);
+      }
 
       // Fetch current status
       final info = await Purchases.getCustomerInfo();
