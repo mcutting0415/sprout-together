@@ -35,6 +35,15 @@ const MODEL = "claude-opus-5";
 // is server-side.
 const FREE_SCAN_LIMIT = 0;
 
+// Comped accounts: these Supabase user ids skip the Pro check entirely.
+// For the owner, family, and anyone reviewing the app. The daily cap below
+// still applies to them, so a comp can't become an unbounded bill either.
+// Adding someone needs a function redeploy, not an app release.
+const COMPED_USER_IDS = new Set<string>([
+  "e5b72a57-52b9-4782-83c6-a363d82390d9", // Mackenzie (owner)
+  "e1823ae0-fd1a-4fdb-8afc-a45cb6ce6b94", // family
+]);
+
 // Hard ceiling per user per day, Pro included — protects against a runaway
 // client loop turning into an unbounded bill.
 const DAILY_CAP = 40;
@@ -231,7 +240,8 @@ Deno.serve(async (req) => {
     return json({ error: "daily_cap_reached", limit: DAILY_CAP }, 429);
   }
 
-  const pro = await isProUser(userId);
+  const comped = COMPED_USER_IDS.has(userId);
+  const pro = comped || (await isProUser(userId));
   if (!pro) {
     if (FREE_SCAN_LIMIT === 0) {
       return json({ error: "free_limit_reached", used: 0, limit: 0 }, 402);
