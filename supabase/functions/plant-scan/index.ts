@@ -15,7 +15,7 @@
 // (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are injected by the platform.)
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-// npm: specifier rather than esm.sh — the Anthropic SDK pulls in enough Node
+// npm: specifier rather than esm.sh  -  the Anthropic SDK pulls in enough Node
 // built-ins that the esm.sh build fails to boot in the edge runtime.
 import Anthropic from "npm:@anthropic-ai/sdk@0.123.0";
 
@@ -31,7 +31,7 @@ const MODEL = "claude-opus-5";
 
 // Scans a non-Pro user gets before the paywall.
 // 0 makes the scanner Pro-only, so it never costs money for a user who isn't
-// paying. Raise it to reintroduce a free trial — no app release needed, this
+// paying. Raise it to reintroduce a free trial  -  no app release needed, this
 // is server-side.
 const FREE_SCAN_LIMIT = 0;
 
@@ -44,7 +44,7 @@ const COMPED_USER_IDS = new Set<string>([
   "e1823ae0-fd1a-4fdb-8afc-a45cb6ce6b94", // family
 ]);
 
-// Hard ceiling per user per day, Pro included — protects against a runaway
+// Hard ceiling per user per day, Pro included  -  protects against a runaway
 // client loop turning into an unbounded bill.
 const DAILY_CAP = 40;
 
@@ -128,7 +128,7 @@ const IDENTIFY_PROMPT = `You identify plants from photographs for a home gardeni
 
 Name the plant as a gardener would (common name first). Give the scientific name when you are reasonably sure of it.
 
-Be honest about uncertainty. Many photos are blurry, show only a leaf, or show a seedling that could be several things. Say "low" confidence and name the most likely candidate rather than inventing false precision — a confident wrong answer sends someone to plant the wrong thing.
+Be honest about uncertainty. Many photos are blurry, show only a leaf, or show a seedling that could be several things. Say "low" confidence and name the most likely candidate rather than inventing false precision  -  a confident wrong answer sends someone to plant the wrong thing.
 
 If the photo does not show a plant, set is_plant to false and leave the other fields empty rather than guessing.
 
@@ -139,7 +139,7 @@ const DIAGNOSE_PROMPT = `You diagnose plant problems from photographs for a home
 Work from what is actually visible: leaf colour and pattern, spotting, wilting, insect damage, the growing medium. Name the most likely problem and say plainly how confident you are.
 
 Rules that matter:
-- If the plant looks fine, say so — set looks_healthy true and severity "none". Do not invent a problem to seem useful.
+- If the plant looks fine, say so  -  set looks_healthy true and severity "none". Do not invent a problem to seem useful.
 - Many symptoms have several causes (over- and under-watering look alike). List the real candidates instead of committing to one.
 - Prefer cultural fixes (watering, spacing, airflow, removing affected leaves) before chemical ones.
 - If you recommend any treatment that could harm people, pets or pollinators, say so in that step.
@@ -185,7 +185,9 @@ Deno.serve(async (req) => {
   }
 
   const authHeader = req.headers.get("Authorization") ?? "";
+  console.log(`[plant-scan] request method=${req.method} hasAuth=${authHeader.startsWith("Bearer ")}`);
   if (!authHeader.startsWith("Bearer ")) {
+    console.log("[plant-scan] denied: no bearer token");
     return json({ error: "unauthorized" }, 401);
   }
 
@@ -198,9 +200,11 @@ Deno.serve(async (req) => {
     authHeader.replace("Bearer ", ""),
   );
   if (userErr || !userData?.user) {
+    console.log(`[plant-scan] denied: getUser failed  -  ${userErr?.message ?? "no user"}`);
     return json({ error: "unauthorized" }, 401);
   }
   const userId = userData.user.id;
+  console.log(`[plant-scan] authenticated user=${userId}`);
 
   let payload: {
     mode?: string;
@@ -218,7 +222,10 @@ Deno.serve(async (req) => {
   const image = payload.image ?? "";
   const mediaType = payload.media_type ?? "image/jpeg";
 
-  if (!image) return json({ error: "missing_image" }, 400);
+  if (!image) {
+    console.log("[plant-scan] denied: missing image in payload");
+    return json({ error: "missing_image" }, 400);
+  }
   if (!ALLOWED_MEDIA.includes(mediaType)) {
     return json({ error: "unsupported_media_type" }, 400);
   }
@@ -242,6 +249,15 @@ Deno.serve(async (req) => {
 
   const comped = COMPED_USER_IDS.has(userId);
   const pro = comped || (await isProUser(userId));
+
+  // Visible in the Supabase function logs. The entitlement path has several
+  // ways to silently deny access  -  wrong user id in the allowlist, RevenueCat
+  // keyed on a different id  -  and none of them are distinguishable from the
+  // app, which just shows a paywall either way.
+  console.log(
+    `[plant-scan] user=${userId} comped=${comped} pro=${pro} mode=${mode}`,
+  );
+
   if (!pro) {
     if (FREE_SCAN_LIMIT === 0) {
       return json({ error: "free_limit_reached", used: 0, limit: 0 }, 402);
