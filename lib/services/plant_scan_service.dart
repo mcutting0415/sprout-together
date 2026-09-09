@@ -51,8 +51,8 @@ class PlantScanService {
 
   /// Mirrors FREE_SCAN_LIMIT in the edge function. The server is the only
   /// authority — this exists so the UI can say the right thing before the
-  /// first call. 0 means the scanner is Pro-only.
-  static const freeScanLimit = 0;
+  /// first call. 0 would mean Pro-only.
+  static const freeScanLimit = 3;
 
   /// Matches MAX_IMAGE_BYTES in the edge function. Checked here too so an
   /// oversized file fails instantly instead of after a slow upload.

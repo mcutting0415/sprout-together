@@ -30,10 +30,17 @@ const corsHeaders = {
 const MODEL = "claude-opus-5";
 
 // Scans a non-Pro user gets before the paywall.
-// 0 makes the scanner Pro-only, so it never costs money for a user who isn't
-// paying. Raise it to reintroduce a free trial  -  no app release needed, this
-// is server-side.
-const FREE_SCAN_LIMIT = 0;
+//
+// Deliberately not 0. Entitlement detection is not yet trustworthy: RevenueCat
+// was never keyed on the Supabase user id (fixed app-side in 5cd8bb4, but that
+// only takes effect once users are on the new build), and with a 0 allowance a
+// failed lookup means nobody can scan at all - which is what happened during
+// testing. A small allowance means the feature works for everyone even when
+// the entitlement check is wrong, and it doubles as a genuine free trial.
+//
+// Drop this to 0 once the logs show comped/pro resolving correctly for real
+// users. It is server-side, so changing it needs a redeploy, not a release.
+const FREE_SCAN_LIMIT = 3;
 
 // Comped accounts: these Supabase user ids skip the Pro check entirely.
 // For the owner, family, and anyone reviewing the app. The daily cap below
