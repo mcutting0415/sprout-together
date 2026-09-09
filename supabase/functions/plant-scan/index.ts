@@ -61,7 +61,14 @@ const ALLOWED_MEDIA = ["image/jpeg", "image/png", "image/webp"];
 const IDENTIFY_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["is_plant", "common_name", "confidence", "summary", "next_steps"],
+  required: [
+    "is_plant",
+    "common_name",
+    "confidence",
+    "summary",
+    "identifying_features",
+    "next_steps",
+  ],
   properties: {
     is_plant: {
       type: "boolean",
@@ -69,13 +76,43 @@ const IDENTIFY_SCHEMA = {
     },
     common_name: {
       type: "string",
-      description: "Everyday name, e.g. 'Basil'. Empty string if is_plant is false.",
+      description:
+        "The everyday name ONLY, two or three words at most, e.g. 'Wild potato vine'. No parentheses, no alternate names, no scientific name. This is rendered as a page heading and a long value breaks the layout.",
+    },
+    also_known_as: {
+      type: "array",
+      items: { type: "string" },
+      description: "Other common names, if any. Empty array if none.",
     },
     scientific_name: { type: "string" },
+    plant_family: { type: "string", description: "e.g. 'Convolvulaceae'." },
     confidence: { type: "string", enum: ["high", "medium", "low"] },
     summary: {
       type: "string",
-      description: "Two or three sentences: what it is and how to tell.",
+      description:
+        "Two or three sentences on what it is and where it grows. Do not describe the photo quality here.",
+    },
+    identifying_features: {
+      type: "array",
+      items: { type: "string" },
+      description:
+        "Two to four specific things visible in the photo that led to this identification - leaf shape, flower form, stem colour.",
+    },
+    look_alikes: {
+      type: "array",
+      items: { type: "string" },
+      description:
+        "Plants this is commonly confused with, and the one detail that separates them. Empty array if none.",
+    },
+    edible_or_toxic: {
+      type: "string",
+      description:
+        "Plain-language safety note. Say clearly if any part is toxic to people, pets or livestock, and if edible say which part and how it is prepared. Say 'Not known to be toxic' only when that is accurate. Never encourage eating a plant identified from a photo.",
+    },
+    is_weed_or_invasive: {
+      type: "string",
+      description:
+        "Whether gardeners usually treat this as a weed, a wildflower, or a cultivated plant, and whether it spreads aggressively.",
     },
     care_snapshot: {
       type: "object",
@@ -91,6 +128,11 @@ const IDENTIFY_SCHEMA = {
       type: "array",
       items: { type: "string" },
       description: "Two to four short, concrete actions for the grower.",
+    },
+    photo_caveat: {
+      type: "string",
+      description:
+        "Only if the photo genuinely limits confidence (blurry, a screen, only one leaf). Empty string otherwise. Kept separate so it does not clutter the description.",
     },
   },
 } as const;
@@ -133,13 +175,18 @@ const DIAGNOSE_SCHEMA = {
 
 const IDENTIFY_PROMPT = `You identify plants from photographs for a home gardening app.
 
-Name the plant as a gardener would (common name first). Give the scientific name when you are reasonably sure of it.
+Give a genuinely useful answer, not a label. Someone photographing an unknown plant wants to know what it is, how sure you are, whether it is safe, and what to do with it.
 
-Be honest about uncertainty. Many photos are blurry, show only a leaf, or show a seedling that could be several things. Say "low" confidence and name the most likely candidate rather than inventing false precision  -  a confident wrong answer sends someone to plant the wrong thing.
+Rules:
+- common_name is a heading. Two or three words, no parentheses, no alternate names. Extra names go in also_known_as.
+- Say what in the photo led you there - leaf shape, flower form, stem colour. That is what lets someone check your work.
+- Be honest about uncertainty. A blurry photo or a single leaf often cannot be pinned down; say "low" and name the most likely candidate. A confident wrong answer sends someone to plant, pull or eat the wrong thing.
+- If the photo limits you, put that in photo_caveat, not in the summary.
+- edible_or_toxic matters. Flag anything toxic to people, pets or livestock plainly. Never encourage eating a plant identified from a photo.
+- Note whether gardeners usually treat it as a weed, a wildflower, or something cultivated.
+- If it is not a plant, set is_plant false and leave the rest empty.
 
-If the photo does not show a plant, set is_plant to false and leave the other fields empty rather than guessing.
-
-Keep the summary to two or three plain sentences. No preamble.`;
+No preamble.`;
 
 const DIAGNOSE_PROMPT = `You diagnose plant problems from photographs for a home gardening app.
 
@@ -157,7 +204,12 @@ Keep every step short and actionable. No preamble.`;
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // charset matters: without it the client may decode UTF-8 as Latin-1 and
+    // an em-dash arrives as mojibake in the middle of a sentence.
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "application/json; charset=utf-8",
+    },
   });
 }
 

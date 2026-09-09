@@ -322,6 +322,11 @@ class _PlantScanPageWidgetState extends State<PlantScanPageWidget> {
 
   Widget _identifyResult(FlutterFlowTheme theme, Map<String, dynamic> r) {
     final care = r['care_snapshot'] as Map?;
+    final alsoKnown = r['also_known_as'];
+    final caveat = (r['photo_caveat'] ?? '').toString().trim();
+    final safety = (r['edible_or_toxic'] ?? '').toString().trim();
+    final habit = (r['is_weed_or_invasive'] ?? '').toString().trim();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -333,26 +338,63 @@ class _PlantScanPageWidgetState extends State<PlantScanPageWidget> {
                 child: Text('${r['common_name'] ?? 'Unknown'}',
                     style: GoogleFonts.poppins(
                         fontSize: 21.0,
+                        height: 1.2,
                         fontWeight: FontWeight.bold,
                         color: theme.primaryText)),
               ),
+              const SizedBox(width: 8.0),
               _confidenceChip(theme, r['confidence']?.toString()),
             ],
           ),
           if ((r['scientific_name'] ?? '').toString().isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(top: 2.0),
-              child: Text('${r['scientific_name']}',
+              padding: const EdgeInsets.only(top: 3.0),
+              child: Text(
+                  [
+                    r['scientific_name'],
+                    if ((r['plant_family'] ?? '').toString().isNotEmpty)
+                      r['plant_family'],
+                  ].join('  ·  '),
                   style: GoogleFonts.poppins(
-                      fontSize: 13.0,
+                      fontSize: 12.5,
                       fontStyle: FontStyle.italic,
                       color: theme.secondaryText)),
             ),
-          const SizedBox(height: 10.0),
+          if (alsoKnown is List && alsoKnown.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 3.0),
+              child: Text('Also called ${alsoKnown.join(', ')}',
+                  style: GoogleFonts.poppins(
+                      fontSize: 12.0, color: theme.secondaryText)),
+            ),
+          const SizedBox(height: 11.0),
           Text('${r['summary'] ?? ''}',
               style: GoogleFonts.poppins(
                   fontSize: 13.5, height: 1.5, color: theme.primaryText)),
+          if (caveat.isNotEmpty) ...[
+            const SizedBox(height: 10.0),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline_rounded,
+                    size: 14.0, color: theme.secondaryText),
+                const SizedBox(width: 6.0),
+                Expanded(
+                  child: Text(caveat,
+                      style: GoogleFonts.poppins(
+                          fontSize: 11.5,
+                          height: 1.45,
+                          color: theme.secondaryText)),
+                ),
+              ],
+            ),
+          ],
         ]),
+        _bulletCard(theme, 'How we can tell', r['identifying_features']),
+        if (safety.isNotEmpty) ...[
+          const SizedBox(height: 12.0),
+          _safetyCard(theme, safety),
+        ],
         if (care != null) ...[
           const SizedBox(height: 12.0),
           _card(theme, [
@@ -360,14 +402,74 @@ class _PlantScanPageWidgetState extends State<PlantScanPageWidget> {
             const SizedBox(height: 8.0),
             _careRow(theme, Icons.wb_sunny_outlined, 'Sun', care['sun']),
             _careRow(theme, Icons.water_drop_outlined, 'Water', care['water']),
-            _careRow(theme, Icons.straighten_rounded, 'Spacing',
-                care['spacing']),
+            _careRow(
+                theme, Icons.straighten_rounded, 'Spacing', care['spacing']),
           ]),
         ],
+        if (habit.isNotEmpty) ...[
+          const SizedBox(height: 12.0),
+          _card(theme, [
+            _sectionTitle(theme, 'In the garden'),
+            const SizedBox(height: 8.0),
+            Text(habit,
+                style: GoogleFonts.poppins(
+                    fontSize: 13.5, height: 1.5, color: theme.primaryText)),
+          ]),
+        ],
+        _bulletCard(theme, 'Easily confused with', r['look_alikes']),
         _bulletCard(theme, 'What to do next', r['next_steps']),
         const SizedBox(height: 12.0),
         _disclaimer(theme),
       ],
+    );
+  }
+
+  /// Safety gets its own visually distinct card. Buried in a bullet list it
+  /// reads as one tip among many, and "toxic to dogs" is not one tip among many.
+  Widget _safetyCard(FlutterFlowTheme theme, String text) {
+    final serious = RegExp(r'toxic|poison|harmful|irritant|do not eat',
+            caseSensitive: false)
+        .hasMatch(text);
+    final accent = serious ? const Color(0xFFA65C46) : theme.primary;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: accent.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(color: accent.withOpacity(0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+              serious
+                  ? Icons.warning_amber_rounded
+                  : Icons.restaurant_outlined,
+              size: 18.0,
+              color: accent),
+          const SizedBox(width: 10.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(serious ? 'Safety' : 'Edible?',
+                    style: GoogleFonts.poppins(
+                        fontSize: 11.0,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.8,
+                        color: accent)),
+                const SizedBox(height: 4.0),
+                Text(text,
+                    style: GoogleFonts.poppins(
+                        fontSize: 13.5,
+                        height: 1.5,
+                        color: theme.primaryText)),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
