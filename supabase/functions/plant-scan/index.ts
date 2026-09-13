@@ -156,10 +156,15 @@ const DIAGNOSE_SCHEMA = {
       type: "boolean",
       description: "True when nothing is visibly wrong.",
     },
-    plant_guess: { type: "string" },
+    plant_guess: {
+      type: "string",
+      description:
+        "What the plant appears to be, in lowercase, short, no parentheses, e.g. 'young cherry or plum tree'. It is shown mid-sentence after 'Looks like'.",
+    },
     problem: {
       type: "string",
-      description: "Short name of what is wrong, e.g. 'Early blight'.",
+      description:
+        "The name of the problem ONLY, two or three words, e.g. 'Gummosis' or 'Early blight'. No parentheses, no explanation. This is rendered as a page heading and anything longer breaks the layout; the explanation belongs in likely_causes.",
     },
     severity: { type: "string", enum: ["none", "low", "medium", "high"] },
     confidence: { type: "string", enum: ["high", "medium", "low"] },
@@ -197,6 +202,8 @@ Rules that matter:
 - Many symptoms have several causes (over- and under-watering look alike). List the real candidates instead of committing to one.
 - Prefer cultural fixes (watering, spacing, airflow, removing affected leaves) before chemical ones.
 - If you recommend any treatment that could harm people, pets or pollinators, say so in that step.
+- problem is a heading: the name only, two or three words, no parentheses. Put what it means in likely_causes.
+- plant_guess is inserted mid-sentence, so write it lowercase and short.
 - If the photo does not show a plant, set is_plant to false.
 
 Keep every step short and actionable. No preamble.`;
