@@ -39,7 +39,13 @@ class _PlantScanPageWidgetState extends State<PlantScanPageWidget> {
 
   Future<void> _refreshRemaining() async {
     final left = await PlantScanService.instance.freeScansRemaining();
-    if (mounted) setState(() => _scansLeft = left);
+    // The app only knows how many scans this account has used, not whether
+    // it is Pro or comped - that is decided server-side. Every successful scan
+    // is recorded either way, so a Pro subscriber past their third scan would
+    // otherwise be told "You've used your free scans" while having unlimited.
+    // Show a count only while scans remain; if the allowance is genuinely
+    // gone, the server says so on the next attempt and the paywall opens.
+    if (mounted) setState(() => _scansLeft = (left != null && left > 0) ? left : null);
   }
 
   Future<void> _pick(ImageSource source) async {
