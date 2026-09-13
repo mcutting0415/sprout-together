@@ -57,16 +57,23 @@ def rounded(img, radius):
     img.putalpha(mask)
     return img
 
+# Order matters: App Store search results show only the first two or three,
+# so the newest, most distinctive feature leads.
 slides = [
-    ("Plant Lib.jpg", "Care guides for", "154 plants", "Veggies, herbs & flowers — all in your pocket", "1-plants.png"),
-    ("Detail.PNG", "Know when to", "plant & harvest", "Timing & care for every plant", "2-timing.png"),
-    ("Builder.jpg", "Design your", "garden beds", "Lay out plots and plants in minutes", "3-builder.png"),
-    ("Companion.jpg", "Companion", "planting made easy", "See what grows well together", "4-companion.png"),
-    ("Journal.jpg", "Track every", "season", "Photos, notes & progress in one place", "5-journal.png"),
+    ("Scanner.PNG", "What plant", "is this?", "Point your camera and find out in seconds", "1-scanner.png"),
+    ("Diagnose.PNG", "Find out what's", "wrong with it", "Photograph a sick plant, get a diagnosis", "2-diagnose.png"),
+    ("Plant Lib.jpg", "Care guides for", "154 plants", "Veggies, herbs & flowers — all in your pocket", "3-plants.png"),
+    ("Builder.jpg", "Design your", "garden beds", "Lay out plots and plants in minutes", "4-builder.png"),
+    ("Detail.PNG", "Know when to", "plant & harvest", "Timing & care for every plant", "5-timing.png"),
+    ("Companion.jpg", "Companion", "planting made easy", "See what grows well together", "6-companion.png"),
+    ("Journal.jpg", "Track every", "season", "Photos, notes & progress in one place", "7-journal.png"),
 ]
 
 MAXW = 1210
 for src, h1, h2, sub, outname in slides:
+    if not os.path.exists(os.path.join(HERE, src)):
+        print(f"SKIP {outname} - no source screenshot at marketing/{src}")
+        continue
     canvas = gradient(W, H, TOP, BOT)
     d = ImageDraw.Draw(canvas)
 
