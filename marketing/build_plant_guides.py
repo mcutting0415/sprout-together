@@ -109,7 +109,7 @@ FOOTER = '''<footer><div class="wrap">
 </div></footer>'''
 
 
-def head(t, desc, canon, extra=""):
+def head(t, desc, canon, extra="", image=None):
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,11 +123,11 @@ def head(t, desc, canon, extra=""):
 <meta property="og:url" content="{canon}" />
 <meta property="og:title" content="{e(t)}" />
 <meta property="og:description" content="{e(desc)}" />
-<meta property="og:image" content="{BASE}/img/og-image.png" />
+<meta property="og:image" content="{image or BASE + '/img/og-image.png'}" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="{e(t)}" />
 <meta name="twitter:description" content="{e(desc)}" />
-<meta name="twitter:image" content="{BASE}/img/og-image.png" />
+<meta name="twitter:image" content="{image or BASE + '/img/og-image.png'}" />
 <link rel="stylesheet" href="/plants/guide.css" />
 {extra}
 </head>
@@ -150,6 +150,8 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;height:6
 .brand svg{width:30px;height:30px}
 nav .cta-small{background:var(--green);color:#fff;text-decoration:none;padding:9px 18px;border-radius:10px;font-weight:600;font-size:.92rem}
 nav .cta-small:hover{background:var(--green-dark)}
+.pphoto{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;
+border-radius:18px;margin:-34px 0 26px;box-shadow:0 18px 40px rgba(20,40,25,.22)}
 .phero{background:linear-gradient(160deg,var(--green) 0%,var(--green-dark) 100%);color:#fff;padding:56px 0 60px}
 .eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:.74rem;font-weight:700;color:var(--mint);margin-bottom:14px}
 .phero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.08;letter-spacing:-.02em;font-weight:800;margin-bottom:16px}
@@ -200,7 +202,7 @@ border-radius:12px;padding:14px 16px;text-decoration:none}
 .pmeta{font-size:.85rem;color:var(--muted)}
 .shophdr{margin:0 0 18px}
 .shophdr h2{font-size:1.3rem;margin-bottom:4px}
-@media(max-width:640px){.phero{padding:40px 0 44px}section.blk{padding:22px 20px}}
+@media(max-width:640px){.pphoto{border-radius:12px;margin:-22px 0 20px}.phero{padding:40px 0 44px}section.blk{padding:22px 20px}}
 '''
 
 SECTIONS = [
@@ -329,9 +331,10 @@ def build():
         desc = trim(f"{disp} growing guide: when to plant, soil and feeding, common problems, "
                     f"when and how to harvest. {rec['bestSeason']}")
         canon = f"{BASE}/plants/{sl}/"
+        photo = f"{BASE}/img/plants/{sl}.jpg"
         ld = {"@context": "https://schema.org", "@type": "Article",
               "headline": t_plain, "description": desc,
-              "mainEntityOfPage": canon, "image": f"{BASE}/img/og-image.png",
+              "mainEntityOfPage": canon, "image": photo,
               "author": {"@type": "Organization", "name": "Sprout Together"},
               "publisher": {"@type": "Organization", "name": "Sprout Together"}}
         crumb = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
@@ -341,7 +344,7 @@ def build():
         extra = ('<script type="application/ld+json">' + json.dumps(ld) + '</script>\n'
                  '<script type="application/ld+json">' + json.dumps(crumb) + '</script>')
 
-        p = [head(t_plain, desc, canon, extra)]
+        p = [head(t_plain, desc, canon, extra, image=photo)]
         p.append(f'''<header class="phero"><div class="wrap">
   <div class="crumb"><a href="/">Home</a> › <a href="/plants/">Plant Guides</a> › {e(disp)}</div>
   <div class="eyebrow">Plant Guide</div>
@@ -349,7 +352,9 @@ def build():
   <p>Everything you need to grow {e(disp.lower())} well — when to plant, how to prepare the soil,
   what to feed it, what usually goes wrong, and how to tell it's ready to harvest.</p>
 </div></header>
-<main><div class="wrap">''')
+<main><div class="wrap">
+  <img class="pphoto" src="/img/plants/{sl}.jpg" width="1200" height="675" alt="{e(disp)} growing in a garden"
+       data-pin-description="How to grow {e(disp.lower())}: when to plant, soil, feeding, common problems and how to tell it is ready to harvest. Free growing guide from Sprout Together." />''')
         for key, heading, cls in SECTIONS:
             p.append(f'<section class="blk {cls}"><h2>{heading}</h2><p>{e(rec[key])}</p></section>')
 

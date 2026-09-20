@@ -48,3 +48,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generated marketing imagery — regenerate with marketing/make_plant_pins.py
+marketing/plant-pins/
+marketing/.photo-cache/

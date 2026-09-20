@@ -7,6 +7,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
+import 'dart:async';
 import 'dart:ui';
 import '/index.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'create_garden_page_model.dart';
 export 'create_garden_page_model.dart';
+import '/services/review_prompt_service.dart';
 import '/services/subscription_service.dart';
 import '/final_app_pages/paywall/paywall_widget.dart';
 
@@ -1669,6 +1671,12 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                         );
 
                         safeSetState(() {});
+
+                        // Garden built and plots laid out - a good moment to
+                        // ask. The builder page is already on screen by now,
+                        // so the sheet doesn't land mid-transition.
+                        unawaited(ReviewPromptService.instance
+                            .registerDelight());
                         } catch (e) {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(

@@ -12,6 +12,8 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;height:6
 .brand svg{width:30px;height:30px}
 nav .cta-small{background:var(--green);color:#fff;text-decoration:none;padding:9px 18px;border-radius:10px;font-weight:600;font-size:.92rem}
 nav .cta-small:hover{background:var(--green-dark)}
+.pphoto{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;
+border-radius:18px;margin:-34px 0 26px;box-shadow:0 18px 40px rgba(20,40,25,.22)}
 .phero{background:linear-gradient(160deg,var(--green) 0%,var(--green-dark) 100%);color:#fff;padding:56px 0 60px}
 .eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:.74rem;font-weight:700;color:var(--mint);margin-bottom:14px}
 .phero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.08;letter-spacing:-.02em;font-weight:800;margin-bottom:16px}
@@ -62,4 +64,4 @@ border-radius:12px;padding:14px 16px;text-decoration:none}
 .pmeta{font-size:.85rem;color:var(--muted)}
 .shophdr{margin:0 0 18px}
 .shophdr h2{font-size:1.3rem;margin-bottom:4px}
-@media(max-width:640px){.phero{padding:40px 0 44px}section.blk{padding:22px 20px}}
+@media(max-width:640px){.pphoto{border-radius:12px;margin:-22px 0 20px}.phero{padding:40px 0 44px}section.blk{padding:22px 20px}}

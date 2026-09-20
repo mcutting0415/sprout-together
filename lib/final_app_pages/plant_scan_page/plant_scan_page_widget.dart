@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import '/final_app_pages/paywall/paywall_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/services/plant_scan_service.dart';
+import '/services/review_prompt_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -70,6 +72,12 @@ class _PlantScanPageWidgetState extends State<PlantScanPageWidget> {
       _response = res;
       if (res.ok) _scansLeft = res.isPro ? null : res.scansLeft;
     });
+
+    // A scan that came back with a real answer is the best moment this app
+    // has to ask for a rating. A scan that hit the quota wall is the worst.
+    if (res.ok && !res.needsUpgrade) {
+      unawaited(ReviewPromptService.instance.registerDelight());
+    }
 
     if (res.needsUpgrade && mounted) {
       await showModalBottomSheet(
