@@ -16,6 +16,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'create_garden_page_model.dart';
 export 'create_garden_page_model.dart';
+import '/components/guest_save_prompt.dart';
 import '/services/review_prompt_service.dart';
 import '/services/subscription_service.dart';
 import '/final_app_pages/paywall/paywall_widget.dart';
@@ -1673,10 +1674,23 @@ class _CreateGardenPageWidgetState extends State<CreateGardenPageWidget> {
                         safeSetState(() {});
 
                         // Garden built and plots laid out - a good moment to
-                        // ask. The builder page is already on screen by now,
-                        // so the sheet doesn't land mid-transition.
-                        unawaited(ReviewPromptService.instance
-                            .registerDelight());
+                        // ask for something. The builder page is already on
+                        // screen by now, so neither sheet lands mid-transition.
+                        //
+                        // A guest gets asked to save their account instead of
+                        // asked for a rating: they have just made the first
+                        // thing they would mind losing, and two sheets stacked
+                        // on one another gets both of them dismissed.
+                        unawaited(Future.delayed(
+                            const Duration(milliseconds: 900), () async {
+                          if (!mounted) return;
+                          final asked = await GuestSavePrompt.showOnce(context,
+                              reason: 'garden');
+                          if (!asked) {
+                            unawaited(ReviewPromptService.instance
+                                .registerDelight());
+                          }
+                        }));
                         } catch (e) {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(

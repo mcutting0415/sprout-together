@@ -11,6 +11,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'login_page_model.dart';
+import '/services/guest_session_service.dart';
 import '/services/subscription_service.dart';
 export 'login_page_model.dart';
 
@@ -539,6 +540,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                   final supaUser = SupaFlow.client.auth.currentUser;
                                   if (supaUser != null) {
                                     await SubscriptionService.instance.loginUser(supaUser.id);
+                                    await GuestSessionService.allowGuestSessions();
                                   }
 
                                   _model.profileQuery =

@@ -2,6 +2,7 @@ import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/index.dart';
 import '/final_app_pages/final_header/final_header_widget.dart';
+import '/services/guest_session_service.dart';
 import '/services/subscription_service.dart';
 import '/final_app_pages/paywall/paywall_widget.dart';
 import '/components/section_card_child2_widget.dart';
@@ -440,7 +441,39 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                     ].divide(SizedBox(height: 24.0)),
                   ),
                 ),
-                // ── Sign Out ───────────────────────────────────────
+                // ── Save account (guest) / Sign Out ────────────────
+                //
+                // Signing out of a guest account is unrecoverable: with no
+                // email and no password there is no way back into it, and
+                // every garden on it is gone. So a guest is offered the thing
+                // that would make signing out safe instead.
+                if (GuestSessionService.isGuest)
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 12.0),
+                    child: FFButtonWidget(
+                      onPressed: () async {
+                        context.pushNamed(SignUpPageWidget.routeName);
+                      },
+                      text: 'Save my account',
+                      icon: const Icon(Icons.person_add_alt_1_rounded, size: 18.0),
+                      options: FFButtonOptions(
+                        width: double.infinity,
+                        height: 40.0,
+                        padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                        iconPadding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                        iconColor: Colors.white,
+                        color: FlutterFlowTheme.of(context).primary,
+                        textStyle: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16.0,
+                        ),
+                        elevation: 0.0,
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                    ),
+                  )
+                else
                 Padding(
                   padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 12.0),
                   child: FFButtonWidget(
@@ -450,6 +483,7 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                       // Reset RevenueCat identity so the next account that
                       // signs in isn't seen as this user (and can't inherit Pro).
                       await SubscriptionService.instance.logoutUser();
+                      await GuestSessionService.suppressNextGuestSession();
                       // Clear cached per-user state so the next account that
                       // signs in on this device starts clean.
                       FFAppState().update(() {
@@ -551,6 +585,7 @@ class _SettingsPage2WidgetState extends State<SettingsPage2Widget> {
                             // Account is gone — clear the local session/state.
                             await authManager.signOut();
                             await SubscriptionService.instance.logoutUser();
+                      await GuestSessionService.suppressNextGuestSession();
                             FFAppState().update(() {
                               FFAppState().currentGardenID = '';
                               FFAppState().hasCompletedProfileSetup = false;

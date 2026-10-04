@@ -3,6 +3,7 @@ import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/services/guest_session_service.dart';
 import '/services/subscription_service.dart';
 import 'dart:ui';
 import '/index.dart';
@@ -405,14 +406,35 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                           return;
                         }
 
-                        final user =
-                            await authManager.createAccountWithEmail(
-                          context,
-                          _model.emailTextController.text,
-                          _model.passwordTextController.text,
-                        );
-                        if (user == null) {
-                          return;
+                        // Someone who has been using the app as a guest
+                        // already owns an anonymous account with gardens and
+                        // plants attached. Add the email to THAT account -
+                        // creating a second one would orphan everything they
+                        // have made.
+                        final wasGuest = GuestSessionService.isGuest;
+                        if (wasGuest) {
+                          final error = await GuestSessionService.upgrade(
+                            email: _model.emailTextController.text,
+                            password: _model.passwordTextController.text,
+                          );
+                          if (error != null) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(error)),
+                              );
+                            }
+                            return;
+                          }
+                        } else {
+                          final user =
+                              await authManager.createAccountWithEmail(
+                            context,
+                            _model.emailTextController.text,
+                            _model.passwordTextController.text,
+                          );
+                          if (user == null) {
+                            return;
+                          }
                         }
 
                         // Link RevenueCat identity to Supabase user
@@ -420,12 +442,14 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                         if (supaUser != null) {
                           await SubscriptionService.instance
                               .loginUser(supaUser.id);
+                          await GuestSessionService.allowGuestSessions();
                         }
 
                         // Clear any leftover setup state from a previous
                         // account so this new account starts blank. Without
                         // this, a prior user's cached name/town/photo would be
                         // saved into the new account's profile.
+                        if (!wasGuest) {
                         FFAppState().update(() {
                           FFAppState().currentGardenID = '';
                           FFAppState().hasCompletedProfileSetup = false;
@@ -442,12 +466,17 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                           FFAppState().selectedGardenIDForDetail = '';
                           FFAppState().selectedGardenPlotsList = [];
                         });
+                        }
                         FFAppState().setupNameInput = _model.textController1.text.trim();
 
-                        await ProfilesTable().insert({
-                          'id': currentUserUid,
-                          'has_completed_setup': false,
-                        });
+                        // A guest already has a profile row from their first
+                        // launch; inserting a second would collide on the id.
+                        if (!wasGuest) {
+                          await ProfilesTable().insert({
+                            'id': currentUserUid,
+                            'has_completed_setup': false,
+                          });
+                        }
 
                         context.pushNamedAuth(
                             AccountSetupPage2Widget.routeName,

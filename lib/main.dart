@@ -13,6 +13,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow/flutter_flow_util.dart';
 import 'flutter_flow/nav/nav.dart';
 import 'index.dart';
+import 'services/guest_session_service.dart';
 import 'services/notification_service.dart';
 import 'services/subscription_service.dart';
 
@@ -22,6 +23,12 @@ void main() async {
   usePathUrlStrategy();
 
   await SupaFlow.initialize();
+
+  // Someone opening the app for the first time gets an anonymous account, so
+  // they can browse guides, lay out a bed and run a scan before deciding
+  // whether to hand over an email. Must run before RevenueCat initialises,
+  // which links its identity to whichever Supabase user is current.
+  await GuestSessionService.ensureSession();
 
   await FlutterFlowTheme.initialize();
 
