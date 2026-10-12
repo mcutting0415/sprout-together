@@ -9,6 +9,10 @@ import 'package:google_fonts/google_fonts.dart';
 /// (the same categories the Plant Library uses), with chips to jump straight
 /// to one. Searching cuts across every category and shows a flat result list,
 /// because when someone types "basil" they want basil, not a heading.
+///
+/// On "All" the categories start collapsed, so opening the sheet shows a
+/// handful of rows to choose between rather than every plant in the database
+/// under headings - the headings alone did not stop it being one long scroll.
 class PlantPickerList extends StatefulWidget {
   const PlantPickerList({
     super.key,
@@ -33,6 +37,9 @@ class PlantPickerList extends StatefulWidget {
 class _PlantPickerListState extends State<PlantPickerList> {
   final _searchController = TextEditingController();
   String _category = _kAll;
+
+  /// Categories opened by hand on the "All" view. Empty = all collapsed.
+  final _expanded = <String>{};
 
   static const _kAll = 'All';
 
@@ -94,12 +101,13 @@ class _PlantPickerListState extends State<PlantPickerList> {
         body.addAll(flat.map((p) => _tile(p, theme)));
       }
     } else {
-      // "All" -> grouped sections, so it reads as categories not one long list.
+      // "All" -> one collapsed row per category. Tap to open just that one.
       for (final c in _categories.skip(1)) {
         final inCategory = matches.where((p) => _categoryOf(p) == c).toList();
         if (inCategory.isEmpty) continue;
-        body.add(_sectionHeader(c, inCategory.length, theme));
-        body.addAll(inCategory.map((p) => _tile(p, theme)));
+        final open = _expanded.contains(c);
+        body.add(_sectionHeader(c, inCategory.length, theme, open: open));
+        if (open) body.addAll(inCategory.map((p) => _tile(p, theme)));
       }
       if (body.isEmpty) body.add(_emptyState(theme));
     }
@@ -200,30 +208,52 @@ class _PlantPickerListState extends State<PlantPickerList> {
         ),
       );
 
-  Widget _sectionHeader(String label, int count, FlutterFlowTheme theme) =>
-      Padding(
-        padding: const EdgeInsets.fromLTRB(2.0, 14.0, 2.0, 4.0),
-        child: Row(
-          children: [
-            Icon(_categoryIcons[label] ?? Icons.spa_rounded,
-                size: 14.0, color: theme.primary),
-            const SizedBox(width: 6.0),
-            Text(
-              label.toUpperCase(),
-              style: GoogleFonts.poppins(
-                fontSize: 11.0,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-                color: theme.primary,
-              ),
-            ),
-            const SizedBox(width: 6.0),
-            Text('$count',
+  /// A category row. On "All" it is a tappable open/close control; when a
+  /// single category is already chosen there is nothing to collapse, so it
+  /// renders as a plain heading.
+  Widget _sectionHeader(String label, int count, FlutterFlowTheme theme,
+          {bool? open}) =>
+      InkWell(
+        onTap: open == null
+            ? null
+            : () => setState(() {
+                  if (!_expanded.remove(label)) _expanded.add(label);
+                }),
+        borderRadius: BorderRadius.circular(10.0),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 12.0),
+          child: Row(
+            children: [
+              Icon(_categoryIcons[label] ?? Icons.spa_rounded,
+                  size: 16.0, color: theme.primary),
+              const SizedBox(width: 8.0),
+              Text(
+                label.toUpperCase(),
                 style: GoogleFonts.poppins(
-                    fontSize: 11.0, color: theme.secondaryText)),
-            const SizedBox(width: 8.0),
-            Expanded(child: Divider(height: 1.0, color: theme.alternate)),
-          ],
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: theme.primary,
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Text('$count',
+                  style: GoogleFonts.poppins(
+                      fontSize: 11.5, color: theme.secondaryText)),
+              const SizedBox(width: 10.0),
+              Expanded(child: Divider(height: 1.0, color: theme.alternate)),
+              if (open != null) ...[
+                const SizedBox(width: 8.0),
+                Icon(
+                  open
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
+                  size: 20.0,
+                  color: theme.secondaryText,
+                ),
+              ],
+            ],
+          ),
         ),
       );
 

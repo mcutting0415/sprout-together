@@ -86,14 +86,19 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       navigatorKey: appNavigatorKey,
       errorBuilder: (context, state) => appStateNotifier.loggedIn
           ? PlannerOverviewPageWidget()
-          : SignUpPageWidget(),
+          : LoginPageWidget(),
       routes: [
         FFRoute(
           name: '_initialize',
           path: '/',
+          // Logged out now means they signed out on purpose: a first launch
+          // gets an anonymous guest session instead (GuestSessionService), so
+          // the person in front of this screen already has an account and
+          // wants to sign back into it. The login page links to sign-up for
+          // the fallback case where a guest session could not be created.
           builder: (context, _) => appStateNotifier.loggedIn
               ? PlannerOverviewPageWidget()
-              : SignUpPageWidget(),
+              : LoginPageWidget(),
         ),
         FFRoute(
           name: PlannerOverviewPageWidget.routeName,
