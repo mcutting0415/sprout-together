@@ -158,7 +158,15 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         body: SafeArea(
           top: true,
-          child: Column(
+          // Scrollable so the keyboard can never cover the field being typed
+          // into - this page has four of them. spaceBetween is kept for the
+          // rare tall screen where the form does not already fill the space.
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -579,6 +587,10 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                 ),
               ),
             ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),

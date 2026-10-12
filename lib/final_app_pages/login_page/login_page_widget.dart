@@ -72,13 +72,17 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Expanded(
-                      child: Align(
-                        alignment: AlignmentDirectional(0.0, -1.0),
+                      // Scrollable so the on-screen keyboard can never cover
+                      // the field being typed into: the Scaffold shrinks the
+                      // body, and Flutter scrolls the focused field back into
+                      // view. Align is not needed - the content is top-aligned
+                      // anyway once the Column sizes to its children.
+                      child: SingleChildScrollView(
                         child: Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(
                               24.0, 40.0, 24.0, 24.0),
                           child: Column(
-                            mainAxisSize: MainAxisSize.max,
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
