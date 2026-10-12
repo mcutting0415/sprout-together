@@ -1,4 +1,4 @@
-# App Store Connect — 1.0.4 metadata
+# App Store Connect — 1.0.5 metadata
 
 Character limits in brackets. Apple indexes the **name**, **subtitle** and
 **keywords** for search; the description is not indexed, so keywords belong in
@@ -35,14 +35,14 @@ New: point your camera at a plant to identify it, or at a struggling one to find
 ## What's New in This Version [4000]
 
 ```
-Plant Scanner is here.
+You can now use Sprout Together without making an account.
 
-Point your camera at any plant and find out what it is - or photograph one that's struggling and get a diagnosis with likely causes, what to do, and how to prevent it next season. Results include safety notes and common look-alikes.
+Open it and start - browse the plant guides, lay out a bed, identify a plant. Nothing is behind a sign-up form any more. When you want your garden to follow you to a new phone, add an email and everything you have already made comes with it.
 
 Also in this update:
-- Plants in the Garden Builder are now grouped by category instead of one long alphabetical list
-- You can leave the Create Garden screen without having to create a garden
-- Fixed an issue where Pro features could be unavailable after reopening the app
+- Finding a plant in the Garden Builder is quicker. Categories start closed, so you pick Vegetables or Herbs instead of scrolling past every plant in the app.
+- Fixed the keyboard covering the password field on the sign-in and sign-up screens.
+- Signing out now takes you back to sign-in rather than the create-account screen.
 ```
 
 ---
@@ -90,11 +90,18 @@ Questions or ideas? hello@sprouttogether.app
 
 ## App Review Information
 
-**Sign-In Required:** yes. Provide a real, working account - a failed login is
-one of the most common rejection reasons.
+**Sign-In Required:** **No** (changed in 1.0.5 - previously yes).
+
+As of 1.0.5 the app creates an anonymous account on first launch, so every
+feature can be reviewed without signing in. Turning this off removes the most
+common rejection cause there is, a demo login that does not work. Leave the
+demo credentials in the notes below anyway, as a fallback in case anonymous
+sign-in is unavailable during review.
 
 **Notes for Review:**
 ```
+No account is needed to review this app. It opens straight into the planner - browsing plant guides, laying out a garden bed and running a scan all work without signing in. An account is only offered when someone wants their garden to persist across devices, and it can be deleted in Settings.
+
 The Plant Scanner sends a user-selected photo to Anthropic's Claude API to identify plants and diagnose plant health issues. Photos are not stored. Results are advisory and labelled as such in the app.
 
 The scanner is free for the first 3 scans, then requires the Sprout Together Pro subscription. The demo account above has scans available for testing.
