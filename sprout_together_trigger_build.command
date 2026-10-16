@@ -16,7 +16,7 @@ echo "  9. Growing calendar: Upcoming Tasks section (next 7 days) below selected
 echo " 10. Growing calendar: water schedule (every 3 days) + weekly weed reminders auto-generated on plant assignment"
 echo ""
 echo "Pushing to GitHub..."
-cd ~/Downloads/sprout_together
+cd ~/SproutTogether/app
 rm -f .git/HEAD.lock .git/index.lock .git/refs/heads/main.lock
 git add -A
 git commit -m "Build 42: auto-schedule + upcoming tasks + full calendar generation" --allow-empty

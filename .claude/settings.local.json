@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(rm -f /Users/mackenziecutting/Downloads/sprout_together/.git/index.lock && echo \"Lock file removed \\(or did not exist\\)\")",
+      "Bash(rm -f /Users/mackenziecutting/SproutTogether/app/.git/index.lock && echo \"Lock file removed \\(or did not exist\\)\")",
       "Bash(git add *)",
       "Bash(curl -s 'https://jcfecyfgznigadbpxvss.supabase.co/rest/v1/shop_products?select=name,category,image_url,is_active&order=category' -H 'apikey: __TRACKED_VAR__' -H 'Authorization: Bearer __TRACKED_VAR__' -o shop_products.json)",
       "Bash(python3 -c \"import json;d=json.load\\(open\\('shop_products.json'\\)\\);print\\(len\\(d\\),'rows'\\);[print\\(f\\\\\"[{r.get\\('is_active'\\)}] {r['category']:<22} | {r['name']}\\\\\"\\) for r in d]\")",

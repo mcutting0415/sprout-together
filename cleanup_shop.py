@@ -1,6 +1,6 @@
 import re
 
-with open('/sessions/zealous-eager-shannon/mnt/Downloads/sprout_together/lib/final_app_pages/shop_page/shop_page_widget.dart', 'r') as f:
+with open('lib/final_app_pages/shop_page/shop_page_widget.dart', 'r') as f:
     content = f.read()
 
 # ── 1. NEW _categories (add Smart Gardens) ───────────────────────────────────
@@ -203,6 +203,6 @@ else:
     print("✅ _curatedProducts updated")
 
 # Write back
-with open('/sessions/zealous-eager-shannon/mnt/Downloads/sprout_together/lib/final_app_pages/shop_page/shop_page_widget.dart', 'w') as f:
+with open('lib/final_app_pages/shop_page/shop_page_widget.dart', 'w') as f:
     f.write(content)
 print("✅ File written")
